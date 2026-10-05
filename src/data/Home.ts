@@ -1,1 +1,0 @@
-export { landingDestinations } from './landingDestinations'

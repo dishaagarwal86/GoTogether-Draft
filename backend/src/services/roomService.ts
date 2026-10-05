@@ -1,0 +1,7 @@
+import type { CreateRoomInput, Room } from '../models/room.js'
+import { supabase } from '../supabase.js'
+const map=(r:Record<string,unknown>):Room=>({id:String(r.id),name:String(r.name),tripName:String(r.trip_name),members:Number(r.members),createdAt:String(r.created_at)})
+const unwrap=<T>(data:T,error:{message:string}|null)=>{if(error)throw new Error(error.message);return data}
+export async function listRooms(){const r=await supabase.from('trip_rooms').select('id,name,trip_name,members,created_at').order('created_at',{ascending:false});return (unwrap(r.data??[],r.error) as Record<string,unknown>[]).map(map)}
+export async function createRoom(input:CreateRoomInput){const r=await supabase.from('trip_rooms').insert({id:`room_${crypto.randomUUID()}`,name:input.name.trim(),trip_name:input.tripName.trim(),members:input.members??1}).select('id,name,trip_name,members,created_at').single();return map(unwrap(r.data,r.error) as Record<string,unknown>)}
+export async function updateRoom(id:string,input:Partial<CreateRoomInput>){const r=await supabase.from('trip_rooms').update({...(input.name?.trim()?{name:input.name.trim()}:{}),...(input.tripName?.trim()?{trip_name:input.tripName.trim()}:{}),...(typeof input.members==='number'?{members:input.members}:{}),updated_at:new Date().toISOString()}).eq('id',id).select('id,name,trip_name,members,created_at').maybeSingle();return unwrap(r.data,r.error)?map(r.data as Record<string,unknown>):undefined}
