@@ -4,6 +4,7 @@ import type { QuestDna, QuestRecommendation } from '../apis/quests'
 import { personaliseItinerary } from '../services/companionApi'
 import { photoFallback, recommendationPhoto } from '../services/itineraryPresentation'
 import { Icon } from './Ui'
+import { TravelPlanningOptions } from './TravelPlanningOptions'
 
 export type ChatContext = { label: string; detail: string }
 type Day = { day?: string | number; title?: string; morning?: string; afternoon?: string; evening?: string; description?: string }
@@ -57,6 +58,7 @@ export function ItineraryStory({ trip, roomId, travelDna, onDiscuss }: { trip: Q
         <div className="itinerary-moments">{([{ key: 'morning', label: 'Morning', icon: 'sun' }, { key: 'afternoon', label: 'Afternoon', icon: 'sunset' }, { key: 'evening', label: 'Evening', icon: 'moon' }] as const).map(({ key, label, icon }) => day[key] && <div className={`itinerary-moment itinerary-moment-${key}`} key={key}><span><Icon name={icon} size={20} /></span><div><h4>{label}</h4><p>{day[key]}</p></div></div>)}</div>
       </article>)}</div>
     </> : <p className="itinerary-open-days">The day-by-day details are still open. Use this idea as the starting point for your conversation.</p>}
+    <TravelPlanningOptions trip={trip} />
     <footer className="itinerary-next-step"><div><Icon name="people" size={23} /><div><h3>Good plans leave room for every voice.</h3><p>Bring an idea to the conversation before deciding together.</p></div></div>{discussionAction(context, 'Talk it over with your crew', 'primary-button')}</footer>
     <details className="itinerary-companion"><summary><Icon name="spark" size={19} /><span>Make it a little more you.<small>Personalise this idea with the Companion</small></span><Icon name="plus" size={17} /></summary><div><p>Give this starting point a little of your crew’s personality.</p><button className="secondary-button" type="button" disabled={personalising} onClick={personalise}>{personalising ? 'Finding your story…' : 'Personalise with Companion'}<Icon name="spark" size={17} /></button>{storyError && <p className="form-error" role="alert">{storyError}</p>}{personalStory && <section className="companion-story" aria-live="polite"><p className="eyebrow">THE COMPANION’S TAKE</p><h3>{personalStory.resultTitle}</h3><p>{personalStory.scrapbookIntro}</p><ul>{(personalStory.whyItWorks ?? []).map((item) => <li key={item}>{item}</li>)}</ul><p>{personalStory.tradeoffNote}</p><div className="story-days">{personalStory.days.map((day) => <article key={day.day}><b>Day {day.day}</b><h3>{day.title}</h3><p>{day.description}</p></article>)}</div></section>}</div></details>
   </section>

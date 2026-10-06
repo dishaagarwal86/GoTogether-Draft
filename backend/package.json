@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "build": "tsc -p tsconfig.json",
+    "build": "tsc",
     "start": "node dist/index.js",
     "seed:catalogue": "tsx ../database/seeds/seedItineraryCatalogue.ts",
     "test": "node --import tsx --test tests/databaseConfig.test.ts",
@@ -24,7 +24,7 @@
   "devDependencies": {
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
-    "@types/node": "^24.13.3",
+    "@types/node": "^24.19.1",
     "@types/nodemailer": "^8.0.2",
     "@types/pg": "^8.23.1",
     "tsx": "^4.20.5",

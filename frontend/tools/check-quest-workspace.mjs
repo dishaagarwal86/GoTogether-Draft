@@ -5,6 +5,7 @@ export async function checkQuestWorkspace(page, { base, roomId, screenshot, chec
   const url = `${base}/quests/${roomId}`
   const endpoint = `${base}/api/trip-rooms/${roomId}/messages`
   await page.locator('.itinerary-cover').waitFor()
+  assert.equal(await page.getByRole('region', { name: 'Flights and stays' }).count(), 1, 'The merged flight and stay guidance remains available')
   const composer = await page.locator('.crew-composer').boundingBox()
   assert.ok(composer.y + composer.height <= page.viewportSize().height, 'Composer starts within the viewport')
   await page.locator('.itinerary-day').nth(1).scrollIntoViewIfNeeded()

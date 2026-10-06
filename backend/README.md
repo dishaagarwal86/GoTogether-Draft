@@ -22,6 +22,8 @@ npm install
 npm run dev
 ```
 
+The API listens on `0.0.0.0`, uses the host's `PORT` when set, and defaults to port 3001 for local development. Set `FRONTEND_URL` to the deployed frontend origin; comma-separated origins and the existing `CLIENT_ORIGIN` setting are supported. Set `APP_URL` to the public frontend URL used in invitations. `/health` and `/api/health` report process health; startup separately checks the selected database connection. A separately hosted frontend also needs a same-origin `/api` proxy to this backend because browser API requests use relative URLs.
+
 ## Seed the itinerary catalogue
 
 ```sh

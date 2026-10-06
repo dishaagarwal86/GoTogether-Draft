@@ -147,6 +147,10 @@
 .crew-composer .form-error { font-size: 10px; padding: 9px; margin-bottom: 0; }
 .quest-unread-count { display: inline-grid; place-items: center; min-width: 19px; height: 19px; border-radius: 50%; padding: 0 4px; background: #eec89e; color: #3a543d; font-size: 9px; }
 .quest-mobile-dock { display: none; }
+.journey-shell .itinerary-story .travel-planning-options { margin: 0; padding: 28px; border-color: #d5d5bb; background: #edf0df; }
+.journey-shell .travel-planning-options h3 { font-size: 25px; }
+.journey-shell .travel-option-grid article { border-color: #c8d1b4; border-radius: 5px; background: #f9f5e9; }
+.journey-shell .travel-option-grid article>svg { color: #718661; }
 .journey-shell .quest-invite-dialog { position: fixed; padding: 35px; width: min(470px,calc(100vw - 32px)); max-height: calc(100dvh - 32px); overflow-y: auto; border-radius: 9px; border: 1px solid #bdc9aa; background: #f5f0df; color: var(--ink); }
 .quest-invite-dialog::backdrop,.crew-chat-dialog::backdrop { background: #132e27a1; backdrop-filter: blur(4px); }
 .journey-shell .quest-invite-dialog h2 { margin: 0 0 15px; font-size: 34px; }
@@ -183,6 +187,7 @@
 }
 @media(max-width:850px) { .itinerary-day-nav { top: 72px; }.itinerary-day { scroll-margin-top: 148px; } }
 @media(max-width:650px) {
+  .journey-shell .itinerary-story .travel-planning-options { padding: 22px 20px; }
   .journey-shell .journey-main:has(.quest-workspace-page) { width: calc(100% - 32px); padding-top: 19px; }
   .quest-workspace-breadcrumb { margin-bottom: 20px; }
   .quest-workspace-breadcrumb>span { display: none; }
