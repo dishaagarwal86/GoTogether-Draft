@@ -1,4 +1,5 @@
 import type { AnswerValue } from '../data/Questions'
+import { apiUrl } from '../services/apiUrl'
 
 const currentUserKey = 'gotogether.current-user-id'
 
@@ -10,7 +11,7 @@ async function request<T>(path: string, options?: RequestInit) {
   const controller = new AbortController()
   const timeout = window.setTimeout(() => controller.abort(), 20_000)
   try {
-    const response = await fetch(`/api${path}`, {
+    const response = await fetch(apiUrl(path), {
       ...options,
       signal: controller.signal,
       headers: { 'Content-Type': 'application/json', ...options?.headers },
