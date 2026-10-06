@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
+import { apiUrl } from '../services/apiUrl'
 export type AppUser = { id: string; firstName: string; lastName: string; email: string; country: string | null; createdAt: string }
 type Credentials = { email: string; password: string }
 type SignUp = Credentials & { firstName: string; lastName: string; country?: string }
@@ -7,7 +8,7 @@ type Auth = { user: AppUser | null; ready: boolean; login: (input: Credentials) 
 const Context = createContext<Auth | null>(null)
 const key = 'gotogether.session-token'
 async function api<T>(path: string, options?: RequestInit, token?: string | null) {
-  const response = await fetch(`/api${path}`, { ...options, headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}), ...options?.headers } })
+  const response = await fetch(apiUrl(path), { ...options, headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}), ...options?.headers } })
   const body = response.status === 204 ? null : await response.json().catch(() => null) as { data?: T; error?: string } | null
   if (!response.ok) throw new Error(body?.error || 'We couldn’t connect right now. Please try again in a moment.')
   return body?.data as T

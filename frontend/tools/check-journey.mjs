@@ -5,7 +5,9 @@ import { resolve } from 'node:path'
 import { checkQuestWorkspace } from './check-quest-workspace.mjs'
 import { checkInvitations } from './check-invitations.mjs'
 const base = process.env.JOURNEY_TEST_URL ?? 'http://127.0.0.1:5186'
+const apiBase = process.env.JOURNEY_TEST_API_URL ?? base
 assert.equal(new URL(base).hostname, '127.0.0.1', 'Browser checks must target the isolated local test runner')
+assert.equal(new URL(apiBase).hostname, '127.0.0.1', 'API checks must target the isolated local test runner')
 const out = resolve(process.env.JOURNEY_TEST_OUTPUT ?? '.journey-test-results')
 await mkdir(out, { recursive: true })
 const browser = await chromium.launch({ channel: process.env.PLAYWRIGHT_CHANNEL ?? 'chrome', headless: true })
@@ -89,7 +91,7 @@ try {
   await page.reload()
   await page.getByText('Let’s leave room for one long lunch.', { exact: true }).waitFor()
   check('Chat sends and persists across reload')
-  await checkQuestWorkspace(page, { base, roomId, screenshot, check })
+  await checkQuestWorkspace(page, { base, apiBase, roomId, screenshot, check })
   await page.getByRole('link', { name: 'Our Travel DNA' }).click()
   await page.getByRole('heading', { name: /Your people.*Your rhythm.*Your Travel DNA/ }).waitFor()
   await screenshot('10-travel-dna', true)
@@ -171,7 +173,7 @@ try {
   await screenshot('27-mobile-landing', false)
   check('Original landing page still renders its interactive match')
   assert.deepEqual(errors, [], 'Browser runtime errors')
-  await writeFile(`${out}/report.json`, JSON.stringify({ passed: checks, errors, roomId, testEmail: email, base, screenshots: out }, null, 2))
+  await writeFile(`${out}/report.json`, JSON.stringify({ passed: checks, errors, roomId, testEmail: email, base, apiBase, screenshots: out }, null, 2))
   console.log(JSON.stringify({ result: 'passed', checks: checks.length, errors, screenshots: out }))
 } catch (error) {
   await page.screenshot({ path: `${out}/failure.png`, fullPage: true })

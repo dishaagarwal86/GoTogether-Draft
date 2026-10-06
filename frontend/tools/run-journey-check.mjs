@@ -4,9 +4,10 @@ import { resolve } from 'node:path'
 const root = resolve(import.meta.dirname, '../..')
 const apiUrl = 'http://127.0.0.1:3016'
 const uiUrl = 'http://127.0.0.1:5186'
+const directApi = process.env.JOURNEY_DIRECT_API === '1'
 const databaseUrl = 'postgres://provider_test:provider_test@127.0.0.1:55436/gotogether_provider_test'
 const children = []
-const env = { ...process.env, NODE_ENV: 'test', DOTENV_CONFIG_PATH: '/dev/null', DATABASE_PROVIDER: 'postgres', DATABASE_URL: databaseUrl, SUPABASE_URL: '', SUPABASE_SERVICE_ROLE_KEY: '', SMTP_HOST: '', SMTP_PORT: '', SMTP_USER: '', SMTP_PASS: '', SMTP_FROM: '', OPENAI_API_KEY: '', OLLAMA_API_KEY: '', PORT: '3016', CLIENT_ORIGIN: uiUrl, APP_URL: uiUrl }
+const env = { ...process.env, NODE_ENV: 'test', DOTENV_CONFIG_PATH: '/dev/null', DATABASE_PROVIDER: 'postgres', DATABASE_URL: databaseUrl, SUPABASE_URL: '', SUPABASE_SERVICE_ROLE_KEY: '', SMTP_HOST: '', SMTP_PORT: '', SMTP_USER: '', SMTP_PASS: '', SMTP_FROM: '', OPENAI_API_KEY: '', OLLAMA_API_KEY: '', PORT: '3016', CLIENT_ORIGIN: uiUrl, APP_URL: uiUrl, VITE_API_URL: directApi ? apiUrl : '', JOURNEY_TEST_API_URL: directApi ? apiUrl : uiUrl }
 function start(args, cwd, childEnv, readyText) {
   return new Promise((resolveReady, reject) => {
     const child = spawn(process.execPath, args, { cwd, env: childEnv, stdio: ['ignore', 'pipe', 'pipe'] })

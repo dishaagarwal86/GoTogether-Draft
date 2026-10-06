@@ -22,7 +22,7 @@ npm install
 npm run dev
 ```
 
-The API listens on `0.0.0.0`, uses the host's `PORT` when set, and defaults to port 3001 for local development. Set `FRONTEND_URL` to the deployed frontend origin; comma-separated origins and the existing `CLIENT_ORIGIN` setting are supported. Set `APP_URL` to the public frontend URL used in invitations. `/health` and `/api/health` report process health; startup separately checks the selected database connection. A separately hosted frontend also needs a same-origin `/api` proxy to this backend because browser API requests use relative URLs.
+The API listens on `0.0.0.0`, uses the host's `PORT` when set, and defaults to port 3001 for local development. Set `FRONTEND_URL` to the deployed frontend origin; comma-separated origins and the existing `CLIENT_ORIGIN` setting are supported. Set `APP_URL` to the public frontend URL used in invitations. `/health` and `/api/health` report process health; startup separately checks the selected database connection. For a separately hosted frontend, set `VITE_API_URL` to this backend's public origin at frontend build time, or provide a same-origin `/api` proxy. Leaving `VITE_API_URL` empty uses relative `/api` requests and the local Vite proxy.
 
 ## Seed the itinerary catalogue
 

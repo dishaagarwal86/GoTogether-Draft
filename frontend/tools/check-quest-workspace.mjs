@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict'
 
 // Real local chat writes verify persistence; response overrides exercise failure and incoming-message UX.
-export async function checkQuestWorkspace(page, { base, roomId, screenshot, check }) {
+export async function checkQuestWorkspace(page, { base, apiBase = base, roomId, screenshot, check }) {
   const url = `${base}/quests/${roomId}`
-  const endpoint = `${base}/api/trip-rooms/${roomId}/messages`
+  const endpoint = `${apiBase}/api/trip-rooms/${roomId}/messages`
   await page.locator('.itinerary-cover').waitFor()
   assert.equal(await page.getByRole('region', { name: 'Flights and stays' }).count(), 1, 'The merged flight and stay guidance remains available')
   const composer = await page.locator('.crew-composer').boundingBox()

@@ -1,8 +1,9 @@
 import type { AnswerValue } from '../data/Questions'
+import { apiUrl } from '../services/apiUrl'
 
 type Preference = Record<string, unknown> & { id: string; tripRoomId: string }
 async function request<T>(path: string, options?: RequestInit) {
-  const response = await fetch(`/api${path}`, { ...options, headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${localStorage.getItem('gotogether.session-token') ?? ''}`, ...options?.headers }, signal: AbortSignal.timeout(20000) })
+  const response = await fetch(apiUrl(path), { ...options, headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${localStorage.getItem('gotogether.session-token') ?? ''}`, ...options?.headers }, signal: AbortSignal.timeout(20000) })
   const body = await response.json().catch(() => null) as { data?: T; error?: string } | null
   if (!response.ok) throw new Error(body?.error || 'We couldn’t save your preferences. Please try again.')
   return body?.data as T
