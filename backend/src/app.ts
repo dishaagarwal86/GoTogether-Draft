@@ -18,6 +18,7 @@ app.use(cors({
   },
 }))
 app.use(express.json())
-app.get('/health', (_request, response) => response.json({ status: 'ok' }))
+app.get('/', (_request, response) => response.json({ status: 'GoTogether backend is live' }))
+app.get('/health', (_request, response) => response.status(200).json({ status: 'ok' }))
 app.use('/api', apiRouter)
 app.use(errorHandler)
