@@ -7,6 +7,17 @@ const fail = (error: { message: string } | null) => { if (error) throw new Error
 
 type InviteRow = { id: string; trip_room_id: string; email: string; status: string; expires_at: string }
 
+export async function listPendingTripRoomInvites(email: string) {
+  const result = await supabase.from('trip_room_invites').select('id,trip_room_id,email,status,expires_at').eq('email', email.toLowerCase()).eq('status', 'pending').gt('expires_at', new Date().toISOString()).order('created_at', { ascending: false })
+  fail(result.error)
+  const invites = (result.data ?? []) as InviteRow[]
+  const roomIds = [...new Set(invites.map((invite) => invite.trip_room_id))]
+  const rooms = roomIds.length ? await supabase.from('trip_rooms').select('id,name,trip_name').in('id', roomIds) : { data: [], error: null }
+  fail(rooms.error)
+  const byId = new Map((rooms.data ?? []).map((room) => [room.id, room]))
+  return invites.flatMap((invite) => { const room = byId.get(invite.trip_room_id); return room ? [{ id: invite.id, expiresAt: invite.expires_at, room }] : [] })
+}
+
 export async function createTripRoomInvite(room: { id: string; name: string }, email: string) {
   const token = randomBytes(32).toString('hex')
   const invite = { id: `invite_${randomUUID()}`, trip_room_id: room.id, email: email.trim().toLowerCase(), token_hash: hash(token), status: 'pending', expires_at: new Date(Date.now() + 1000 * 60 * 60 * 24 * 14).toISOString() }
@@ -51,4 +62,17 @@ export async function acceptTripRoomInvite(token: string, user: { id: string; em
   const update = await supabase.from('trip_room_invites').update({ status: 'accepted', accepted_at: new Date().toISOString() }).eq('id', lookup.data.id)
   fail(update.error)
   return invite.room
+}
+
+export async function acceptTripRoomInviteById(inviteId: string, user: { id: string; email: string }) {
+  const result = await supabase.from('trip_room_invites').select('id,trip_room_id,email,status,expires_at').eq('id', inviteId).maybeSingle()
+  fail(result.error)
+  const invite = result.data as InviteRow | null
+  if (!invite || invite.status !== 'pending' || new Date(invite.expires_at).getTime() < Date.now()) throw new Error('This invitation is no longer available.')
+  if (invite.email.toLowerCase() !== user.email.toLowerCase()) throw new Error('This invitation belongs to a different email address.')
+  const membership = await supabase.from('trip_room_people').upsert({ trip_room_id: invite.trip_room_id, user_id: user.id, role: 'member', invite_status: 'accepted' }, { onConflict: 'trip_room_id,user_id' })
+  fail(membership.error)
+  const update = await supabase.from('trip_room_invites').update({ status: 'accepted', accepted_at: new Date().toISOString() }).eq('id', invite.id)
+  fail(update.error)
+  return invite.trip_room_id
 }
