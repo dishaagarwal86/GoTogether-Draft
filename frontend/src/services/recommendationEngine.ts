@@ -1,34 +1,27 @@
-import { exploreItineraries, type ExploreItinerary } from '../data/exploreItineraries'
+import { curatedItineraries, type CuratedItinerary } from '../data/curatedItineraries'
 import { demoTravellers, type TravellerProfile } from '../data/groupMockData'
 
-export type ScoredItinerary = ExploreItinerary & { groupFit: number; fairness: number; finalScore: number }
-export type PlanPath = { id: string; title: string; label: string; description: string; itinerary: ScoredItinerary; tradeoff: string }
+export type MemberPreference = { name: string; moods: string[]; budget: string; pace: string; mustHave: string; preferredActivities?: string; noGo?: string; season?: string }
+export type GroupTravelDNA = { sharedVibe: string; groupPace: string; budgetStyle: string; sharedMustHaves: string[]; flexiblePreferences: string[]; tensionsToBalance: string[]; noGoActivities: string[] }
+export type Recommendation = CuratedItinerary & { score: number; matchedPreferences: string[]; compromises: string[]; neutralPreferences: string[] }
+export type PlanPath = { id: string; title: string; label: string; description: string; itinerary: Recommendation; tradeoff: string }
+const clean = (value = '') => value.toLowerCase().replace(/&/g, 'and')
+const tokens = (value = '') => clean(value).split(/[^a-z]+/).filter((word) => word.length > 3)
+const band = (value: string): CuratedItinerary['budgetBand'] => clean(value).includes('budget') ? 'low' : clean(value).includes('premium') ? 'premium' : 'mid'
+const rhythm = (value: string): CuratedItinerary['pace'] => clean(value).includes('slow') ? 'slow' : clean(value).includes('busy') ? 'fast' : 'balanced'
+const hit = (trip: CuratedItinerary, values: string[]) => values.filter((value) => trip.moods.some((mood) => clean(mood).includes(clean(value)) || clean(value).includes(clean(mood))) || trip.mustHaveTags.some((tag) => clean(value).includes(tag)))
 
-const normalise = (value: string) => value.toLowerCase().replace('food & culture', 'food').replace('food and local culture', 'food')
-const travellerScore = (trip: ExploreItinerary, person: TravellerProfile) => {
-  const matches = person.moods.filter((mood) => {
-    return trip.moods.some((tripMood) => normalise(tripMood).includes(normalise(mood)) || normalise(mood).includes(normalise(tripMood)))
-  }).length
-  const moodScore = (matches / person.moods.length) * 72
-  const budgetScore = person.budget === trip.budget ? 20 : person.budget === 'Premium' || trip.budget === 'Moderate' ? 13 : 7
-  return Math.min(100, Math.round(moodScore + budgetScore + (trip.locationType === 'Beach' && person.moods.includes('Relaxation') ? 8 : 0)))
+export function deriveGroupTravelDna(members: MemberPreference[]): GroupTravelDNA {
+  const moods = members.flatMap((member) => member.moods); const shared = [...new Set(moods)].filter((mood) => moods.filter((item) => item === mood).length >= Math.max(1, Math.ceil(members.length / 2)))
+  const paces = members.map((member) => rhythm(member.pace)); const noGos = [...new Set(members.flatMap((member) => tokens(member.noGo)))]
+  return { sharedVibe: shared.join(' + ') || 'Curious shared discovery', groupPace: paces.includes('slow') && paces.includes('fast') ? 'A balanced rhythm with room to opt in or out' : paces[0] ?? 'A balanced rhythm', budgetStyle: [...new Set(members.map((member) => band(member.budget)))].join(' / '), sharedMustHaves: [...new Set(members.flatMap((member) => tokens(`${member.mustHave} ${member.preferredActivities ?? ''}`)))].slice(0, 5), flexiblePreferences: [...new Set(moods.filter((mood) => !shared.includes(mood)))], tensionsToBalance: paces.includes('slow') && paces.includes('fast') ? ['Restful time and one active anchor'] : [], noGoActivities: noGos }
 }
 
-export const getScoredItineraries = (travellers = demoTravellers): ScoredItinerary[] => exploreItineraries.map((itinerary) => {
-  const scores = travellers.map((person) => travellerScore(itinerary, person))
-  const groupFit = Math.round(scores.reduce((sum, score) => sum + score, 0) / scores.length)
-  const fairness = Math.min(...scores)
-  return { ...itinerary, groupFit, fairness, finalScore: Math.round(groupFit * .65 + fairness * .35) }
-}).sort((a, b) => b.finalScore - a.finalScore)
-
-export const getPlanPaths = (): PlanPath[] => {
-  const ranked = getScoredItineraries()
-  const best = ranked[0]
-  const fair = [...ranked].sort((a, b) => b.fairness - a.fairness)[0]
-  const unexpected = ranked.find((trip) => trip.id !== best.id && trip.locationType === 'Hidden gems') ?? ranked[2]
-  return [
-    { id: 'best-shared', title: 'Best Shared Fit', label: `${best.finalScore}% group fit`, itinerary: best, description: 'The strongest overlap across your group’s mood, rhythm and budget.', tradeoff: 'Leans toward the interests you share most.' },
-    { id: 'fair-compromise', title: 'Fair Compromise', label: `${fair.fairness}% minimum individual fit`, itinerary: fair, description: 'The most balanced option—no traveller is left with a weak match.', tradeoff: 'May be less intense for the group’s biggest enthusiasts.' },
-    { id: 'unexpected', title: 'Unexpected Discovery', label: `${unexpected.finalScore}% group fit`, itinerary: unexpected, description: 'A slightly bolder choice that still honours the group’s core preferences.', tradeoff: 'A little more novelty, a little less certainty.' },
-  ]
+export function recommendItineraries(members: MemberPreference[]): Recommendation[] {
+  const dna = deriveGroupTravelDna(members); const ceiling = members.some((member) => band(member.budget) === 'low') ? 'low' : members.some((member) => band(member.budget) === 'mid') ? 'mid' : 'premium'; const rank = { low: 0, mid: 1, premium: 2 }
+  const filtered = curatedItineraries.filter((trip) => rank[trip.budgetBand] <= rank[ceiling] && !dna.noGoActivities.some((avoid) => trip.avoidTags.some((tag) => avoid.includes(tag))))
+  return (filtered.length >= 3 ? filtered : curatedItineraries).map((trip) => { const moods = hit(trip, members.flatMap((member) => member.moods)); const activities = hit(trip, members.flatMap((member) => tokens(`${member.mustHave} ${member.preferredActivities ?? ''}`))); const individual = members.map((member) => (hit(trip, member.moods).length + hit(trip, tokens(member.mustHave)).length) / Math.max(1, member.moods.length + 1)); const fairnessPenalty = Math.min(...individual) < .2 ? .18 : 0; const score = ((moods.length / Math.max(1, members.flatMap((member) => member.moods).length)) * .35) + ((activities.length / Math.max(1, members.length)) * .25) + ((rank[trip.budgetBand] <= rank[ceiling] ? 1 : .2) * .2) + ((members.filter((member) => rhythm(member.pace) === trip.pace).length / members.length) * .1) + ((members.some((member) => member.season && trip.bestSeasons.includes(member.season)) ? 1 : .7) * .1) - fairnessPenalty; return { ...trip, score: Math.round(score * 100), matchedPreferences: [...new Set([...moods, ...activities])].slice(0, 4), compromises: dna.tensionsToBalance.length ? dna.tensionsToBalance : ['A few individual wishes remain optional'], neutralPreferences: dna.flexiblePreferences.slice(0, 3) } }).sort((a, b) => b.score - a.score)
 }
+const demoMembers: MemberPreference[] = demoTravellers.map((traveller: TravellerProfile) => ({ ...traveller }))
+export const getScoredItineraries = (members = demoMembers) => recommendItineraries(members)
+export const getPlanPaths = (members = demoMembers): PlanPath[] => { const ranked = recommendItineraries(members); const best = ranked[0]; const fair = [...ranked].sort((a, b) => b.score - a.score)[1] ?? best; const unexpected = ranked.find((item) => item.id !== best.id && item.id !== fair.id) ?? best; return [{ id: 'best-shared', title: 'Best shared match', label: 'Best shared match', itinerary: best, description: 'The strongest overlap across the preferences your crew shares.', tradeoff: best.compromises[0] }, { id: 'fair-compromise', title: 'Fair compromise', label: 'Fair compromise', itinerary: fair, description: 'A route that protects every traveller’s stated essentials.', tradeoff: fair.compromises[0] }, { id: 'unexpected', title: 'Unexpected match', label: 'Unexpected match', itinerary: unexpected, description: 'A fresh option that still respects the group’s foundations.', tradeoff: unexpected.compromises[0] }] }
