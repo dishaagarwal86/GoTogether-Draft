@@ -1,6 +1,6 @@
 import { createHash, randomUUID } from 'node:crypto'
 import bcrypt from 'bcryptjs'
-import { selectRows, insertRow, deleteRows } from '../storage.js'
+import { selectRows, insertRow, deleteRows, updateRows } from '../storage.js'
 
 export type PublicUser = { id: string; firstName: string; lastName: string; email: string; country: string | null; createdAt: string }
 type User = { id: string; first_name: string | null; last_name: string | null; email: string; country: string | null; password_hash: string; created_at: string }
@@ -83,4 +83,12 @@ export async function userForToken(token: string) {
 
 export async function endSession(token: string) {
   await deleteRows('user_sessions', [{ column: 'token_hash', operator: 'eq', value: hash(token) }])
+}
+
+export async function updateUserProfile(userId: string, input: { firstName: string; lastName: string; country: string }) {
+  const [existing] = await selectRows<{ data: Record<string, unknown> }>('users', ['data'], [{ column: 'id', operator: 'eq', value: userId }])
+  if (!existing) throw new Error('We could not find your account.')
+  const rows = await updateRows('users', { first_name: input.firstName, last_name: input.lastName, country: input.country || null, data: { ...existing.data, firstName: input.firstName, lastName: input.lastName, name: `${input.firstName} ${input.lastName}`, country: input.country || null }, updated_at: new Date().toISOString() }, [{ column: 'id', operator: 'eq', value: userId }], userColumns)
+  if (!rows[0]) throw new Error('We could not find your account.')
+  return publicUser(asUser(rows[0]))
 }

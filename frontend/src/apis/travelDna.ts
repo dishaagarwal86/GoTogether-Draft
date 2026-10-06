@@ -1,89 +1,32 @@
 import type { AnswerValue } from '../data/Questions'
 
-const currentUserKey = 'gotogether.current-user-id'
-
-type ApiResponse<T> = { data: T; error?: string }
-type User = { id: string }
-type TripRoom = { id: string }
-
+type Preference = Record<string, unknown> & { id: string; tripRoomId: string }
 async function request<T>(path: string, options?: RequestInit) {
-  const controller = new AbortController()
-  const timeout = window.setTimeout(() => controller.abort(), 20_000)
-  try {
-    const response = await fetch(`/api${path}`, {
-      ...options,
-      signal: controller.signal,
-      headers: { 'Content-Type': 'application/json', ...options?.headers },
-    })
-    const body = await response.json() as ApiResponse<T>
-    if (!response.ok) throw new Error(body.error || 'We could not save your Travel DNA. Please try again.')
-    return body.data
-  } catch (error) {
-    if (error instanceof DOMException && error.name === 'AbortError') {
-      throw new Error('Saving took too long. Check that the GoTogether API is running, then try again.')
-    }
-    throw error
-  } finally {
-    window.clearTimeout(timeout)
+  const response = await fetch(`/api${path}`, { ...options, headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${localStorage.getItem('gotogether.session-token') ?? ''}`, ...options?.headers }, signal: AbortSignal.timeout(20000) })
+  const body = await response.json().catch(() => null) as { data?: T; error?: string } | null
+  if (!response.ok) throw new Error(body?.error || 'We couldn’t save your preferences. Please try again.')
+  return body?.data as T
+}
+export async function getRoomPreference(userId: string, roomId: string) {
+  return (await request<Preference[]>(`/users/${userId}/preferences`)).find((item) => item.tripRoomId === roomId)
+}
+export function preferenceAnswers(preference: Preference): Record<string, AnswerValue> {
+  const dates = preference.dates as { start?: string; end?: string; flexible?: boolean } | undefined
+  const location = preference.locationPreferences as { scope?: string; destination?: string } | undefined
+  const days = Number(preference.daysCount)
+  return { startDate: dates?.start ?? '', endDate: dates?.end ?? '', flexibleDates: dates?.flexible ? 'yes' : '', tripLength: days === 2 ? 'Weekend' : days === 4 ? '3–4 days' : days === 6 ? '5–7 days' : days ? 'More than a week' : '', groupSize: String(preference.peopleCount || 1), destinationScope: location?.scope ?? '', destination: location?.destination ?? '', budget: String(preference.budget ?? ''), tripFeeling: preference.moodPreferences as string[] ?? [], stayStyle: preference.accommodationPreferences as string[] ?? [], mustHave: String(preference.activitiesMustHave ?? ''), niceToHave: String(preference.activitiesPreferred ?? ''), noGo: String(preference.noGo ?? ''), pace: String(preference.pace ?? ''), discovery: String(preference.discovery ?? ''), companions: String(preference.companions ?? ''), ageGroups: preference.ageGroups as string[] ?? [], priorities: preference.priorities as string[] ?? [] }
+}
+export async function saveTravelDna(name: string, answers: Record<string, AnswerValue>, inviteEmail?: string, options?: { roomId?: string; onRoomCreated?: (roomId: string) => void }) {
+  const userId = localStorage.getItem('gotogether.current-user-id')
+  if (!userId) throw new Error('Please sign in to save your quest.')
+  let roomId = options?.roomId
+  let invitation: { delivered: boolean; reason?: string } | undefined
+  if (!roomId) {
+    const room = await request<{ id: string; invite?: { delivered: boolean; reason?: string } }>('/trip-rooms', { method: 'POST', body: JSON.stringify({ name, tripName: typeof answers.destination === 'string' && answers.destination.trim() ? answers.destination.trim() : name, members: Number(answers.groupSize) || 1, inviteEmail, ownerId: userId }) })
+    roomId = room.id; invitation = room.invite; options?.onRoomCreated?.(roomId)
   }
-}
-
-async function currentUser() {
-  const savedUserId = window.localStorage.getItem(currentUserKey)
-  if (savedUserId) return savedUserId
-
-  const suffix = crypto.randomUUID()
-  const user = await request<User>('/users', {
-    method: 'POST',
-    body: JSON.stringify({ name: 'GoTogether traveller', email: `traveller-${suffix}@local.gotogether` }),
-  })
-  window.localStorage.setItem(currentUserKey, user.id)
-  return user.id
-}
-
-export async function saveTravelDna(travelDnaName: string, answers: Record<string, AnswerValue>, inviteEmail?: string) {
-  const userId = await currentUser()
-  const room = await request<TripRoom>('/trip-rooms', {
-    method: 'POST',
-    body: JSON.stringify({
-      name: travelDnaName,
-      tripName: typeof answers.destination === 'string' && answers.destination.trim() ? answers.destination.trim() : travelDnaName,
-      members: Number(answers.groupSize) || 1,
-      inviteEmail,
-      ownerId: userId,
-    }),
-  })
-
-  const preferences = await request<{ id: string }>(`/users/${userId}/preferences`, {
-    method: 'POST',
-    body: JSON.stringify({
-      tripRoomId: room.id,
-      dates: { start: answers.startDate ?? null, end: answers.endDate ?? null, flexible: answers.flexibleDates === 'yes' },
-      budget: answers.budget ?? null,
-      peopleCount: Number(answers.groupSize) || null,
-      daysCount: tripLengthToDays(answers.tripLength),
-      kidsInvolved: Array.isArray(answers.ageGroups) && answers.ageGroups.some((age) => age === 'Under 12' || age === '13–17'),
-      locationPreferences: { scope: answers.destinationScope ?? null, destination: answers.destination ?? null },
-      moodPreferences: answers.tripFeeling ?? [],
-      activitiesMustHave: answers.mustHave ?? '',
-      activitiesPreferred: answers.niceToHave ?? '',
-      accommodationPreferences: answers.stayStyle ?? [],
-      noGo: answers.noGo ?? '',
-      pace: answers.pace ?? null,
-      discovery: answers.discovery ?? null,
-      priorities: answers.priorities ?? [],
-      companions: answers.companions ?? null,
-      ageGroups: answers.ageGroups ?? [],
-    }),
-  })
-
-  return { userId, roomId: room.id, preferenceId: preferences.id }
-}
-
-function tripLengthToDays(value: AnswerValue | undefined) {
-  if (value === 'Weekend') return 2
-  if (value === '3–4 days') return 4
-  if (value === '5–7 days') return 6
-  if (value === 'More than a week') return 8
-  return null
+  const existing = await getRoomPreference(userId, roomId)
+  const payload = { tripRoomId: roomId, dates: { start: answers.flexibleDates === 'yes' ? null : answers.startDate ?? null, end: answers.flexibleDates === 'yes' ? null : answers.endDate ?? null, flexible: answers.flexibleDates === 'yes' }, budget: answers.budget ?? null, peopleCount: Number(answers.groupSize) || null, daysCount: answers.tripLength === 'Weekend' ? 2 : answers.tripLength === '3–4 days' ? 4 : answers.tripLength === '5–7 days' ? 6 : 8, kidsInvolved: Array.isArray(answers.ageGroups) && answers.ageGroups.some((age) => age === 'Under 12' || age === '13–17'), locationPreferences: { scope: answers.destinationScope ?? null, destination: answers.destination ?? null }, moodPreferences: answers.tripFeeling ?? [], activitiesMustHave: answers.mustHave ?? '', activitiesPreferred: answers.niceToHave ?? '', accommodationPreferences: answers.stayStyle ?? [], noGo: answers.noGo ?? '', pace: answers.pace ?? null, discovery: answers.discovery ?? null, priorities: answers.priorities ?? [], companions: answers.companions ?? null, ageGroups: answers.ageGroups ?? [] }
+  const preference = await request<{ id: string }>(`/users/${userId}/preferences${existing ? `/${existing.id}` : ''}`, { method: existing ? 'PATCH' : 'POST', body: JSON.stringify(payload) })
+  return { userId, roomId, preferenceId: preference.id, invitation }
 }

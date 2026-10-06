@@ -1,24 +1,17 @@
-import { Link, useNavigate } from 'react-router-dom'
-import { useEffect, useState } from 'react'
-import { getUserQuests, type Quest } from '../apis/quests'
-import { useAuth } from '../auth/AuthContext'
+import { useState } from 'react'
+import { Link } from 'react-router-dom'
+import { useQuests } from '../hooks/useQuests'
+import { EmptyState, ErrorState, Icon, LoadingState, PageHeading } from '../components/Ui'
+import { QuestCard } from '../components/QuestCard'
+import { TravelArtwork } from '../components/TravelArtwork'
 
 export function PlanTripPage() {
-  const navigate = useNavigate()
-  const { user, requestSignIn } = useAuth()
-  const [quests, setQuests] = useState<Quest[]>([])
-  const [loading, setLoading] = useState(false)
-  useEffect(() => { if (!user) { setQuests([]); return } setLoading(true); getUserQuests(user.id).then(setQuests).finally(() => setLoading(false)) }, [user])
-  const continueTo = (path: string, state?: object) => user ? navigate(path, { state }) : requestSignIn()
-
-  return (
-    <section className="flow-page plan-page">
-      <div className="flow-topbar"><Link className="back-link" to="/">← Home</Link><span className="flow-step">1 / 3</span></div>
-      <div className="flow-heading"><p className="eyebrow">A new treasure awaits</p><h1>Plan your new <em>quest.</em></h1><p className="lede">Tell us what matters to your crew and we’ll shape a quest around your group.</p></div>
-      <div className="room-layout">
-        <section className="room-list-panel"><div className="flow-section-heading"><div><p className="section-kicker">Your quest log</p><h2>Your quests</h2></div><span className="room-count">{quests.length} saved</span></div><div className="room-list">{loading && <p className="form-hint">Loading your quests…</p>}{!loading && !quests.length && <p className="form-hint">Your saved quests will appear here.</p>}{quests.map((quest) => <button className="room-card quest-card" type="button" key={quest.id} onClick={() => navigate(`/quests/${quest.id}`)}><img className="quest-card-image" src="https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=800&q=85" alt="" /><span className="room-card-copy"><span className="quest-status-badge upcoming">{quest.role === 'owner' ? 'Hosting' : 'Joined'}</span><strong>{quest.name}</strong><small>{quest.tripName}</small><span className="quest-traits"><i>Saved quest</i><i>{quest.members} travellers</i></span><span className="quest-travellers"><span className="quest-avatar-stack"><b>{`${user?.firstName[0] ?? ''}${user?.lastName[0] ?? ''}`}</b></span><em>{quest.role === 'owner' ? 'Your quest' : 'Invited by your crew'}</em></span></span><span className="room-arrow">→</span></button>)}</div></section>
-        <section className="new-room-panel"><span className="new-room-mark">+</span><p className="section-kicker">Start from scratch</p><h2>Plan your new quest</h2><p>Tell us what matters to your crew and we’ll shape a quest around your group.</p><button className="primary-button" type="button" onClick={() => continueTo('/travel-dna/new')}>Plan a new quest <span>→</span></button></section>
-      </div>
-    </section>
-  )
+  const { quests, loading, error, retry } = useQuests()
+  const [tab, setTab] = useState('all')
+  const [query, setQuery] = useState('')
+  const visible = quests.filter((quest) => (tab === 'all' || quest.role === tab) && `${quest.name} ${quest.tripName}`.toLowerCase().includes(query.toLowerCase()))
+  return <section className="quests-page"><PageHeading eyebrow="GOOD STORIES NEED A STARTING POINT" title={<>Your people.<br />Your <em>quests.</em></>} description="A home for the trips you’re dreaming up together." action={<Link className="primary-button" to="/travel-dna/new"><Icon name="plus" size={18} />Start a new quest</Link>} />
+    <div className="quest-toolbar"><div className="journey-tabs" aria-label="Filter quests">{[{ id: 'all', label: 'All quests' }, { id: 'owner', label: 'I’m hosting' }, { id: 'member', label: 'I’ve joined' }].map(({ id, label }) => <button type="button" key={id} className={tab === id ? 'active' : ''} aria-pressed={tab === id} onClick={() => setTab(id)}>{label}<span>{quests.filter((quest) => id === 'all' || quest.role === id).length}</span></button>)}</div><label className="journey-search-input"><Icon name="search" size={18} /><input aria-label="Search your quests" placeholder="Find a quest…" value={query} onChange={(event) => setQuery(event.target.value)} /></label></div>
+    {loading ? <LoadingState label="Gathering your quests…" /> : error ? <ErrorState message={error} retry={retry} /> : visible.length ? <div className="journey-quest-grid">{visible.map((quest, index) => <QuestCard key={quest.id} quest={quest} index={index} />)}<Link to="/travel-dna/new" className="new-quest-tile"><TravelArtwork motif="luggage" className="new-quest-art" /><h2>Room for one more story.</h2><p>A weekend away. A long-awaited reunion.<br />The trip you keep talking about.</p><strong>Start something good <Icon size={17} /></strong></Link></div> : quests.length ? <EmptyState title="No quests here just yet." description={query ? 'Try another name or destination.' : 'An invitation from your crew will give you a new place to plan together.'} /> : <EmptyState title="The best part is still ahead." description="You don’t need a destination or a finished plan. Just give your first quest a name." to="/travel-dna/new" label="Create your first quest" />}
+  </section>
 }

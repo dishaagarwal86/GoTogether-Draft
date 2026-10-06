@@ -1,26 +1,88 @@
-import { useEffect, useState, type FormEvent } from 'react'
-import { Link, Navigate, useParams } from 'react-router-dom'
-import { getQuestMessages, getQuestRecommendations, getUserQuests, inviteToQuest, sendQuestMessage, type Quest, type QuestMessage, type QuestRecommendation } from '../apis/quests'
-import { useAuth } from '../auth/AuthContext'
-import { personaliseItinerary } from '../services/companionApi'
+import { useEffect, useLayoutEffect, useRef, useState, type FormEvent } from 'react'
+import { Link, useLocation, useParams } from 'react-router-dom'
+import { inviteToQuest, type Quest } from '../apis/quests'
+import { useQuests } from '../hooks/useQuests'
+import { useQuestRecommendations } from '../hooks/useQuestRecommendations'
+import { EmptyState, ErrorState, Icon, LoadingState } from '../components/Ui'
+import { RecommendationCards } from '../components/RecommendationCards'
+import { QuestChat } from '../components/QuestChat'
+import type { ChatContext } from '../components/ItineraryStory'
 
 export function QuestDetailPage() {
-  const { roomId = '' } = useParams(); const { user, ready } = useAuth(); const [quest, setQuest] = useState<Quest | null>(null); const [email, setEmail] = useState(''); const [message, setMessage] = useState(''); const [error, setError] = useState(''); const [chatMessages, setChatMessages] = useState<QuestMessage[]>([]); const [chatText, setChatText] = useState(''); const [chatError, setChatError] = useState(''); const [sendingChat, setSendingChat] = useState(false)
-  useEffect(() => { if (user) getUserQuests(user.id).then((items) => setQuest(items.find((item) => item.id === roomId) ?? null)).catch((reason: Error) => setError(reason.message)) }, [roomId, user])
-  useEffect(() => {
-    if (!user || !roomId) return
-    let mounted = true
-    const refresh = () => getQuestMessages(roomId).then((items) => { if (mounted) setChatMessages(items) }).catch((reason: Error) => { if (mounted) setChatError(reason.message) })
-    refresh()
-    const timer = window.setInterval(refresh, 5_000)
-    return () => { mounted = false; window.clearInterval(timer) }
-  }, [roomId, user])
-  if (!ready) return null; if (!user) return <Navigate to="/login" replace />
-  const invite = async (event: FormEvent) => { event.preventDefault(); setError(''); setMessage(''); try { const result = await inviteToQuest(roomId, email); setMessage(result.delivered ? `Invitation sent to ${result.email}.` : result.reason ?? `Invitation created for ${result.email}, but delivery could not be completed.`); setEmail('') } catch (reason) { setError(reason instanceof Error ? reason.message : 'Could not send the invitation.') } }
-  const sendChat = async (event: FormEvent) => { event.preventDefault(); if (!chatText.trim()) return; setSendingChat(true); setChatError(''); try { const created = await sendQuestMessage(roomId, chatText); setChatMessages((current) => [...current, created]); setChatText('') } catch (reason) { setChatError(reason instanceof Error ? reason.message : 'Could not send this message.') } finally { setSendingChat(false) } }
-  if (!quest && !error) return <section className="flow-page"><p className="lede">Loading your quest…</p></section>
-  if (!quest) return <section className="flow-page"><Link className="back-link" to="/plan">← Your quests</Link><p className="form-error">{error || 'This quest is unavailable.'}</p></section>
-  return <section className="flow-page quest-detail-page"><div className="flow-topbar"><Link className="back-link" to="/plan">← Your quests</Link><span className="room-live"><i /> {quest.role === 'owner' ? 'Quest host' : 'Quest member'}</span></div><div className="overview-hero"><p className="eyebrow">{quest.tripName}</p><h1>{quest.name}</h1><p className="lede">{quest.members} travellers are planned for this quest. Keep building the group whenever you are ready.</p></div><div className="overview-grid"><section className="overview-panel"><p className="section-kicker">Quest details</p><h2>Your journey</h2><div className="answer-list"><div><span>Destination</span><strong>{quest.tripName}</strong></div><div><span>Group size</span><strong>{quest.members} travellers</strong></div><div><span>Role</span><strong>{quest.role === 'owner' ? 'Quest host' : 'Crew member'}</strong></div></div></section><section className="overview-panel suggestion-panel"><p className="section-kicker">Grow your crew</p><h2>Invite another traveller.</h2><p>They’ll receive a secure link to sign in or create an account, then join this quest.</p><form className="quest-invite-form" onSubmit={invite}><label htmlFor="quest-invite-email">Email address<input id="quest-invite-email" type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="friend@example.com" required /></label>{error && <p className="form-error">{error}</p>}{message && <p className="invite-success">{message}</p>}<button className="primary-button" type="submit">Send invitation <span>→</span></button></form></section></div><QuestSuggestions roomId={roomId} /><section className="quest-chat" aria-label="Quest chat"><div className="quest-chat-heading"><div><p className="section-kicker">Crew conversation</p><h2>Plan it together.</h2></div><span>Updates every 5 seconds</span></div><div className="chat-thread" aria-live="polite">{!chatMessages.length && !chatError && <p className="chat-empty">Start the conversation—share an idea, a question, or a travel wish.</p>}{chatMessages.map((item) => <article className={item.senderId === user.id ? 'chat-message mine' : 'chat-message'} key={item.id}><div><strong>{item.senderId === user.id ? 'You' : item.senderName}</strong><time dateTime={item.createdAt}>{new Date(item.createdAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}</time></div><p>{item.body}</p></article>)}</div><form className="chat-composer" onSubmit={sendChat}><label className="sr-only" htmlFor="quest-chat-message">Message your crew</label><textarea id="quest-chat-message" rows={2} maxLength={2000} value={chatText} onChange={(event) => setChatText(event.target.value)} placeholder="Share an idea with your crew…" /><button className="primary-button" type="submit" disabled={sendingChat}>{sendingChat ? 'Sending…' : 'Send'} <span>→</span></button></form>{chatError && <p className="form-error">{chatError}</p>}</section></section>
+  const { roomId = '' } = useParams()
+  const { quests, loading, error, retry } = useQuests()
+  const quest = quests.find((item) => item.id === roomId)
+  if (loading) return <LoadingState label="Opening your quest…" />
+  if (error) return <ErrorState message={error} retry={retry} />
+  if (!quest) return <EmptyState title="This quest isn’t in your travel book." description="It may be unavailable, or you may need to accept an invitation first." to="/trips" label="Back to my quests" />
+  return <QuestWorkspace key={roomId} quest={quest} />
 }
 
-function QuestSuggestions({ roomId }: { roomId: string }) { const [story, setStory] = useState<{ resultTitle: string; scrapbookIntro: string; whyItWorks: string[]; tradeoffNote: string } | null>(null); const [loading, setLoading] = useState<string | null>(null); const [data, setData] = useState<{ travelDna: unknown; results: QuestRecommendation[] } | null>(null); const [error, setError] = useState(''); useEffect(() => { getQuestRecommendations(roomId).then(setData).catch((reason: Error) => setError(reason.message)) }, [roomId]); const open = async (trip: QuestRecommendation) => { setLoading(trip.id); try { const result = await personaliseItinerary(data?.travelDna, trip, { matchedPreferences: trip.matchedPreferences, compromises: trip.compromises }); setStory(result.data) } catch { setStory({ resultTitle: trip.title, scrapbookIntro: trip.short_description, whyItWorks: trip.matchedPreferences, tradeoffNote: trip.compromises[0] ?? 'This is a flexible starting point.' }) } finally { setLoading(null) } }; return <section className="quest-suggestions"><div className="flow-section-heading"><div><p className="section-kicker">Suggested itineraries</p><h2>Your group’s next possibilities</h2></div></div>{error && <p className="form-error">{error}</p>}{!data && !error && <p className="form-hint">Matching your saved preferences with the curated collection…</p>}<div className="path-grid">{data?.results.map((trip) => <article className="path-card" key={trip.id}><div><span className="path-label">{trip.label}</span><p className="section-kicker">{trip.destination}, {trip.country}</p><h2>{trip.title}</h2><p>{trip.short_description}</p><small>{trip.duration_days} days · {trip.budget} · {trip.matchedPreferences.join(', ') || 'Balanced group fit'}</small><button type="button" className="text-button" onClick={() => open(trip)}>{loading === trip.id ? 'Turning your group’s plan into a travel story…' : 'Open itinerary'} <span>→</span></button></div></article>)}</div>{story && <article className="path-note itinerary-story"><p className="section-kicker">Your travel story</p><h2>{story.resultTitle}</h2><p>{story.scrapbookIntro}</p><ul>{story.whyItWorks.map((item) => <li key={item}>{item}</li>)}</ul><small><b>Fair trade-off:</b> {story.tradeoffNote}</small></article>}</section> }
+function QuestWorkspace({ quest }: { quest: Quest }) {
+  const roomId = quest.id
+  const location = useLocation()
+  const { data, error, retry } = useQuestRecommendations(roomId)
+  const [inviteOpen, setInviteOpen] = useState(false)
+  const [chatOpen, setChatOpen] = useState(location.hash === '#crew-chat')
+  const [focusRequest, setFocusRequest] = useState(location.hash === '#crew-chat' ? 1 : 0)
+  const [chatContext, setChatContext] = useState<ChatContext | null>(location.state?.chatContext ?? null)
+  const [unread, setUnread] = useState(0)
+  const itinerary = useRef<HTMLElement>(null)
+  const workspace = useRef<HTMLDivElement>(null)
+  useLayoutEffect(() => {
+    const grid = workspace.current
+    if (!grid) return
+    let frame = 0
+    const measure = () => {
+      const top = Math.max(106, grid.getBoundingClientRect().top + window.scrollY)
+      grid.style.setProperty('--quest-chat-start', `${top}px`)
+    }
+    measure()
+    const resize = new ResizeObserver(() => { window.cancelAnimationFrame(frame); frame = window.requestAnimationFrame(measure) })
+    resize.observe(grid.parentElement!)
+    window.addEventListener('resize', measure)
+    return () => { resize.disconnect(); window.cancelAnimationFrame(frame); window.removeEventListener('resize', measure) }
+  }, [])
+  const openChat = () => { setChatOpen(true); setFocusRequest((value) => value + 1) }
+  const discuss = (context: ChatContext) => { setChatContext(context); openChat() }
+  return <section className="quest-workspace-page">
+    <div className="quest-workspace-breadcrumb"><Link className="back-link" to="/trips">← All your quests</Link><span>A little less someday. A little more together.</span></div>
+    {location.state?.saved && <div className="quest-success" role="status"><Icon name="check" size={19} />Your preferences are saved. Let’s make something good of them.</div>}
+    {location.state?.invitation?.delivered === false && <p className="form-error" role="status">Your quest is saved, but the invitation email couldn’t be delivered. Use “Invite your people” to try again.</p>}
+    <header className="quest-workspace-header"><div><p className="eyebrow">YOUR SHARED TRAVEL BOOK</p><h1>{quest.name}</h1><div className="quest-workspace-meta"><span><Icon name="pin" size={14} />{quest.tripName === quest.name ? 'Somewhere good, still to be found' : `On your mind: ${quest.tripName}`}</span><span><Icon name="people" size={14} />{quest.members} planned {quest.members === 1 ? 'traveller' : 'travellers'}</span><span className="quest-role-tag">{quest.role === 'owner' ? 'You’re hosting' : 'Part of the crew'}</span></div></div><div className="quest-workspace-actions"><button type="button" className="primary-button" onClick={() => setInviteOpen(true)}><Icon name="plus" size={16} />Invite your people</button><button type="button" className="text-button quest-chat-shortcut" onClick={openChat}><Icon name="chat" size={16} />Crew chat{unread > 0 && <span className="quest-unread-count">{unread}</span>}</button></div></header>
+    <div className="quest-workspace-grid" ref={workspace}>
+      <section className="quest-planning-column" id="quest-itinerary" ref={itinerary} tabIndex={-1} aria-label="Itinerary planning">
+        <nav className="quest-planning-links" aria-label="Quest planning"><span><Icon name="compass" size={17} />Itinerary ideas</span><Link to={`/travel-dna/group-dna?roomId=${roomId}`}><Icon name="spark" size={15} />Our Travel DNA</Link><Link to={`/travel-dna/preferences?roomId=${roomId}`}>My travel preferences <Icon name="northeast" size={14} /></Link></nav>
+        <div className="quest-ideas-heading"><div><p className="eyebrow">THE WORLD IS STILL OPEN</p><h2>Which way <em>shall we go?</em></h2></div>{data && <p>{data.results.length} starting {data.results.length === 1 ? 'point' : 'points'}<br /><span>Explore one, then talk it over.</span></p>}</div>
+        {error ? <ErrorState message={error} retry={retry} /> : !data ? <LoadingState label="Gathering ideas for your crew…" /> : data.results.length ? <RecommendationCards results={data.results} roomId={roomId} travelDna={data.travelDna} workspace onDiscuss={discuss} /> : <EmptyState title="Your ideas are still taking shape." description="Share your travel style to find a starting point, and keep dreaming with your crew in the meantime." to={`/travel-dna/preferences?roomId=${roomId}`} label="Share my travel style" icon="spark" />}
+      </section>
+      <QuestChat roomId={roomId} open={chatOpen} onClose={() => setChatOpen(false)} focusRequest={focusRequest} context={chatContext} onClearContext={(context) => setChatContext((current) => current === context ? null : current)} onUnreadChange={setUnread} />
+    </div>
+    <nav className="quest-mobile-dock" aria-label="Quest workspace"><button type="button" onClick={() => { itinerary.current?.scrollIntoView({ block: 'start' }); itinerary.current?.focus({ preventScroll: true }) }}><Icon name="compass" size={19} /><span>The itinerary</span></button><button type="button" className="quest-dock-chat" onClick={openChat} aria-haspopup="dialog" aria-expanded={chatOpen}><Icon name="chat" size={20} /><span>Crew chat</span>{unread > 0 ? <span className="quest-unread-count">{unread}</span> : <Icon name="arrow" size={17} />}</button></nav>
+    <QuestInviteDialog roomId={roomId} open={inviteOpen} onClose={() => setInviteOpen(false)} />
+  </section>
+}
+
+function QuestInviteDialog({ roomId, open, onClose }: { roomId: string; open: boolean; onClose: () => void }) {
+  const dialog = useRef<HTMLDialogElement>(null)
+  const [email, setEmail] = useState('')
+  const [notice, setNotice] = useState('')
+  const [error, setError] = useState('')
+  const [busy, setBusy] = useState(false)
+  useEffect(() => {
+    if (!open) return
+    const previous = document.activeElement as HTMLElement | null
+    const overflow = document.body.style.overflow
+    const element = dialog.current
+    element?.showModal(); document.body.style.overflow = 'hidden'
+    return () => { element?.close(); document.body.style.overflow = overflow; previous?.focus({ preventScroll: true }) }
+  }, [open])
+  const invite = async (event: FormEvent) => {
+    event.preventDefault(); if (busy) return
+    setBusy(true); setError(''); setNotice('')
+    try { const result = await inviteToQuest(roomId, email.trim()); setNotice(result.delivered ? `An invitation is on its way to ${result.email}.` : 'The invitation was saved, but the email could not be delivered. Please try sending it again later.'); if (result.delivered) setEmail('') }
+    catch { setError('We couldn’t send the invitation. Please check the address and try again.') }
+    finally { setBusy(false) }
+  }
+  return <dialog ref={dialog} className="quest-invite-dialog" aria-labelledby="quest-invite-title" onCancel={(event) => { event.preventDefault(); onClose() }} onClick={(event) => { if (event.target === event.currentTarget) onClose() }}><button type="button" className="quest-invite-close" onClick={onClose} aria-label="Close invitation"><Icon name="close" /></button><span className="account-symbol"><Icon name="people" size={27} /></span><p className="eyebrow">THE GOOD PART IS THE TOGETHER PART</p><h2 id="quest-invite-title">Room for your people.</h2><p>Invite a friend to join this quest, share their travel style, and join the conversation.</p><form className="quest-invite-form" onSubmit={invite}><label htmlFor="invite-email">Their email address<input id="invite-email" type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="friend@example.com" required /></label>{error && <p className="form-error" role="alert">{error}</p>}{notice && <p className="invite-success" role="status">{notice}</p>}<button className="primary-button" type="submit" disabled={busy}>{busy ? 'Sending their invitation…' : 'Invite to our quest'}<Icon /></button></form></dialog>
+}

@@ -76,7 +76,7 @@ export function LandingConcept({ appBase = '' }: { appBase?: string }) {
   const currentScene = scenes[scene]
   const filteredTrips = collection.filter((trip) => mood === 'All' || trip.moods.includes(mood)).slice(0, 3)
   const crew = useMemo(() => [...demoTravellers.slice(0, 2), { ...demoTravellers[2], name: 'You', initials: 'Y', moods: [travelMood], budget }], [travelMood, budget])
-  const match = useMemo(() => getScoredItineraries(crew).find((trip) => Boolean(photos[trip.id]))!, [crew])
+  const match = useMemo(() => { const ranked = getScoredItineraries(crew).find((trip) => Boolean(photos[trip.id]))!; return { ...exploreItineraries.find((trip) => trip.id === ranked.id)!, finalScore: ranked.score } }, [crew])
 
   useEffect(() => {
     const previousTitle = document.title

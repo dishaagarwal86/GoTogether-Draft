@@ -1,27 +1,21 @@
-import { Link, NavLink } from 'react-router-dom'
-import { useState } from 'react'
+import { Link, NavLink, useNavigate } from 'react-router-dom'
+import { useEffect, useRef, useState } from 'react'
 import { useAuth } from '../auth/AuthContext'
+import { Brand, Icon } from './Ui'
 
-type MainNavigationProps = {
-  isLanding: boolean
-  isScrolled: boolean
-}
-
-/** The app's single persistent navigation bar. */
-export function GlobalNavbar({ isLanding, isScrolled }: MainNavigationProps) {
-  const { user, logout, requestSignIn } = useAuth(); const [open, setOpen] = useState(false)
-  const className = `global-nav${isLanding ? ' landing-global-nav' : ''}${isScrolled ? ' is-scrolled' : ''}`
-
-  return <header className={className}>
-    <div className="navigation-content">
-      <Link className="ocean-brand" to="/" aria-label="GoTogether home">Go.Together</Link>
-      <nav className="ocean-links" aria-label="Main navigation">
-        <Link to="/#popular">Discover</Link>
-        <NavLink to="/trips" onClick={(event) => { if (!user) { event.preventDefault(); requestSignIn() } }}>Quests</NavLink>
-        <NavLink to="/inspiration">About us</NavLink>
-        <NavLink className="explore-link" to="/explore">Explore <span>↗</span></NavLink>
-        {user ? <div className="user-nav"><NavLink className="profile-link" to="/profile">Profile</NavLink><button type="button" className="user-trigger" onClick={() => setOpen(!open)} aria-expanded={open}>{`${user.firstName[0] ?? ''}${user.lastName[0] ?? ''}` || 'U'}</button>{open && <div className="user-menu"><strong>{user.firstName} {user.lastName}</strong><small>{user.email}</small><NavLink to="/profile" onClick={() => setOpen(false)}>My profile</NavLink><NavLink to="/plan" onClick={() => setOpen(false)}>My quests</NavLink><button type="button" onClick={() => { void logout(); setOpen(false) }}>Sign out</button></div>}</div> : <div className="auth-nav"><NavLink to="/login">Sign in</NavLink><NavLink to="/signup" className="join-link">Join us</NavLink></div>}
-      </nav>
-    </div>
-  </header>
+export function GlobalNavbar() {
+  const { user, logout } = useAuth()
+  const [menu, setMenu] = useState(false)
+  const [profile, setProfile] = useState(false)
+  const navigate = useNavigate()
+  const profileRef = useRef<HTMLDivElement>(null)
+  useEffect(() => { const close = (event: PointerEvent) => { if (!profileRef.current?.contains(event.target as Node)) setProfile(false) }; document.addEventListener('pointerdown', close); return () => document.removeEventListener('pointerdown', close) }, [])
+  return <header className="journey-nav" onKeyDown={(event) => { if (event.key === 'Escape') { setMenu(false); setProfile(false) } }}><div className="journey-nav-inner">
+    <Link to={user ? '/dashboard' : '/'} aria-label="GoTogether home"><Brand /></Link>
+    <nav className={`journey-nav-links${menu ? ' is-open' : ''}`} id="journey-navigation" aria-label="Main navigation">
+      {user && <NavLink to="/dashboard">Overview</NavLink>}<NavLink to="/trips">My quests</NavLink><NavLink to="/explore">Explore</NavLink><NavLink to="/saved">Saved places</NavLink>
+    </nav>
+    <div className="journey-nav-actions">{user ? <><Link className="nav-create" to="/travel-dna/new"><Icon name="plus" size={16} /> New quest</Link><div className="journey-user" ref={profileRef}><button className="journey-avatar" type="button" aria-label="Open account menu" aria-expanded={profile} aria-controls="account-menu" onClick={() => setProfile(!profile)}>{user.firstName[0]}{user.lastName[0]}</button>{profile && <div className="journey-user-menu" id="account-menu"><strong>{user.firstName} {user.lastName}</strong><small>{user.email}</small><Link to="/profile">My profile <Icon name="people" size={16} /></Link><Link to="/trips">My quests <Icon name="compass" size={16} /></Link><button type="button" onClick={async () => { try { await logout() } catch { /* Local session is cleared even if the API is unreachable. */ } navigate('/login') }}>Sign out <Icon size={16} /></button></div>}</div></> : <><Link to="/login">Sign in</Link><Link className="nav-create" to="/signup">Join the journey <Icon size={16} /></Link></>}
+    <button className="journey-menu-toggle" aria-label={menu ? 'Close navigation' : 'Open navigation'} aria-expanded={menu} aria-controls="journey-navigation" onClick={() => setMenu(!menu)}><Icon name={menu ? 'close' : 'menu'} /></button></div>
+  </div></header>
 }

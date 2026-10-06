@@ -1131,7 +1131,7 @@ main {
 }
 
 /* Master warm-coast template for every route outside the immersive home screen. */
-.app-shell:not(.landing-shell) {
+.app-shell:not(.landing-shell):not(.journey-shell) {
     --ink: #173b4c;
     --muted: #687b78;
     --paper: rgba(255, 252, 246, .94);
@@ -1141,71 +1141,71 @@ main {
     background: linear-gradient(125deg, rgba(12, 54, 72, .7), rgba(63, 62, 116, .46) 58%, rgba(33, 112, 120, .38)), url('./assets/coast-hero.png') center/cover fixed;
 }
 
-.app-shell:not(.landing-shell) .topbar {
+.app-shell:not(.landing-shell):not(.journey-shell) .topbar {
     height: 82px;
     background: rgba(23, 59, 76, .94);
     border-bottom-color: rgba(255, 225, 192, .22);
     backdrop-filter: blur(14px);
 }
 
-.app-shell:not(.landing-shell) .topbar.is-scrolled { background: rgba(19, 50, 65, .98); }
-.app-shell:not(.landing-shell) .brand,
-.app-shell:not(.landing-shell) .nav-link,
-.app-shell:not(.landing-shell) .profile-button,
-.app-shell:not(.landing-shell) .icon-button { color: #fff; }
-.app-shell:not(.landing-shell) .brand-mark span { color: #ffc17d; }
-.app-shell:not(.landing-shell) .nav-link.active:after { background: #ffc17d; }
-.app-shell:not(.landing-shell) .nav-link.active { color: #fff; }
-.app-shell:not(.landing-shell) .nav-link { color: rgba(255, 255, 255, .72); }
-.app-shell:not(.landing-shell) .avatar { background: #ffc17d; color: #173b4c; }
-.app-shell:not(.landing-shell) main { min-height: calc(100vh - 82px); padding-top: 136px; }
-.app-shell:not(.landing-shell) .route-view { max-width: 1080px; margin: 0 auto; padding: clamp(28px, 5vw, 58px); }
-.app-shell:not(.landing-shell) .page-heading h1,
-.app-shell:not(.landing-shell) .flow-heading h1 { color: #fff8ef; text-shadow: 0 3px 18px rgba(4, 24, 36, .24); }
-.app-shell:not(.landing-shell) .eyebrow,
-.app-shell:not(.landing-shell) .section-kicker { color: #ffc58d; }
-.app-shell:not(.landing-shell) .lede { color: #f6e8d8; }
-.app-shell:not(.landing-shell) .flow-topbar .back-link,
-.app-shell:not(.landing-shell) .flow-topbar .flow-step { color: #fff4e5; }
-.app-shell:not(.landing-shell) .form-section-label { color: #fff8ef; }
-.app-shell:not(.landing-shell) .form-section-label p { color: #fff8ef; }
-.app-shell:not(.landing-shell) .form-section-label small { color: #dcebe5; }
-.app-shell:not(.landing-shell) .primary-button { background: var(--coral); color: #fff; box-shadow: 0 8px 20px rgba(173, 75, 47, .2); }
-.app-shell:not(.landing-shell) .empty-panel,
-.app-shell:not(.landing-shell) .room-list-panel,
-.app-shell:not(.landing-shell) .room-form,
-.app-shell:not(.landing-shell) .question-card,
-.app-shell:not(.landing-shell) .overview-panel { border-color: var(--line); box-shadow: 0 10px 22px rgba(86, 55, 28, .08); }
-.app-shell:not(.landing-shell) .new-room-panel { background: linear-gradient(145deg, rgba(23, 59, 76, .98), rgba(43, 104, 102, .94)); }
-.app-shell:not(.landing-shell) .overview-hero { background: linear-gradient(115deg, rgba(255,250,242,.98), rgba(243,224,199,.9)); border-color: var(--line); }
-.app-shell:not(.landing-shell) .wide-inspiration .section-block { border-top-color: var(--line); }
+.app-shell:not(.landing-shell):not(.journey-shell) .topbar.is-scrolled { background: rgba(19, 50, 65, .98); }
+.app-shell:not(.landing-shell):not(.journey-shell) .brand,
+.app-shell:not(.landing-shell):not(.journey-shell) .nav-link,
+.app-shell:not(.landing-shell):not(.journey-shell) .profile-button,
+.app-shell:not(.landing-shell):not(.journey-shell) .icon-button { color: #fff; }
+.app-shell:not(.landing-shell):not(.journey-shell) .brand-mark span { color: #ffc17d; }
+.app-shell:not(.landing-shell):not(.journey-shell) .nav-link.active:after { background: #ffc17d; }
+.app-shell:not(.landing-shell):not(.journey-shell) .nav-link.active { color: #fff; }
+.app-shell:not(.landing-shell):not(.journey-shell) .nav-link { color: rgba(255, 255, 255, .72); }
+.app-shell:not(.landing-shell):not(.journey-shell) .avatar { background: #ffc17d; color: #173b4c; }
+.app-shell:not(.landing-shell):not(.journey-shell) main { min-height: calc(100vh - 82px); padding-top: 136px; }
+.app-shell:not(.landing-shell):not(.journey-shell) .route-view { max-width: 1080px; margin: 0 auto; padding: clamp(28px, 5vw, 58px); }
+.app-shell:not(.landing-shell):not(.journey-shell) .page-heading h1,
+.app-shell:not(.landing-shell):not(.journey-shell) .flow-heading h1 { color: #fff8ef; text-shadow: 0 3px 18px rgba(4, 24, 36, .24); }
+.app-shell:not(.landing-shell):not(.journey-shell) .eyebrow,
+.app-shell:not(.landing-shell):not(.journey-shell) .section-kicker { color: #ffc58d; }
+.app-shell:not(.landing-shell):not(.journey-shell) .lede { color: #f6e8d8; }
+.app-shell:not(.landing-shell):not(.journey-shell) .flow-topbar .back-link,
+.app-shell:not(.landing-shell):not(.journey-shell) .flow-topbar .flow-step { color: #fff4e5; }
+.app-shell:not(.landing-shell):not(.journey-shell) .form-section-label { color: #fff8ef; }
+.app-shell:not(.landing-shell):not(.journey-shell) .form-section-label p { color: #fff8ef; }
+.app-shell:not(.landing-shell):not(.journey-shell) .form-section-label small { color: #dcebe5; }
+.app-shell:not(.landing-shell):not(.journey-shell) .primary-button { background: var(--coral); color: #fff; box-shadow: 0 8px 20px rgba(173, 75, 47, .2); }
+.app-shell:not(.landing-shell):not(.journey-shell) .empty-panel,
+.app-shell:not(.landing-shell):not(.journey-shell) .room-list-panel,
+.app-shell:not(.landing-shell):not(.journey-shell) .room-form,
+.app-shell:not(.landing-shell):not(.journey-shell) .question-card,
+.app-shell:not(.landing-shell):not(.journey-shell) .overview-panel { border-color: var(--line); box-shadow: 0 10px 22px rgba(86, 55, 28, .08); }
+.app-shell:not(.landing-shell):not(.journey-shell) .new-room-panel { background: linear-gradient(145deg, rgba(23, 59, 76, .98), rgba(43, 104, 102, .94)); }
+.app-shell:not(.landing-shell):not(.journey-shell) .overview-hero { background: linear-gradient(115deg, rgba(255,250,242,.98), rgba(243,224,199,.9)); border-color: var(--line); }
+.app-shell:not(.landing-shell):not(.journey-shell) .wide-inspiration .section-block { border-top-color: var(--line); }
 
 /* Explore owns its upper viewport: a full-bleed editorial cover begins below the pinned nav. */
-.app-shell:not(.landing-shell) main.explore-route-main { min-height: calc(100vh - 92px); padding-top: 92px; }
-.app-shell:not(.landing-shell) main.explore-route-main .route-view { max-width: none; padding: 0; }
+.app-shell:not(.landing-shell):not(.journey-shell) main.explore-route-main { min-height: calc(100vh - 92px); padding-top: 92px; }
+.app-shell:not(.landing-shell):not(.journey-shell) main.explore-route-main .route-view { max-width: none; padding: 0; }
 
 /* Readability pass: every surface has a deliberate high-contrast text treatment. */
-.app-shell:not(.landing-shell) { --ink: #102f42; --muted: #365866; }
-.app-shell:not(.landing-shell) .nav-link { color: rgba(255,255,255,.94); }
-.app-shell:not(.landing-shell) .nav-link:hover { color: #ffd49f; }
-.app-shell:not(.landing-shell) .flow-heading .lede, .app-shell:not(.landing-shell) .page-heading > p, .app-shell:not(.landing-shell) .flow-topbar .back-link, .app-shell:not(.landing-shell) .flow-topbar .flow-step { color: #fff9ed; text-shadow: 0 2px 9px rgba(4,24,36,.48); }
-.app-shell:not(.landing-shell) .form-section-label p { color: #fffdf5; text-shadow: 0 2px 9px rgba(4,24,36,.52); }
-.app-shell:not(.landing-shell) .form-section-label small { color: #f5dfbe; text-shadow: 0 2px 9px rgba(4,24,36,.52); }
-.app-shell:not(.landing-shell) .room-list-panel, .app-shell:not(.landing-shell) .room-form, .app-shell:not(.landing-shell) .question-card, .app-shell:not(.landing-shell) .overview-panel, .app-shell:not(.landing-shell) .auth-card, .app-shell:not(.landing-shell) .profile-card { color: #102f42; }
-.app-shell:not(.landing-shell) .room-card-copy small, .app-shell:not(.landing-shell) .quest-travellers em, .app-shell:not(.landing-shell) .question-helper, .app-shell:not(.landing-shell) .option-button, .app-shell:not(.landing-shell) .form-hint, .app-shell:not(.landing-shell) .answer-list span, .app-shell:not(.landing-shell) .suggestion-panel > p:not(.section-kicker), .app-shell:not(.landing-shell) .date-fields label, .app-shell:not(.landing-shell) .flexible-date, .app-shell:not(.landing-shell) .token-status { color: #315561; }
-.app-shell:not(.landing-shell) .question-title, .app-shell:not(.landing-shell) .room-card-copy strong, .app-shell:not(.landing-shell) .flow-section-heading h2, .app-shell:not(.landing-shell) .overview-panel h2 { color: #102f42; }
-.app-shell:not(.landing-shell) .option-button { background: rgba(255,255,255,.62); border-color: rgba(77,112,119,.48); font-weight: 600; }
-.app-shell:not(.landing-shell) .option-button:hover, .app-shell:not(.landing-shell) .option-button.selected { color: #102f42; background: #ffe4cf; border-color: #ce6248; }
-.app-shell:not(.landing-shell) .question-input { background: #fffdf9; color: #102f42; border-color: rgba(104,82,57,.42); font-weight: 600; }
-.app-shell:not(.landing-shell) .question-input::placeholder { color: #60757a; opacity: 1; }
-.app-shell:not(.landing-shell) .text-button { color: #ad472f; font-weight: 700; }
-.app-shell:not(.landing-shell) .new-room-panel > p:not(.section-kicker) { color: #fff7eb; }
-.app-shell:not(.landing-shell) .new-room-panel h2 { color: #fff; text-shadow: 0 2px 8px rgba(45,15,36,.28); }
-.app-shell:not(.landing-shell) .wide-inspiration .section-heading h2 { color: var(--ink); }
+.app-shell:not(.landing-shell):not(.journey-shell) { --ink: #102f42; --muted: #365866; }
+.app-shell:not(.landing-shell):not(.journey-shell) .nav-link { color: rgba(255,255,255,.94); }
+.app-shell:not(.landing-shell):not(.journey-shell) .nav-link:hover { color: #ffd49f; }
+.app-shell:not(.landing-shell):not(.journey-shell) .flow-heading .lede, .app-shell:not(.landing-shell):not(.journey-shell) .page-heading > p, .app-shell:not(.landing-shell):not(.journey-shell) .flow-topbar .back-link, .app-shell:not(.landing-shell):not(.journey-shell) .flow-topbar .flow-step { color: #fff9ed; text-shadow: 0 2px 9px rgba(4,24,36,.48); }
+.app-shell:not(.landing-shell):not(.journey-shell) .form-section-label p { color: #fffdf5; text-shadow: 0 2px 9px rgba(4,24,36,.52); }
+.app-shell:not(.landing-shell):not(.journey-shell) .form-section-label small { color: #f5dfbe; text-shadow: 0 2px 9px rgba(4,24,36,.52); }
+.app-shell:not(.landing-shell):not(.journey-shell) .room-list-panel, .app-shell:not(.landing-shell):not(.journey-shell) .room-form, .app-shell:not(.landing-shell):not(.journey-shell) .question-card, .app-shell:not(.landing-shell):not(.journey-shell) .overview-panel, .app-shell:not(.landing-shell):not(.journey-shell) .auth-card, .app-shell:not(.landing-shell):not(.journey-shell) .profile-card { color: #102f42; }
+.app-shell:not(.landing-shell):not(.journey-shell) .room-card-copy small, .app-shell:not(.landing-shell):not(.journey-shell) .quest-travellers em, .app-shell:not(.landing-shell):not(.journey-shell) .question-helper, .app-shell:not(.landing-shell):not(.journey-shell) .option-button, .app-shell:not(.landing-shell):not(.journey-shell) .form-hint, .app-shell:not(.landing-shell):not(.journey-shell) .answer-list span, .app-shell:not(.landing-shell):not(.journey-shell) .suggestion-panel > p:not(.section-kicker), .app-shell:not(.landing-shell):not(.journey-shell) .date-fields label, .app-shell:not(.landing-shell):not(.journey-shell) .flexible-date, .app-shell:not(.landing-shell):not(.journey-shell) .token-status { color: #315561; }
+.app-shell:not(.landing-shell):not(.journey-shell) .question-title, .app-shell:not(.landing-shell):not(.journey-shell) .room-card-copy strong, .app-shell:not(.landing-shell):not(.journey-shell) .flow-section-heading h2, .app-shell:not(.landing-shell):not(.journey-shell) .overview-panel h2 { color: #102f42; }
+.app-shell:not(.landing-shell):not(.journey-shell) .option-button { background: rgba(255,255,255,.62); border-color: rgba(77,112,119,.48); font-weight: 600; }
+.app-shell:not(.landing-shell):not(.journey-shell) .option-button:hover, .app-shell:not(.landing-shell):not(.journey-shell) .option-button.selected { color: #102f42; background: #ffe4cf; border-color: #ce6248; }
+.app-shell:not(.landing-shell):not(.journey-shell) .question-input { background: #fffdf9; color: #102f42; border-color: rgba(104,82,57,.42); font-weight: 600; }
+.app-shell:not(.landing-shell):not(.journey-shell) .question-input::placeholder { color: #60757a; opacity: 1; }
+.app-shell:not(.landing-shell):not(.journey-shell) .text-button { color: #ad472f; font-weight: 700; }
+.app-shell:not(.landing-shell):not(.journey-shell) .new-room-panel > p:not(.section-kicker) { color: #fff7eb; }
+.app-shell:not(.landing-shell):not(.journey-shell) .new-room-panel h2 { color: #fff; text-shadow: 0 2px 8px rgba(45,15,36,.28); }
+.app-shell:not(.landing-shell):not(.journey-shell) .wide-inspiration .section-heading h2 { color: var(--ink); }
 
 @media (max-width: 620px) {
-    .app-shell:not(.landing-shell) main { padding-top: 104px; }
-    .app-shell:not(.landing-shell) .route-view { padding: 24px 18px; }
+    .app-shell:not(.landing-shell):not(.journey-shell) main { padding-top: 104px; }
+    .app-shell:not(.landing-shell):not(.journey-shell) .route-view { padding: 24px 18px; }
     .shared-nav { min-width: 0; overflow-x: auto; justify-content: flex-start; gap: 14px; scrollbar-width: none; }
     .shared-nav::-webkit-scrollbar { display: none; }
     .shared-nav .nav-link { flex: 0 0 auto; }

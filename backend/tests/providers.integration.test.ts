@@ -1,10 +1,11 @@
 import assert from 'node:assert/strict'
 import { createHash, randomUUID } from 'node:crypto'
 import { test } from 'node:test'
-import { registerUser, loginUser, userForToken, endSession } from '../src/services/authService.js'
+import { registerUser, loginUser, userForToken, endSession, updateUserProfile } from '../src/services/authService.js'
 import { createRoom, listRooms, listUserRooms, inviteToRoom, updateRoom } from '../src/services/roomService.js'
 import { getTripRoomInvite, acceptTripRoomInvite } from '../src/services/invitationService.js'
 import { createQuestMessage, listQuestMessages } from '../src/services/chatService.js'
+import { recommendForQuest } from '../src/services/recommendationService.js'
 import * as entities from '../src/services/apiStore.js'
 import { selectRows, insertRow, updateRows, deleteRows, upsertRow, insertIfMissing, verifyDatabaseConnection, closeDatabase } from '../src/storage.js'
 
@@ -186,6 +187,30 @@ test(`database contract (${process.env.DATABASE_PROVIDER})`, async (t) => {
       assert.deepEqual(stored.seasons, row.seasons)
       assert.deepEqual(stored.daily_plan, row.daily_plan)
       assert.deepEqual(stored.ai_context, row.ai_context)
+    })
+    await t.test('profile changes survive session readback without changing credentials', async () => {
+      const changed = await updateUserProfile(userId, { firstName: 'Updated', lastName: 'Explorer', country: 'India' })
+      assert.equal(changed.firstName, 'Updated')
+      assert.equal(changed.country, 'India')
+      assert.equal(changed.email, email)
+      assert.equal('password_hash' in changed, false)
+      assert.equal((await userForToken(token))?.lastName, 'Explorer')
+      assert.equal((await entities.find('users', userId))?.firstName, 'Updated')
+      const loggedIn = await loginUser(email, password)
+      assert.equal(loggedIn.user.country, 'India')
+      await endSession(loggedIn.token)
+    })
+    await t.test('quest recommendations use the selected provider and actual saved preferences', async () => {
+      const empty = await recommendForQuest(`missing-${suffix}`)
+      assert.equal(empty.travelDna, null)
+      assert.equal(empty.memberCount, 0)
+      assert.deepEqual(empty.results, [])
+      const result = await recommendForQuest(roomId)
+      assert.equal(result.memberCount, 1)
+      assert.equal(result.travelDna?.budgetStyle, 'Premium')
+      assert.ok(result.results.length > 0)
+      assert.ok(result.results.every((trip) => Array.isArray(trip.daily_plan)))
+      assert.equal(new Set(result.results.map((trip) => trip.id)).size, result.results.length)
     })
     await t.test('expired and ended sessions cannot authenticate', async () => {
       await updateRows('user_sessions', { expires_at: '2000-01-01T00:00:00Z' }, [{ column: 'token_hash', operator: 'eq', value: createHash('sha256').update(token).digest('hex') }], ['id'])

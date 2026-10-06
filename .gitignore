@@ -26,3 +26,6 @@ backend/.env
 *.njsproj
 *.sln
 *.sw?
+
+# Local browser verification screenshots and test reports
+frontend/.journey-test-results/

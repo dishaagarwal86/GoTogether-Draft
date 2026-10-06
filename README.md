@@ -58,3 +58,36 @@ docker compose up --build
 That starts PostgreSQL, applies `database/migrations/*.sql` to a new database volume, and connects the API with `DATABASE_URL`. Existing volumes need new migrations applied explicitly. The app is at `http://localhost:5173` and the API at `http://localhost:3001`. Local database credentials are `gotogether` / `gotogether` on database `gotogether`.
 
 Docker builds use the public npm registry by default. If your network requires an approved npm mirror, build with `docker compose build --build-arg NPM_REGISTRY=https://your-mirror.example/npm/`, then run `docker compose up -d`. Keep TLS certificate verification enabled.
+
+## Application journey
+
+The app continues the landing page’s design across public browsing and the signed-in experience.
+
+| Route | Purpose |
+| --- | --- |
+| `/login`, `/signup` | Account access; preserves the original quest or invitation destination |
+| `/dashboard` | Personal overview, first-trip guidance, real quests, and inspiration |
+| `/trips` | Hosting/joined quest collection with search; `/plan` redirects here |
+| `/travel-dna/new` | Quest name, optional invitation, and destination inspiration |
+| `/travel-dna/preferences` | Four-step preferences wizard with browser draft recovery |
+| `/quests/:roomId` | Illustrated itinerary workspace with sticky desktop chat, a mobile chat sheet, contextual day discussions, and invitations |
+| `/travel-dna/group-dna?roomId=…` | Travel DNA from submitted preferences, plus Companion |
+| `/travel-dna/plan-paths?roomId=…` | Compare itineraries, read daily plans, optionally personalise with Companion |
+| `/explore`, `/saved` | Filterable inspiration and a saved-place collection |
+| `/invite/:token` | Invitation preview, account switching, explicit acceptance, and guest preferences |
+| `/profile` | Authenticated name and country updates |
+
+Quest data and submitted preferences live in the selected database. Drafts and saved places are scoped to the account in the current browser; they do not sync between devices. Places saved before signing in transfer to that account. Email delivery and live Companion personalisation require their existing provider configuration. The UI reports unavailable delivery or personalisation without blocking the saved quest or original itinerary.
+
+### Local browser verification
+
+Use the isolated fixtures, which send no emails and make no external AI requests:
+
+```bash
+docker compose -f backend/tests/docker-compose.yml up -d --wait
+npm --prefix backend run test:providers
+npm run build
+npm --prefix frontend run test:journey
+```
+
+The browser check requires Google Chrome (or set `PLAYWRIGHT_CHANNEL=chromium` after installing Playwright’s Chromium). Its runner starts temporary API/frontend processes on ports 3016/5186 against the test database on 55436, then stops those processes. It verifies sign-up, protected-route return, draft recovery, quest creation, chat persistence, preference edits, saved places, profile readback, missing quests, sign-in/sign-out, and responsive layouts. Workspace checks cover contextual day discussions, failed-send retries, unread messages, keyboard focus, sticky chat, and preserving the itinerary position and message draft when mobile chat closes. Screenshots and a JSON report are written to `frontend/.journey-test-results/` (ignored by Git). Synthetic records stay in the isolated test database until its containers are removed.

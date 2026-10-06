@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { endSession, loginUser, registerUser, userForToken } from '../services/authService.js'
+import { endSession, loginUser, registerUser, userForToken, updateUserProfile } from '../services/authService.js'
 import { payload } from './helpers.js'
 
 export const authRouter = Router()
@@ -22,3 +22,14 @@ authRouter.post('/login', async (request, response) => {
 })
 authRouter.get('/me', async (request, response) => { const user = await userForToken(token(request.header('authorization'))); if (!user) return response.status(401).json({ error: 'Please sign in.' }); response.json({ data: user }) })
 authRouter.post('/logout', async (request, response) => { const value = token(request.header('authorization')); if (value) await endSession(value); response.status(204).send() })
+
+authRouter.patch('/me', async (request, response) => {
+  const user = await userForToken(token(request.header('authorization')))
+  if (!user) return response.status(401).json({ error: 'Please sign in again to update your profile.' })
+  const input = payload(request)
+  const firstName = typeof input.firstName === 'string' ? input.firstName.trim() : ''
+  const lastName = typeof input.lastName === 'string' ? input.lastName.trim() : ''
+  const country = typeof input.country === 'string' ? input.country.trim() : ''
+  if (!firstName || !lastName || firstName.length > 60 || lastName.length > 60 || country.length > 100) return response.status(400).json({ error: 'Enter a first and last name of up to 60 characters.' })
+  response.json({ data: await updateUserProfile(user.id, { firstName, lastName, country }) })
+})

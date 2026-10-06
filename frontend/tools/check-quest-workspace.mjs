@@ -1,0 +1,102 @@
+import assert from 'node:assert/strict'
+
+// Real local chat writes verify persistence; response overrides exercise failure and incoming-message UX.
+export async function checkQuestWorkspace(page, { base, roomId, screenshot, check }) {
+  const url = `${base}/quests/${roomId}`
+  const endpoint = `${base}/api/trip-rooms/${roomId}/messages`
+  await page.locator('.itinerary-cover').waitFor()
+  const composer = await page.locator('.crew-composer').boundingBox()
+  assert.ok(composer.y + composer.height <= page.viewportSize().height, 'Composer starts within the viewport')
+  await page.locator('.itinerary-day').nth(1).scrollIntoViewIfNeeded()
+  const panel = await page.locator('.crew-chat-panel').boundingBox()
+  assert.ok(panel.y >= 85 && panel.y < 120, 'Chat stays below the navigation as the itinerary scrolls')
+  assert.ok(panel.y + panel.height <= page.viewportSize().height, 'Sticky chat and composer remain reachable')
+  await page.locator('.itinerary-day-nav').getByRole('button', { name: 'Day 3', exact: true }).click()
+  assert.equal(await page.evaluate(() => document.activeElement?.getAttribute('aria-label')), 'Day 3')
+  await screenshot('workspace-desktop-reading')
+  check('Chat remains visible while reading and jumping between itinerary days')
+
+  await page.getByRole('button', { name: 'Discuss this day', exact: true }).first().click()
+  const context = await page.locator('.crew-compose-context strong').textContent()
+  const draft = 'Could we keep this afternoon free for a long lunch?'
+  await page.getByLabel('Message your crew').fill(draft)
+  const failSend = async route => route.request().method() === 'POST'
+    ? route.fulfill({ status: 503, contentType: 'application/json', body: JSON.stringify({ error: 'Synthetic local failure' }) })
+    : route.fallback()
+  await page.route(endpoint, failSend)
+  await page.getByRole('button', { name: 'Send', exact: true }).click()
+  await page.getByRole('alert').filter({ hasText: 'Your draft is safe' }).waitFor()
+  assert.equal(await page.getByLabel('Message your crew').inputValue(), draft)
+  assert.equal(await page.locator('.crew-compose-context strong').textContent(), context)
+  await page.waitForResponse(response => response.url() === endpoint && response.request().method() === 'GET')
+  assert.equal(await page.getByRole('alert').filter({ hasText: 'Your draft is safe' }).isVisible(), true, 'Polling does not erase a send failure')
+  await page.unroute(endpoint, failSend)
+  await page.getByRole('button', { name: 'Send', exact: true }).click()
+  await page.locator('.crew-message').filter({ hasText: draft }).waitFor()
+  await page.reload()
+  await page.locator('.crew-message').filter({ hasText: draft }).waitFor()
+  assert.equal(await page.locator('.crew-message').filter({ hasText: draft }).count(), 1)
+  assert.ok((await page.locator('.crew-message').filter({ hasText: draft }).textContent()).includes(`About ${context}`))
+  check('Day context survives a failed send and is persisted exactly once after retry')
+
+  await page.getByRole('button', { name: 'Invite your people', exact: true }).click()
+  await page.getByRole('dialog', { name: 'Room for your people.' }).waitFor()
+  await page.keyboard.press('Escape')
+  assert.equal(await page.getByRole('button', { name: 'Invite your people', exact: true }).evaluate(el => el === document.activeElement), true)
+  check('Invitations open without displacing the plan and restore keyboard focus')
+
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.goto(url)
+  await page.locator('.itinerary-day').nth(1).scrollIntoViewIfNeeded()
+  const position = await page.evaluate(() => scrollY)
+  await page.locator('.quest-dock-chat').click()
+  await page.getByRole('dialog', { name: 'The crew conversation.' }).waitFor()
+  await page.getByLabel('Message your crew').fill('An unfinished mobile thought.')
+  await screenshot('workspace-mobile-chat')
+  await page.keyboard.press('Escape')
+  assert.ok(Math.abs(await page.evaluate(() => scrollY) - position) < 2, 'Opening chat preserves the itinerary scroll position')
+  assert.equal(await page.locator('.quest-dock-chat').evaluate(el => el === document.activeElement), true)
+  await page.locator('.quest-dock-chat').click()
+  assert.equal(await page.getByLabel('Message your crew').inputValue(), 'An unfinished mobile thought.')
+  await page.getByRole('button', { name: 'Close crew chat' }).click()
+  check('Mobile chat preserves the itinerary position, unsent draft, and keyboard focus')
+
+  const start = Date.now() - 90000
+  const simulated = Array.from({ length: 48 }, (_, index) => ({ id: `ui-history-${index}`, senderId: 'local-ui-test-crew', senderName: 'Rowan', body: `Earlier crew idea ${index + 1}`, createdAt: new Date(start + index * 1000).toISOString() }))
+  const receive = async route => {
+    if (route.request().method() !== 'GET') return route.fallback()
+    const response = await route.fetch()
+    const body = await response.json()
+    await route.fulfill({ response, json: { ...body, data: [...body.data, ...simulated] } })
+  }
+  await page.route(endpoint, receive)
+  await page.goto(url)
+  await page.waitForFunction(() => document.querySelectorAll('.crew-message').length >= 48)
+  simulated.push({ id: 'ui-incoming-hidden', senderId: 'local-ui-test-crew', senderName: 'Rowan', body: 'A new thought while chat was closed.', createdAt: new Date().toISOString() })
+  await page.locator('.quest-dock-chat .quest-unread-count').getByText('1', { exact: true }).waitFor()
+  await page.locator('.quest-dock-chat').click()
+  await page.locator('.quest-dock-chat .quest-unread-count').waitFor({ state: 'hidden' })
+  const thread = page.locator('.crew-thread')
+  assert.ok(await thread.evaluate(el => el.scrollHeight - el.scrollTop - el.clientHeight < 5), 'Opening chat shows the latest messages')
+  await thread.evaluate(el => { el.scrollTop = 0; el.dispatchEvent(new Event('scroll')) })
+  simulated.push({ id: 'ui-incoming-reading', senderId: 'local-ui-test-crew', senderName: 'Rowan', body: 'A new thought while reading older messages.', createdAt: new Date().toISOString() })
+  await page.getByRole('button', { name: '1 new message ↓', exact: true }).waitFor()
+  assert.equal(await thread.evaluate(el => el.scrollTop), 0, 'Incoming messages do not pull the reader away from older messages')
+  await page.getByRole('button', { name: '1 new message ↓', exact: true }).click()
+  assert.ok(await thread.evaluate(el => el.scrollHeight - el.scrollTop - el.clientHeight < 5))
+  await page.getByRole('button', { name: 'Close crew chat' }).click()
+  await page.unroute(endpoint, receive)
+  check('Unread messages are discoverable and new messages respect the reader’s scroll position')
+
+  for (const width of [320, 768, 1024]) {
+    await page.setViewportSize({ width, height: 900 })
+    await page.goto(url)
+    await page.locator('.itinerary-cover').waitFor()
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth + 1), false, `Workspace fits ${width}px`)
+    await screenshot(`workspace-${width}`)
+  }
+  check('Quest workspace fits phone, tablet, and compact desktop widths')
+  await page.setViewportSize({ width: 1440, height: 1000 })
+  await page.goto(url)
+  await page.locator('.itinerary-cover').waitFor()
+}
