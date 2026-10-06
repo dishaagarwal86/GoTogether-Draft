@@ -1,5 +1,5 @@
-import { Home } from '../html/Home'
+import { LandingConcept } from './LandingConcept'
 
 export function HomePage() {
-  return <Home />
+  return <LandingConcept />
 }

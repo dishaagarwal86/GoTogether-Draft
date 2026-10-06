@@ -1,5 +1,20 @@
-import { createClient } from '@supabase/supabase-js'
-const url = process.env.SUPABASE_URL; const key = process.env.SUPABASE_SERVICE_ROLE_KEY
-if (!url || !key) throw new Error('Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY in backend/.env.')
-export const supabase = createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } })
-export async function verifySupabaseConnection() { const { error } = await supabase.from('itinerary_catalogue').select('id', { head: true, count: 'exact' }).limit(1); if (error) throw error }
+import { createClient, type SupabaseClient } from '@supabase/supabase-js'
+import { getDatabaseConfig } from './databaseConfig.js'
+
+let client: SupabaseClient | undefined
+
+export function getSupabase() {
+  if (!client) {
+    const config = getDatabaseConfig()
+    if (config.provider !== 'supabase') throw new Error('The Supabase provider is not selected.')
+    client = createClient(config.url, config.serviceRoleKey, {
+      auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
+    })
+  }
+  return client
+}
+
+export async function verifySupabaseConnection() {
+  const { error } = await getSupabase().from('itinerary_catalogue').select('id', { head: true }).limit(1)
+  if (error) throw new Error(`Supabase schema check failed: ${error.message}`)
+}

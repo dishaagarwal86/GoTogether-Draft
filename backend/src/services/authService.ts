@@ -1,13 +1,86 @@
 import { createHash, randomUUID } from 'node:crypto'
 import bcrypt from 'bcryptjs'
-import { supabase } from '../supabase.js'
-export type PublicUser={id:string;firstName:string;lastName:string;email:string;country:string|null;createdAt:string}
-type User={id:string;first_name:string|null;last_name:string|null;email:string;country:string|null;password_hash:string;created_at:string}
-const publicUser=(u:User):PublicUser=>({id:u.id,firstName:u.first_name??'',lastName:u.last_name??'',email:u.email,country:u.country,createdAt:u.created_at})
-const hash=(t:string)=>createHash('sha256').update(t).digest('hex')
-const unwrap=<T>(data:T,error:{message:string}|null)=>{if(error)throw new Error(error.message);return data}
-export async function registerUser(i:{firstName:string;lastName:string;email:string;password:string;country?:string}){const email=i.email.trim().toLowerCase();const existing=await supabase.from('users').select('id').eq('email',email).maybeSingle();if(existing.data)throw new Error('An account with this email already exists.');unwrap(null,existing.error);const id=`user_${randomUUID()}`;const passwordHash=await bcrypt.hash(i.password,12);const user={id,first_name:i.firstName.trim(),last_name:i.lastName.trim(),email,country:i.country?.trim()||null,password_hash:passwordHash,data:{name:`${i.firstName} ${i.lastName}`,email,firstName:i.firstName,lastName:i.lastName,country:i.country?.trim()||null}};const result=await supabase.from('users').insert(user).select('id,first_name,last_name,email,country,password_hash,created_at').single();return session(unwrap(result.data,result.error) as User)}
-export async function loginUser(email:string,password:string){const result=await supabase.from('users').select('id,first_name,last_name,email,country,password_hash,created_at').eq('email',email.trim().toLowerCase()).maybeSingle();const user=unwrap(result.data,result.error) as User|null;if(!user||!await bcrypt.compare(password,user.password_hash))throw new Error('Email or password is incorrect.');return session(user)}
-async function session(user:User){const token=randomUUID()+randomUUID();const r=await supabase.from('user_sessions').insert({id:`session_${randomUUID()}`,user_id:user.id,token_hash:hash(token),expires_at:new Date(Date.now()+2592000000).toISOString()});unwrap(null,r.error);return{user:publicUser(user),token}}
-export async function userForToken(token:string){const s=await supabase.from('user_sessions').select('user_id').eq('token_hash',hash(token)).gt('expires_at',new Date().toISOString()).maybeSingle();const session=unwrap(s.data,s.error) as {user_id:string}|null;if(!session)return undefined;const r=await supabase.from('users').select('id,first_name,last_name,email,country,password_hash,created_at').eq('id',session.user_id).maybeSingle();const user=unwrap(r.data,r.error) as User|null;return user?publicUser(user):undefined}
-export async function endSession(token:string){const r=await supabase.from('user_sessions').delete().eq('token_hash',hash(token));unwrap(null,r.error)}
+import { selectRows, insertRow, deleteRows } from '../storage.js'
+
+export type PublicUser = { id: string; firstName: string; lastName: string; email: string; country: string | null; createdAt: string }
+type User = { id: string; first_name: string | null; last_name: string | null; email: string; country: string | null; password_hash: string; created_at: string }
+
+const hash = (token: string) => createHash('sha256').update(token).digest('hex')
+const userColumns = ['id', 'first_name', 'last_name', 'email', 'country', 'password_hash', 'created_at']
+
+function timestamp(value: Date | string) {
+  return value instanceof Date ? value.toISOString() : String(value)
+}
+
+function asUser(row: Record<string, unknown>): User {
+  return {
+    id: String(row.id),
+    first_name: row.first_name == null ? null : String(row.first_name),
+    last_name: row.last_name == null ? null : String(row.last_name),
+    email: String(row.email),
+    country: row.country == null ? null : String(row.country),
+    password_hash: String(row.password_hash),
+    created_at: timestamp(row.created_at as Date | string),
+  }
+}
+
+const publicUser = (user: User): PublicUser => ({
+  id: user.id,
+  firstName: user.first_name ?? '',
+  lastName: user.last_name ?? '',
+  email: user.email,
+  country: user.country,
+  createdAt: user.created_at,
+})
+
+async function session(user: User) {
+  const token = randomUUID() + randomUUID()
+  await insertRow('user_sessions', {
+    id: `session_${randomUUID()}`, user_id: user.id, token_hash: hash(token), expires_at: new Date(Date.now() + 2592000000).toISOString(),
+  }, ['id'])
+  return { user: publicUser(user), token }
+}
+
+export async function registerUser(input: { firstName: string; lastName: string; email: string; password: string; country?: string }) {
+  const email = input.email.trim().toLowerCase()
+  const existing = await selectRows('users', ['id'], [{ column: 'email', operator: 'eq', value: email }])
+  if (existing.length) throw new Error('An account with this email already exists.')
+
+  const id = `user_${randomUUID()}`
+  const passwordHash = await bcrypt.hash(input.password, 12)
+  const country = input.country?.trim() || null
+  const row = await insertRow('users', {
+      id, first_name: input.firstName.trim(), last_name: input.lastName.trim(), email, country, password_hash: passwordHash,
+      data: {
+        name: `${input.firstName} ${input.lastName}`,
+        email,
+        firstName: input.firstName,
+        lastName: input.lastName,
+        country,
+      },
+  }, userColumns)
+  return session(asUser(row))
+}
+
+export async function loginUser(email: string, password: string) {
+  const rows = await selectRows('users', userColumns, [{ column: 'email', operator: 'eq', value: email.trim().toLowerCase() }])
+  const user = rows[0] ? asUser(rows[0]) : undefined
+  if (!user || !(await bcrypt.compare(password, user.password_hash))) throw new Error('Email or password is incorrect.')
+  return session(user)
+}
+
+export async function userForToken(token: string) {
+  const sessions = await selectRows<{ user_id: string }>('user_sessions', ['user_id'], [
+    { column: 'token_hash', operator: 'eq', value: hash(token) },
+    { column: 'expires_at', operator: 'gt', value: new Date().toISOString() },
+  ])
+  const current = sessions[0]
+  if (!current) return undefined
+
+  const rows = await selectRows('users', userColumns, [{ column: 'id', operator: 'eq', value: current.user_id }])
+  return rows[0] ? publicUser(asUser(rows[0])) : undefined
+}
+
+export async function endSession(token: string) {
+  await deleteRows('user_sessions', [{ column: 'token_hash', operator: 'eq', value: hash(token) }])
+}

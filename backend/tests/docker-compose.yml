@@ -1,0 +1,31 @@
+name: gotogether-provider-tests
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: provider_test
+      POSTGRES_PASSWORD: provider_test
+      POSTGRES_DB: gotogether_provider_test
+    ports:
+      - "127.0.0.1:55436:5432"
+    tmpfs:
+      - /var/lib/postgresql/data
+    volumes:
+      - ../../database/migrations/001_gotogether_core.sql:/docker-entrypoint-initdb.d/001.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U provider_test -d gotogether_provider_test"]
+      interval: 1s
+      timeout: 3s
+      retries: 30
+  rest:
+    image: postgrest/postgrest:v12.2.3
+    environment:
+      PGRST_DB_URI: postgres://provider_test:provider_test@db:5432/gotogether_provider_test
+      PGRST_DB_SCHEMAS: public
+      PGRST_DB_ANON_ROLE: provider_test
+      PGRST_JWT_SECRET: gotogether-provider-contract-test-only-secret-2026
+    ports:
+      - "127.0.0.1:55437:3000"
+    depends_on:
+      db:
+        condition: service_healthy

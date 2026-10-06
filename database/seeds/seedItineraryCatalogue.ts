@@ -1,5 +1,5 @@
-import 'dotenv/config'
-import { supabase } from '../../backend/src/supabase.js'
+import '../../backend/src/environment.js'
+import { closeDatabase, insertIfMissing } from '../../backend/src/storage.js'
 
 type Place = { destination: string; country: string; location: string; seasons: string[]; anchors: string[] }
 const places: Place[] = [
@@ -32,12 +32,31 @@ const moods = ['Adventure', 'Food & Culture', 'Relaxation', 'Nature', 'Nightlife
 const budgets = ['Budget-friendly', 'Moderate', 'Premium'] as const
 const titles: Record<string, string> = { Adventure: 'Wild horizons & brave detours', 'Food & Culture': 'Local tables & living stories', Relaxation: 'Slow mornings & golden hours', Nature: 'Open skies & untamed trails', Nightlife: 'After-dark flavours & city rhythm', Wellness: 'Restore, roam & reconnect' }
 
+async function seedCatalogue() {
+try {
 for (let index = 0; index < 72; index++) {
   const place = places[index % places.length]; const mood = moods[index % moods.length]; const budget = budgets[Math.floor(index / moods.length) % budgets.length]
   const duration = 3 + (index % 4); const cost = budget === 'Budget-friendly' ? 420 + (index % 5) * 45 : budget === 'Moderate' ? 900 + (index % 5) * 90 : 1750 + (index % 5) * 180
   const id = `catalogue_${String(index + 1).padStart(3, '0')}`
   const dailyPlan = Array.from({ length: duration }, (_, day) => ({ day: day + 1, morning: `${place.anchors[day % 3]} at an easy pace`, afternoon: mood === 'Food & Culture' ? 'Meet a local maker and taste regional favourites' : `A curated ${mood.toLowerCase()} experience`, evening: day === duration - 1 ? 'A celebratory final dinner' : 'A relaxed neighbourhood evening' }))
   const aiContext = { primaryMood: mood, secondaryMoods: [moods[(index + 2) % moods.length]], groupFit: index % 5 === 0 ? ['Families', 'Friends'] : ['Couples', 'Friends'], pace: index % 3 === 0 ? 'Slow & relaxed' : index % 3 === 1 ? 'A balanced mix' : 'Busy & activity-filled', highlights: place.anchors, avoidIf: mood === 'Adventure' ? ['Limited mobility'] : ['None'] }
-  const result=await supabase.from('itinerary_catalogue').upsert({id,title:`${place.destination} · ${titles[mood]}`,destination:place.destination,country:place.country,duration_days:duration,budget,estimated_cost_usd:cost,seasons:place.seasons,moods:[mood,moods[(index+2)%moods.length]],location_type:place.location,short_description:`${duration} days shaped around ${place.anchors.join(', ')}.`,why_it_fits:`Best for groups seeking ${mood.toLowerCase()} with a ${budget.toLowerCase()} comfort level.`,daily_plan:dailyPlan,ai_context:aiContext},{onConflict:'id',ignoreDuplicates:true});if(result.error)throw result.error
+  await insertIfMissing('itinerary_catalogue', {
+    id, title: `${place.destination} · ${titles[mood]}`, destination: place.destination, country: place.country,
+    duration_days: duration, budget, estimated_cost_usd: cost, seasons: place.seasons,
+    moods: [mood, moods[(index + 2) % moods.length]], location_type: place.location,
+    short_description: `${duration} days shaped around ${place.anchors.join(', ')}.`,
+    why_it_fits: `Best for groups seeking ${mood.toLowerCase()} with a ${budget.toLowerCase()} comfort level.`,
+    daily_plan: dailyPlan, ai_context: aiContext,
+  })
 }
+
 console.log('Seeded 72 AI-ready itinerary catalogue records.')
+} finally {
+  await closeDatabase()
+}
+}
+
+seedCatalogue().catch((error: unknown) => {
+  console.error(error instanceof Error ? error.message : 'Catalogue seed failed.')
+  process.exitCode = 1
+})
