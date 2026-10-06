@@ -1,0 +1,65 @@
+import assert from 'node:assert/strict'
+
+export async function checkInvitations(page, { base, roomId, password, out, check }) {
+  assert.equal(process.env.NODE_ENV, 'test')
+  assert.equal(process.env.SMTP_HOST, '')
+  const guestEmail = `crew-${Date.now()}@example.invalid`
+  const created = await page.request.post(`${base}/api/auth/signup`, { data: { firstName: 'Casey', lastName: 'Traveller', email: guestEmail, password } })
+  assert.equal(created.status(), 201)
+  const ownerToken = await page.evaluate(() => localStorage.getItem('gotogether.session-token'))
+  const invited = await page.request.post(`${base}/api/trip-rooms/${roomId}/invites`, { headers: { Authorization: `Bearer ${ownerToken}` }, data: { email: guestEmail } })
+  assert.equal(invited.status(), 201)
+  assert.equal((await invited.json()).data.delivered, false, 'This isolated test never sends email')
+  assert.equal((await page.request.get(`${base}/api/invites/mine`)).status(), 401)
+
+  const guestContext = await page.context().browser().newContext({ viewport: { width: 320, height: 844 } })
+  const guestPage = await guestContext.newPage()
+  const errors = []
+  guestPage.on('pageerror', error => errors.push(error.message))
+  guestPage.setDefaultTimeout(12000)
+  try {
+    await guestPage.goto(`${base}/login`)
+    await guestPage.getByLabel('Email address', { exact: true }).fill(guestEmail)
+    await guestPage.getByLabel('Password', { exact: true }).fill(password)
+    await guestPage.getByRole('button', { name: 'Let’s get back out there' }).click()
+    await guestPage.waitForURL('**/dashboard')
+    const trigger = guestPage.getByRole('button', { name: 'Invitations, 1 pending', exact: true })
+    await trigger.click()
+    const panel = guestPage.getByRole('region', { name: 'Quest invitations' })
+    await panel.getByRole('button', { name: 'Join quest', exact: true }).waitFor()
+    const bounds = await panel.boundingBox()
+    assert.ok(bounds.x >= 0 && bounds.x + bounds.width <= 320, 'Invitation menu fits a small phone')
+    assert.equal(await guestPage.evaluate(() => document.documentElement.scrollWidth > innerWidth), false)
+    await guestPage.screenshot({ path: `${out}/28-mobile-invitations.png` })
+    await guestPage.keyboard.press('Escape')
+    assert.equal(await trigger.evaluate(el => el === document.activeElement), true)
+    assert.equal(await panel.count(), 0)
+    await guestPage.setViewportSize({ width: 1440, height: 1000 })
+    await trigger.click()
+    await panel.getByRole('button', { name: 'Join quest', exact: true }).waitFor()
+    await guestPage.screenshot({ path: `${out}/29-desktop-invitations.png` })
+    const joinEndpoint = '**/api/invites/*/join'
+    await guestPage.route(joinEndpoint, route => route.fulfill({ status: 503, contentType: 'application/json', body: JSON.stringify({ error: 'Synthetic local failure' }) }))
+    await panel.getByRole('button', { name: 'Join quest', exact: true }).click()
+    await panel.getByRole('alert').waitFor()
+    assert.equal(await panel.getByRole('button', { name: 'Join quest', exact: true }).isEnabled(), true)
+    check('Invitation inbox fits mobile and desktop, restores focus, and allows a failed join to retry')
+    await guestPage.unroute(joinEndpoint)
+    await panel.getByRole('button', { name: 'Join quest', exact: true }).click()
+    await guestPage.waitForURL(`**/quests/${roomId}`)
+    await guestPage.getByText('Part of the crew', { exact: true }).waitFor()
+    await guestPage.getByText('Let’s leave room for one long lunch.', { exact: true }).waitFor()
+    await guestPage.getByLabel('Message your crew').fill('Glad to join this shared adventure!')
+    await guestPage.getByRole('button', { name: 'Send', exact: true }).click()
+    await guestPage.getByText('Glad to join this shared adventure!', { exact: true }).waitFor()
+    await guestPage.reload()
+    await guestPage.getByText('Glad to join this shared adventure!', { exact: true }).waitFor()
+    await guestPage.getByRole('button', { name: 'Invitations', exact: true }).click()
+    await guestPage.getByText('You’re all caught up. New invitations will appear here.', { exact: true }).waitFor()
+    check('Accepting an invitation opens the saved quest and grants persistent crew chat access')
+    assert.deepEqual(errors, [], 'Invitation browser runtime errors')
+  } catch (error) {
+    await guestPage.screenshot({ path: `${out}/invitation-failure.png` })
+    throw error
+  } finally { await guestContext.close() }
+}

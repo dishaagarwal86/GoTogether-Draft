@@ -19,6 +19,7 @@ export function Icon({ name = 'arrow', size = 20 }: { name?: string; size?: numb
     eye: <><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7S2 12 2 12Z" /><circle cx="12" cy="12" r="3" /></>,
     lock: <><rect x="5" y="10" width="14" height="11" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3m-4 5v2" /></>,
     menu: <path d="M4 6h16M4 12h16M4 18h16" />,
+    bell: <><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9ZM10 21h4" /></>,
     plane: <path d="m22 2-7 20-4-9-9-4 20-7Zm0 0L11 13" />,
     home: <><path d="m3 10 9-7 9 7v11H3V10Z" /><path d="M9 21v-8h6v8" /></>,
     chat: <path d="M21 11a9 9 0 0 1-9 9H4l-3 3V11a10 10 0 0 1 20 0ZM6 10h10M6 14h6" />,

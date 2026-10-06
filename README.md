@@ -79,6 +79,8 @@ The app continues the landing page’s design across public browsing and the sig
 
 Quest data and submitted preferences live in the selected database. Drafts and saved places are scoped to the account in the current browser; they do not sync between devices. Places saved before signing in transfer to that account. Email delivery and live Companion personalisation require their existing provider configuration. The UI reports unavailable delivery or personalisation without blocking the saved quest or original itinerary.
 
+Signed-in travellers can also open the invitation bell in the navigation to view and accept pending quest invitations. The inbox checks for updates every 30 seconds and when opened, and works with either database provider. It uses the signed-in email address, so recipients can join even when invitation email delivery is unavailable.
+
 ### Local browser verification
 
 Use the isolated fixtures, which send no emails and make no external AI requests:

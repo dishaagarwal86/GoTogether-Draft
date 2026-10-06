@@ -3,6 +3,7 @@ import assert from 'node:assert/strict'
 import { mkdir, writeFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { checkQuestWorkspace } from './check-quest-workspace.mjs'
+import { checkInvitations } from './check-invitations.mjs'
 const base = process.env.JOURNEY_TEST_URL ?? 'http://127.0.0.1:5186'
 assert.equal(new URL(base).hostname, '127.0.0.1', 'Browser checks must target the isolated local test runner')
 const out = resolve(process.env.JOURNEY_TEST_OUTPUT ?? '.journey-test-results')
@@ -149,6 +150,7 @@ try {
   await page.locator('#journey-navigation').getByRole('link', { name: 'Overview' }).click()
   await page.waitForURL('**/dashboard')
   check('Mobile pages fit the viewport and navigation works')
+  await checkInvitations(page, { base, roomId, password, out, check })
   await page.getByRole('button', { name: 'Open account menu' }).click()
   await page.getByRole('button', { name: 'Sign out', exact: true }).click()
   await page.waitForURL('**/login')

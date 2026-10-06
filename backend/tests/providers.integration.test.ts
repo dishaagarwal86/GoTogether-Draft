@@ -3,7 +3,7 @@ import { createHash, randomUUID } from 'node:crypto'
 import { test } from 'node:test'
 import { registerUser, loginUser, userForToken, endSession, updateUserProfile } from '../src/services/authService.js'
 import { createRoom, listRooms, listUserRooms, inviteToRoom, updateRoom } from '../src/services/roomService.js'
-import { getTripRoomInvite, acceptTripRoomInvite } from '../src/services/invitationService.js'
+import { getTripRoomInvite, acceptTripRoomInvite, listPendingTripRoomInvites, acceptTripRoomInviteById } from '../src/services/invitationService.js'
 import { createQuestMessage, listQuestMessages } from '../src/services/chatService.js'
 import { recommendForQuest } from '../src/services/recommendationService.js'
 import * as entities from '../src/services/apiStore.js'
@@ -101,6 +101,31 @@ test(`database contract (${process.env.DATABASE_PROVIDER})`, async (t) => {
       assert.equal(joined[0].role, 'member')
       assert.equal(joined[0].inviteStatus, 'accepted')
       assert.deepEqual(await selectRows('trip_rooms', ['id'], [{ column: 'id', operator: 'in', value: [] }]), [])
+    })
+    await t.test('invitation inbox filters by recipient and expiry and joins only the intended account', async (t) => {
+      t.mock.method(console, 'info', () => {})
+      const guest = { id: guestId, email: `guest-${suffix}@example.invalid` }
+      await deleteRows('trip_room_people', [{ column: 'trip_room_id', operator: 'eq', value: roomId }, { column: 'user_id', operator: 'eq', value: guestId }])
+      await inviteToRoom(roomId, guest.email)
+      const pending = await listPendingTripRoomInvites(` ${guest.email.toUpperCase()} `)
+      assert.equal(pending.length, 1)
+      assert.equal(pending[0].room.id, roomId)
+      assert.equal(typeof pending[0].expiresAt, 'string')
+      assert.equal('token_hash' in pending[0], false)
+      assert.deepEqual(await listPendingTripRoomInvites(email), [])
+      const id = pending[0].id
+      await assert.rejects(acceptTripRoomInviteById(id, { id: userId, email }), /different email/)
+      await updateRows('trip_room_invites', { expires_at: '2000-01-01T00:00:00Z' }, [{ column: 'id', operator: 'eq', value: id }], ['id'])
+      assert.deepEqual(await listPendingTripRoomInvites(guest.email), [])
+      await assert.rejects(acceptTripRoomInviteById(id, guest), /no longer available/)
+      await updateRows('trip_room_invites', { expires_at: new Date(Date.now() + 86400000).toISOString() }, [{ column: 'id', operator: 'eq', value: id }], ['id'])
+      assert.equal(await acceptTripRoomInviteById(id, guest), roomId)
+      assert.deepEqual(await listPendingTripRoomInvites(guest.email), [])
+      await assert.rejects(acceptTripRoomInviteById(id, guest), /no longer available/)
+      const joined = await listUserRooms(guestId)
+      assert.equal(joined.length, 1)
+      assert.equal(joined[0].inviteStatus, 'accepted')
+      assert.equal(joined[0].role, 'member')
     })
     await t.test('chat keeps membership checks, sender names, ordering, and message validation', async () => {
       assert.deepEqual(await listQuestMessages(roomId, userId), [])
