@@ -26,7 +26,8 @@ const proxy = createServer((incoming, outgoing) => {
 async function run(provider, args) {
   const env = { ...process.env, DATABASE_PROVIDER: provider, DATABASE_URL: databaseUrl,
     SUPABASE_URL: `http://127.0.0.1:${proxy.address().port}`, SUPABASE_SERVICE_ROLE_KEY: token,
-    OPENAI_API_KEY: '', DOTENV_CONFIG_PATH: '/dev/null', NODE_ENV: 'test' }
+    OPENAI_API_KEY: '', OLLAMA_API_KEY: '', SMTP_HOST: '', SMTP_PORT: '', SMTP_USER: '', SMTP_PASS: '', SMTP_FROM: '',
+    APP_URL: 'http://localhost:5173', DOTENV_CONFIG_PATH: '/dev/null', NODE_ENV: 'test' }
   await new Promise((resolve, reject) => {
     const child = spawn(process.execPath, args, { env, stdio: 'inherit' })
     child.on('error', reject)

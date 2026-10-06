@@ -2,10 +2,10 @@ import { query, verifyPostgresConnection, closePool } from './db.js'
 import { getDatabaseConfig } from './databaseConfig.js'
 import { getSupabase, verifySupabaseConnection } from './supabase.js'
 
-const tables = ['users', 'user_sessions', 'preferences', 'contacts', 'itineraries', 'flights', 'hotels', 'activities', 'suggested_itineraries', 'country_itineraries', 'itinerary_catalogue', 'trip_rooms'] as const
+const tables = ['users', 'user_sessions', 'preferences', 'contacts', 'itineraries', 'flights', 'hotels', 'activities', 'suggested_itineraries', 'country_itineraries', 'itinerary_catalogue', 'trip_rooms', 'trip_room_people', 'trip_room_invites', 'trip_room_messages'] as const
 export type Table = typeof tables[number]
 export type Row = Record<string, unknown>
-export type Filter = { column: string; operator: 'eq' | 'gt' | 'ilike'; value: string }
+export type Filter = { column: string; operator: 'eq' | 'gt' | 'ilike'; value: string } | { column: string; operator: 'in'; value: string[] }
 type SelectOptions = { orderBy?: string; ascending?: boolean; limit?: number }
 const jsonColumns = new Set(['data', 'dates', 'location_preferences', 'mood_preferences', 'activities_must_have', 'activities_preferred', 'accommodation_preferences', 'seasons', 'moods', 'daily_plan', 'ai_context'])
 
@@ -25,6 +25,10 @@ function columnsSql(columns: string[]) {
 }
 function whereSql(filters: Filter[], values: unknown[]) {
   return filters.length ? ` where ${filters.map((filter) => {
+    if (filter.operator === 'in') {
+      values.push(filter.value)
+      return `${identifier(filter.column)} = any($${values.length})`
+    }
     const operator = { eq: '=', gt: '>', ilike: 'ilike' }[filter.operator]
     if (!operator) throw new Error('Unsupported database filter.')
     values.push(filter.value)
@@ -48,7 +52,7 @@ export async function selectRows<T extends Row>(table: Table, columns: string[],
   if (options.orderBy) identifier(options.orderBy)
   if (isSupabase()) {
     let request = getSupabase().from(table).select(columns.join(','))
-    for (const filter of filters) request = request.filter(filter.column, filter.operator, filter.value)
+    for (const filter of filters) request = filter.operator === 'in' ? request.in(filter.column, filter.value) : request.filter(filter.column, filter.operator, filter.value)
     if (options.orderBy) request = request.order(options.orderBy, { ascending: options.ascending ?? false })
     if (options.limit !== undefined) request = request.limit(options.limit)
     const { data, error } = await request
@@ -85,7 +89,7 @@ export async function updateRows<T extends Row>(table: Table, row: Row, filters:
   const selection = columnsSql(returning)
   if (isSupabase()) {
     let request = getSupabase().from(table).update(row)
-    for (const filter of filters) request = request.filter(filter.column, filter.operator, filter.value)
+    for (const filter of filters) request = filter.operator === 'in' ? request.in(filter.column, filter.value) : request.filter(filter.column, filter.operator, filter.value)
     const { data, error } = await request.select(returning.join(','))
     checkError(error)
     return (data ?? []) as unknown as T[]
@@ -100,13 +104,30 @@ export async function deleteRows(table: Table, filters: Filter[]): Promise<numbe
   const name = tableName(table)
   if (isSupabase()) {
     let request = getSupabase().from(table).delete({ count: 'exact' })
-    for (const filter of filters) request = request.filter(filter.column, filter.operator, filter.value)
+    for (const filter of filters) request = filter.operator === 'in' ? request.in(filter.column, filter.value) : request.filter(filter.column, filter.operator, filter.value)
     const { count, error } = await request
     checkError(error)
     return count ?? 0
   }
   const values: unknown[] = []
   return (await query(`delete from ${name}${whereSql(filters, values)}`, values)).rowCount ?? 0
+}
+
+export async function upsertRow(table: Table, row: Row, conflictColumns: string[]) {
+  const name = tableName(table)
+  const columns = Object.keys(row)
+  const fields = columnsSql(columns)
+  const conflict = columnsSql(conflictColumns)
+  if (conflictColumns.some((column) => row[column] == null)) throw new Error('Upserts require values for every conflict column.')
+  if (isSupabase()) {
+    const { error } = await getSupabase().from(table).upsert(row, { onConflict: conflictColumns.join(',') })
+    checkError(error)
+    return
+  }
+  const updates = columns.filter((column) => !conflictColumns.includes(column))
+    .map((column) => `${identifier(column)} = excluded.${identifier(column)}`)
+  const action = updates.length ? `do update set ${updates.join(', ')}` : 'do nothing'
+  await query(`insert into ${name} (${fields}) values (${columns.map((_, index) => `$${index + 1}`).join(', ')}) on conflict (${conflict}) ${action}`, preparedValues(row))
 }
 
 // Seeding is intentionally insert-only: reruns do not overwrite edited trips.

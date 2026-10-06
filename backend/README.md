@@ -13,7 +13,7 @@ Supabase-hosted PostgreSQL can also use the direct `postgres` provider with its 
 
 ## Setup
 
-1. Apply [the migration](../database/migrations/001_gotogether_core.sql) to your PostgreSQL database or in the Supabase SQL Editor. Local Docker Compose applies it on the first database start.
+1. Apply all SQL files in [database/migrations](../database/migrations) in numeric order to your PostgreSQL database or in the Supabase SQL Editor. They include the core schema, invitations, and chat messages. Local Docker Compose applies them on the first database start. For an existing database volume, apply new migrations explicitly; restarting Docker does not run them again.
 2. Copy `.env.example` to `.env` and configure one provider as above. Both providers use the existing application-managed login/session model; this does not switch authentication to Supabase Auth.
 3. Install and run:
 
@@ -61,6 +61,6 @@ npm --prefix backend run test:providers
 docker compose -f backend/tests/docker-compose.yml down
 ```
 
-The suite uses disposable PostgreSQL on `127.0.0.1:55436` and PostgREST on `127.0.0.1:55437`. The same contract exercises actual SQL and actual Supabase SDK HTTP requests: registration, login, session expiry/logout, room operations, JSON preferences, filtered entity CRUD, foreign keys, and idempotent catalogue seeding. No hosted Supabase or application database credentials are used. A hosted project's configuration and permissions still require verification in that environment.
+The suite uses disposable PostgreSQL on `127.0.0.1:55436` and PostgREST on `127.0.0.1:55437`. The same contract exercises actual SQL and actual Supabase SDK HTTP requests: registration, login, session expiry/logout, room operations, invitation reissue/acceptance, memberships, chat access and persistence, JSON preferences, filtered entity CRUD, foreign keys, and idempotent catalogue seeding. SMTP is disabled during tests. No hosted Supabase or application database credentials are used. A hosted project's configuration and permissions still require verification in that environment.
 
 Implementation references: [Supabase initialization](https://supabase.com/docs/reference/javascript/initializing), [returning inserted records](https://supabase.com/docs/reference/javascript/insert), [insert-only upserts](https://supabase.com/docs/reference/javascript/upsert), and [PostgreSQL parameterized queries](https://node-postgres.com/features/queries).

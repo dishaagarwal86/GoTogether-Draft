@@ -16,7 +16,7 @@ export async function postRoom(request: Request, response: Response) {
   } catch (error) {
     const message = error instanceof Error ? error.message : ''
     if (/trip_room_invites|schema cache|relation .* does not exist/i.test(message)) {
-      response.status(503).json({ error: 'Invitations need one database setup step. Run database/migrations/002_trip_room_invites.sql in the Supabase SQL Editor, then try again.' })
+      response.status(503).json({ error: 'Invitations need one database setup step. Run database/migrations/002_trip_room_invites.sql in your configured database, then try again.' })
       return
     }
     console.error('Could not create quest:', error)
@@ -35,7 +35,7 @@ export async function postRoomInvite(request: Request, response: Response) {
   } catch (error) {
     const message = error instanceof Error ? error.message : ''
     if (/trip_room_invites|schema cache|relation .* does not exist/i.test(message)) {
-      return response.status(503).json({ error: 'Invitations need one database setup step. Run database/migrations/002_trip_room_invites.sql in the Supabase SQL Editor.' })
+      return response.status(503).json({ error: 'Invitations need one database setup step. Run database/migrations/002_trip_room_invites.sql in your configured database.' })
     }
     console.error('Could not invite to quest:', error)
     return response.status(500).json({ error: 'Could not send this invitation. Please try again.' })

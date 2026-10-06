@@ -2,9 +2,11 @@ import assert from 'node:assert/strict'
 import { createHash, randomUUID } from 'node:crypto'
 import { test } from 'node:test'
 import { registerUser, loginUser, userForToken, endSession } from '../src/services/authService.js'
-import { createRoom, listRooms, updateRoom } from '../src/services/roomService.js'
+import { createRoom, listRooms, listUserRooms, inviteToRoom, updateRoom } from '../src/services/roomService.js'
+import { getTripRoomInvite, acceptTripRoomInvite } from '../src/services/invitationService.js'
+import { createQuestMessage, listQuestMessages } from '../src/services/chatService.js'
 import * as entities from '../src/services/apiStore.js'
-import { selectRows, insertRow, updateRows, deleteRows, insertIfMissing, verifyDatabaseConnection, closeDatabase } from '../src/storage.js'
+import { selectRows, insertRow, updateRows, deleteRows, upsertRow, insertIfMissing, verifyDatabaseConnection, closeDatabase } from '../src/storage.js'
 
 test(`database contract (${process.env.DATABASE_PROVIDER})`, async (t) => {
   // Never run this destructive fixture test with ordinary app credentials.
@@ -14,6 +16,7 @@ test(`database contract (${process.env.DATABASE_PROVIDER})`, async (t) => {
   const email = `provider-${suffix}@example.invalid`
   const password = 'Synthetic test password 2026!'
   let userId = ''
+  let guestId = ''
   let roomId = ''
   let token = ''
   let countryId = ''
@@ -47,7 +50,7 @@ test(`database contract (${process.env.DATABASE_PROVIDER})`, async (t) => {
       assert.equal(await userForToken(result.token), undefined)
     })
     await t.test('room writes and timestamps have the same shape', async () => {
-      const room = await createRoom({ name: "  Summer's adventure  ", tripName: ' Kyoto ', members: 3 })
+      const room = await createRoom({ name: "  Summer's adventure  ", tripName: ' Kyoto ', members: 3, ownerId: userId })
       roomId = room.id
       assert.equal(room.name, "Summer's adventure")
       assert.equal(room.tripName, 'Kyoto')
@@ -58,6 +61,64 @@ test(`database contract (${process.env.DATABASE_PROVIDER})`, async (t) => {
       assert.equal(changed?.tripName, 'Kyoto')
       assert.ok((await listRooms()).some((entry) => entry.id === roomId))
       assert.equal(await updateRoom(`missing-${suffix}`, { name: 'Absent' }), undefined)
+    })
+    await t.test('invitation reissue, acceptance, and membership work without sending email', async (t) => {
+      assert.equal(process.env.SMTP_HOST, '')
+      let inviteToken = ''
+      t.mock.method(console, 'info', (...args: unknown[]) => {
+        const match = args.join(' ').match(/\/invite\/([a-f0-9]+)/)
+        if (match) inviteToken = match[1]
+      })
+      const guestEmail = `guest-${suffix}@example.invalid`
+      const guest = await registerUser({ firstName: 'Guest', lastName: 'Traveller', email: guestEmail, password })
+      guestId = guest.user.id
+      const owned = await listUserRooms(userId)
+      assert.equal(owned.length, 1)
+      assert.equal(owned[0].role, 'owner')
+      assert.equal(owned[0].inviteStatus, 'accepted')
+      assert.deepEqual(await listUserRooms(guestId), [])
+      assert.equal(await inviteToRoom(`missing-${suffix}`, guestEmail), undefined)
+      assert.equal((await inviteToRoom(roomId, ` ${guestEmail.toUpperCase()} `))?.delivered, false)
+      assert.ok(inviteToken)
+      const oldToken = inviteToken
+      const first = await getTripRoomInvite(oldToken)
+      assert.equal(first?.email, guestEmail)
+      assert.equal(typeof first?.expiresAt, 'string')
+      await inviteToRoom(roomId, guestEmail)
+      assert.notEqual(inviteToken, oldToken)
+      assert.equal(await getTripRoomInvite(oldToken), undefined)
+      const invites = await selectRows('trip_room_invites', ['id'], [{ column: 'trip_room_id', operator: 'eq', value: roomId }])
+      assert.equal(invites.length, 1)
+      await assert.rejects(acceptTripRoomInvite(inviteToken, { id: userId, email }), /email address/)
+      await upsertRow('trip_room_people', { trip_room_id: roomId, user_id: guestId, role: 'member', invite_status: 'invited' }, ['trip_room_id', 'user_id'])
+      await assert.rejects(listQuestMessages(roomId, guestId), /accepted quest members/)
+      assert.equal((await acceptTripRoomInvite(inviteToken, guest.user)).id, roomId)
+      assert.equal(await getTripRoomInvite(inviteToken), undefined)
+      await assert.rejects(acceptTripRoomInvite(inviteToken, guest.user), /no longer available/)
+      const joined = await listUserRooms(guestId)
+      assert.equal(joined.length, 1)
+      assert.equal(joined[0].role, 'member')
+      assert.equal(joined[0].inviteStatus, 'accepted')
+      assert.deepEqual(await selectRows('trip_rooms', ['id'], [{ column: 'id', operator: 'in', value: [] }]), [])
+    })
+    await t.test('chat keeps membership checks, sender names, ordering, and message validation', async () => {
+      assert.deepEqual(await listQuestMessages(roomId, userId), [])
+      await assert.rejects(createQuestMessage(roomId, `outsider-${suffix}`, 'Hello'), /accepted quest members/)
+      await assert.rejects(listQuestMessages(roomId, `outsider-${suffix}`), /accepted quest members/)
+      await assert.rejects(createQuestMessage(roomId, userId, '  '), /2,000 characters/)
+      await assert.rejects(createQuestMessage(roomId, userId, 'a'.repeat(2001)), /2,000 characters/)
+      const first = await createQuestMessage(roomId, userId, "  Let's visit Kyoto!  ")
+      const second = await createQuestMessage(roomId, guestId, 'Sounds good')
+      assert.equal(first.body, "Let's visit Kyoto!")
+      assert.equal(first.senderName, 'Travel Tester')
+      assert.equal(second.senderName, 'Guest Traveller')
+      assert.equal(typeof first.createdAt, 'string')
+      await updateRows('trip_room_messages', { created_at: '2027-01-01T00:00:00Z' }, [{ column: 'id', operator: 'eq', value: first.id }], ['id'])
+      await updateRows('trip_room_messages', { created_at: '2027-01-02T00:00:00Z' }, [{ column: 'id', operator: 'eq', value: second.id }], ['id'])
+      const messages = await listQuestMessages(roomId, guestId)
+      assert.deepEqual(messages.map((message) => message.id), [first.id, second.id])
+      assert.deepEqual(messages.map((message) => message.senderName), ['Travel Tester', 'Guest Traveller'])
+      assert.equal(messages[0].createdAt, '2027-01-01T00:00:00.000Z')
     })
     await t.test('JSONB objects, arrays, strings, and nulls round-trip in preferences', async () => {
       const input = {
@@ -137,6 +198,7 @@ test(`database contract (${process.env.DATABASE_PROVIDER})`, async (t) => {
       await assert.rejects(updateRows('users', { first_name: 'No' }, [], ['id']), /require a filter/)
     })
   } finally {
+    if (guestId) await deleteRows('users', [{ column: 'id', operator: 'eq', value: guestId }])
     if (userId) await deleteRows('users', [{ column: 'id', operator: 'eq', value: userId }])
     if (roomId) await deleteRows('trip_rooms', [{ column: 'id', operator: 'eq', value: roomId }])
     if (countryId) await deleteRows('country_itineraries', [{ column: 'id', operator: 'eq', value: countryId }])
