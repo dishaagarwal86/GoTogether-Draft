@@ -17,17 +17,17 @@
     "cors": "^2.8.5",
     "dotenv": "^16.6.1",
     "express": "^5.1.0",
+    "nodemailer": "10.0.14",
     "openai": "^7.27.0",
-    "pg": "^8.23.1",
-    "nodemailer": "^10.0.15"
+    "pg": "^8.23.1"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
     "@types/node": "^24.13.3",
+    "@types/nodemailer": "^8.0.2",
     "@types/pg": "^8.23.1",
     "tsx": "^4.20.5",
-    "typescript": "~6.0.2",
-    "@types/nodemailer": "^8.0.2"
+    "typescript": "~6.0.2"
   }
 }
