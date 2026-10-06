@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import { create, find, remove, update } from '../services/apiStore.js'
 import { notFound, payload, requireFields } from './helpers.js'
+import { listUserRooms } from '../services/roomService.js'
 
 export const usersRouter = Router()
 
@@ -9,6 +10,7 @@ usersRouter.post('/', async (request, response) => {
   if (!requireFields(response, input, ['name', 'email'])) return
   response.status(201).json({ data: await create('users', 'user', input) })
 })
+usersRouter.get('/:userId/trip-rooms', async (request, response) => response.json({ data: await listUserRooms(String(request.params.userId)) }))
 usersRouter.get('/:userId', async (request, response) => {
   const user = await find('users', request.params.userId)
   if (!user) return notFound(response, 'User')

@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext'
 import { countries } from '../data/countries'
 
@@ -7,7 +7,7 @@ export function LoginPage() { return <AuthPage mode="login" /> }
 export function SignUpPage() { return <AuthPage mode="signup" /> }
 
 function AuthPage({ mode }: { mode: 'login' | 'signup' }) {
-  const navigate = useNavigate(); const { login, signup } = useAuth()
+  const navigate = useNavigate(); const location = useLocation(); const { login, signup } = useAuth()
   const [error, setError] = useState(''); const [busy, setBusy] = useState(false)
   const [country, setCountry] = useState(''); const [countryOpen, setCountryOpen] = useState(false)
   const signUp = mode === 'signup'
@@ -17,7 +17,8 @@ function AuthPage({ mode }: { mode: 'login' | 'signup' }) {
     try {
       if (signUp) await signup({ firstName: String(data.get('firstName')), lastName: String(data.get('lastName')), country, email: String(data.get('email')), password: String(data.get('password')) })
       else await login({ email: String(data.get('email')), password: String(data.get('password')) })
-      navigate('/plan')
+      const next = new URLSearchParams(location.search).get('next')
+      navigate(next?.startsWith('/') ? next : '/plan')
     } catch (err) { setError(err instanceof Error ? err.message : 'Please try again.') } finally { setBusy(false) }
   }
   return <section className="auth-page"><div className="auth-card"><p className="eyebrow">GO.TOGETHER ACCOUNT</p><h1>{signUp ? <>Start your <em>story.</em></> : <>Welcome <em>back.</em></>}</h1><p>{signUp ? 'Create your profile, invite your favourite people, and keep every journey together.' : 'Sign in to return to your quests and Travel DNA.'}</p><form onSubmit={submit}>
