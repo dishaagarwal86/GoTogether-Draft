@@ -1,27 +1,15 @@
-import { Link, NavLink } from 'react-router-dom'
-import { useState } from 'react'
+import { Link, NavLink, useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { getMyInvites, joinInvite, type PendingInvite } from '../apis/invites'
 import { useAuth } from '../auth/AuthContext'
 
-type MainNavigationProps = {
-  isLanding: boolean
-  isScrolled: boolean
-}
+type MainNavigationProps = { isLanding: boolean; isScrolled: boolean }
 
 /** The app's single persistent navigation bar. */
 export function GlobalNavbar({ isLanding, isScrolled }: MainNavigationProps) {
-  const { user, logout, requestSignIn } = useAuth(); const [open, setOpen] = useState(false)
+  const { user, logout, requestSignIn } = useAuth(); const navigate = useNavigate(); const [open, setOpen] = useState(false); const [invitesOpen, setInvitesOpen] = useState(false); const [invites, setInvites] = useState<PendingInvite[]>([]); const [joining, setJoining] = useState('')
+  useEffect(() => { if (!user) { setInvites([]); return } const load = () => getMyInvites().then(setInvites).catch(() => setInvites([])); load(); const timer = window.setInterval(load, 30_000); return () => window.clearInterval(timer) }, [user])
+  const join = async (invite: PendingInvite) => { setJoining(invite.id); try { const result = await joinInvite(invite.id); setInvites((current) => current.filter((item) => item.id !== invite.id)); setInvitesOpen(false); navigate(`/quests/${result.roomId}`) } finally { setJoining('') } }
   const className = `global-nav${isLanding ? ' landing-global-nav' : ''}${isScrolled ? ' is-scrolled' : ''}`
-
-  return <header className={className}>
-    <div className="navigation-content">
-      <Link className="ocean-brand" to="/" aria-label="GoTogether home">Go.Together</Link>
-      <nav className="ocean-links" aria-label="Main navigation">
-        <Link to="/#popular">Discover</Link>
-        <NavLink to="/trips" onClick={(event) => { if (!user) { event.preventDefault(); requestSignIn() } }}>Quests</NavLink>
-        <NavLink to="/inspiration">About us</NavLink>
-        <NavLink className="explore-link" to="/explore">Explore <span>↗</span></NavLink>
-        {user ? <div className="user-nav"><NavLink className="profile-link" to="/profile">Profile</NavLink><button type="button" className="user-trigger" onClick={() => setOpen(!open)} aria-expanded={open}>{`${user.firstName[0] ?? ''}${user.lastName[0] ?? ''}` || 'U'}</button>{open && <div className="user-menu"><strong>{user.firstName} {user.lastName}</strong><small>{user.email}</small><NavLink to="/profile" onClick={() => setOpen(false)}>My profile</NavLink><NavLink to="/plan" onClick={() => setOpen(false)}>My quests</NavLink><button type="button" onClick={() => { void logout(); setOpen(false) }}>Sign out</button></div>}</div> : <div className="auth-nav"><NavLink to="/login">Sign in</NavLink><NavLink to="/signup" className="join-link">Join us</NavLink></div>}
-      </nav>
-    </div>
-  </header>
+  return <header className={className}><div className="navigation-content"><Link className="ocean-brand" to="/" aria-label="GoTogether home">Go.Together</Link><nav className="ocean-links" aria-label="Main navigation"><Link to="/#popular">Discover</Link><NavLink to="/trips" onClick={(event) => { if (!user) { event.preventDefault(); requestSignIn() } }}>Quests</NavLink><NavLink to="/inspiration">About us</NavLink><NavLink className="explore-link" to="/explore">Explore <span>↗</span></NavLink>{user ? <div className="user-nav"><div className="invite-nav"><button className="invite-bell" type="button" onClick={() => setInvitesOpen((value) => !value)} aria-label={`Invitations${invites.length ? `, ${invites.length} pending` : ''}`} aria-expanded={invitesOpen}>♧{invites.length > 0 && <b>{invites.length}</b>}</button>{invitesOpen && <div className="invite-menu"><p className="section-kicker">Quest invitations</p>{invites.length ? invites.map((invite) => <article key={invite.id}><strong>{invite.room.name}</strong><small>{invite.room.trip_name}</small><button type="button" onClick={() => join(invite)} disabled={joining === invite.id}>{joining === invite.id ? 'Joining…' : 'Join quest →'}</button></article>) : <p className="invite-empty">You’re all caught up.</p>}</div>}</div><NavLink className="profile-link" to="/profile">Profile</NavLink><button type="button" className="user-trigger" onClick={() => setOpen(!open)} aria-expanded={open}>{`${user.firstName[0] ?? ''}${user.lastName[0] ?? ''}` || 'U'}</button>{open && <div className="user-menu"><strong>{user.firstName} {user.lastName}</strong><small>{user.email}</small><NavLink to="/profile" onClick={() => setOpen(false)}>My profile</NavLink><NavLink to="/plan" onClick={() => setOpen(false)}>My quests</NavLink><button type="button" onClick={() => { void logout(); setOpen(false) }}>Sign out</button></div>}</div> : <div className="auth-nav"><NavLink to="/login">Sign in</NavLink><NavLink to="/signup" className="join-link">Join us</NavLink></div>}</nav></div></header>
 }
