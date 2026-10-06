@@ -7,13 +7,25 @@ type User = { id: string }
 type TripRoom = { id: string }
 
 async function request<T>(path: string, options?: RequestInit) {
-  const response = await fetch(`/api${path}`, {
-    ...options,
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-  })
-  const body = await response.json() as ApiResponse<T>
-  if (!response.ok) throw new Error(body.error || 'We could not save your Travel DNA. Please try again.')
-  return body.data
+  const controller = new AbortController()
+  const timeout = window.setTimeout(() => controller.abort(), 20_000)
+  try {
+    const response = await fetch(`/api${path}`, {
+      ...options,
+      signal: controller.signal,
+      headers: { 'Content-Type': 'application/json', ...options?.headers },
+    })
+    const body = await response.json() as ApiResponse<T>
+    if (!response.ok) throw new Error(body.error || 'We could not save your Travel DNA. Please try again.')
+    return body.data
+  } catch (error) {
+    if (error instanceof DOMException && error.name === 'AbortError') {
+      throw new Error('Saving took too long. Check that the GoTogether API is running, then try again.')
+    }
+    throw error
+  } finally {
+    window.clearTimeout(timeout)
+  }
 }
 
 async function currentUser() {
@@ -29,7 +41,7 @@ async function currentUser() {
   return user.id
 }
 
-export async function saveTravelDna(travelDnaName: string, answers: Record<string, AnswerValue>) {
+export async function saveTravelDna(travelDnaName: string, answers: Record<string, AnswerValue>, inviteEmail?: string) {
   const userId = await currentUser()
   const room = await request<TripRoom>('/trip-rooms', {
     method: 'POST',
@@ -37,6 +49,8 @@ export async function saveTravelDna(travelDnaName: string, answers: Record<strin
       name: travelDnaName,
       tripName: typeof answers.destination === 'string' && answers.destination.trim() ? answers.destination.trim() : travelDnaName,
       members: Number(answers.groupSize) || 1,
+      inviteEmail,
+      ownerId: userId,
     }),
   })
 
