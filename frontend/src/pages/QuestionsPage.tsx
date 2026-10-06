@@ -21,6 +21,7 @@ export function QuestionsPage() {
   const navigate = useNavigate()
   const location = useLocation()
   const travelDnaName = location.state?.travelDnaName ?? 'Your new quest'
+  const invitedEmail = location.state?.invitedEmail as string | undefined
   const [answers, setAnswers] = useState<Record<string, AnswerValue>>({})
   const [countryListOpen, setCountryListOpen] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
@@ -37,7 +38,7 @@ export function QuestionsPage() {
     setIsSaving(true)
     setSaveError('')
     try {
-      const saved = await saveTravelDna(travelDnaName, answers)
+      const saved = await saveTravelDna(travelDnaName, answers, invitedEmail)
       navigate('/travel-dna/overview', { state: { travelDnaName, answers, ...saved } })
     } catch (error) {
       setSaveError(error instanceof Error ? error.message : 'We could not save your Travel DNA. Please try again.')

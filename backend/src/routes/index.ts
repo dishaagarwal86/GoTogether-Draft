@@ -7,11 +7,13 @@ import { travelServicesRouter, userTravelRouter } from './travelServices.js'
 import { usersRouter } from './users.js'
 import { authRouter } from './auth.js'
 import { companionRouter } from './companion.js'
+import { invitesRouter } from './invites.js'
 
 export const apiRouter = Router()
 apiRouter.get('/health', (_request, response) => response.json({ status: 'ok' }))
 apiRouter.use('/auth', authRouter)
 apiRouter.use('/companion', companionRouter)
+apiRouter.use('/invites', invitesRouter)
 // Users
 apiRouter.use('/users', usersRouter)
 // Trip rooms
