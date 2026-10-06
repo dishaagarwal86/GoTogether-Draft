@@ -2,6 +2,7 @@
 
 Date: 2026-10-06
 Status: design approved in chat; spec awaiting review
+Base commit: `8c55b75` (journey redesign and invitation inbox merged)
 
 ## Goal
 
@@ -142,6 +143,8 @@ Text that can't be parsed returns 422 with "I couldn't turn that into a change â
 
 ## Front end
 
+The existing invite page, invitation inbox, and quest chat stay as they are; the join page is a separate route for share links.
+
 New files:
 
 - `pages/JoinPage.tsx`
@@ -177,6 +180,9 @@ The crew panel and the recommendations refresh every 4 seconds. Once the quest i
 - **Provider integration test** on both databases, using the existing runner: the owner creates a quest and a link, two guests join and save answers, recommendations show three paths with each member's fit, the change "no hiking" removes hiking trips, both members vote for the same trip, and the quest is decided.
 - **Manual check:** `docker compose up --build` on an existing volume applies `004` and seeds 72 trips.
 
-## Coordination
+## Coordination and hosting
 
-A UI redesign is in progress in the working tree. Its uncommitted files include `QuestionsPage`, `PlanPathsPage`, `RecommendationCards`, `recommendationService`, `AuthContext`, and `AppShell`. New work goes into new files. Edits to those existing files are limited to the small changes listed above, and are made after that redesign is committed.
+- The journey redesign and the invitation inbox are committed on `main`. Email invites, the inbox, and `POST /api/invites/:id/join` stay unchanged.
+- New work goes into new files. Edits to existing files are limited to the small changes listed above, so they merge cleanly with teammates' work.
+- The hosted front end (Vercel) builds join links from `APP_URL`, the same setting email invites already use.
+- A hosted Supabase database needs `004_group_decision.sql` run in its SQL editor before the new backend is deployed. Seeding on start-up works with both database providers.
