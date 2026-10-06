@@ -2,12 +2,12 @@ import { query, verifyPostgresConnection, closePool } from './db.js'
 import { getDatabaseConfig } from './databaseConfig.js'
 import { getSupabase, verifySupabaseConnection } from './supabase.js'
 
-const tables = ['users', 'user_sessions', 'preferences', 'contacts', 'itineraries', 'flights', 'hotels', 'activities', 'suggested_itineraries', 'country_itineraries', 'itinerary_catalogue', 'trip_rooms', 'trip_room_people', 'trip_room_invites', 'trip_room_messages'] as const
+const tables = ['users', 'user_sessions', 'preferences', 'contacts', 'itineraries', 'flights', 'hotels', 'activities', 'suggested_itineraries', 'country_itineraries', 'itinerary_catalogue', 'trip_rooms', 'trip_room_people', 'trip_room_invites', 'trip_room_messages', 'quest_note_settings', 'quest_notes', 'guest_invite_preferences', 'quest_picks', 'quest_shared_picks', 'quest_pick_reactions'] as const
 export type Table = typeof tables[number]
 export type Row = Record<string, unknown>
 export type Filter = { column: string; operator: 'eq' | 'gt' | 'ilike'; value: string } | { column: string; operator: 'in'; value: string[] }
 type SelectOptions = { orderBy?: string; ascending?: boolean; limit?: number }
-const jsonColumns = new Set(['data', 'dates', 'location_preferences', 'mood_preferences', 'activities_must_have', 'activities_preferred', 'accommodation_preferences', 'seasons', 'moods', 'daily_plan', 'ai_context'])
+const jsonColumns = new Set(['data', 'dates', 'location_preferences', 'mood_preferences', 'activities_must_have', 'activities_preferred', 'accommodation_preferences', 'seasons', 'moods', 'daily_plan', 'ai_context', 'mentioned_by', 'message_ids'])
 
 const isSupabase = () => getDatabaseConfig().provider === 'supabase'
 

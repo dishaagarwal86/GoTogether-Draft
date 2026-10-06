@@ -9,9 +9,11 @@ async function request<T>(path: string, options?: RequestInit) {
   if (!response.ok) throw new Error(body.error ?? 'This invitation is unavailable.')
   return body.data as T
 }
-export type InviteDetails = { email: string; expiresAt: string; room: { id: string; name: string; trip_name: string } }
+export type InviteDetails = { email: string; expiresAt: string; organiserName?: string; memberCount?: number; completedPreferences?: number; room: { id: string; name: string; trip_name: string } }
 export type PendingInvite = { id: string; expiresAt: string; room: { id: string; name: string; trip_name: string } }
 export const getInvite = (token: string) => request<InviteDetails>(`/invites/${token}`)
 export const acceptInvite = (token: string) => request<{ id: string; name: string }>(`/invites/${token}/accept`, { method: 'POST' })
 export const getMyInvites = () => request<PendingInvite[]>('/invites/mine')
 export const joinInvite = (inviteId: string) => request<{ roomId: string }>(`/invites/${inviteId}/join`, { method: 'POST' })
+export const saveGuestInvitePreferences = (token: string, guestSessionId: string, answers: Record<string, unknown>) => request<{ roomId: string }>(`/invites/${token}/guest-preferences`, { method: 'POST', body: JSON.stringify({ guestSessionId, answers }) })
+export const claimGuestInvitePreferences = (token: string, guestSessionId: string) => request<{ id: string; name: string }>(`/invites/${token}/claim-guest`, { method: 'POST', body: JSON.stringify({ guestSessionId }) })

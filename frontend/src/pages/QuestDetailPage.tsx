@@ -6,6 +6,7 @@ import { useQuestRecommendations } from '../hooks/useQuestRecommendations'
 import { EmptyState, ErrorState, Icon, LoadingState } from '../components/Ui'
 import { RecommendationCards } from '../components/RecommendationCards'
 import { QuestChat } from '../components/QuestChat'
+import { QuestShortlist } from '../components/QuestShortlist'
 import type { ChatContext } from '../components/ItineraryStory'
 
 export function QuestDetailPage() {
@@ -53,10 +54,11 @@ function QuestWorkspace({ quest }: { quest: Quest }) {
     <div className="quest-workspace-grid" ref={workspace}>
       <section className="quest-planning-column" id="quest-itinerary" ref={itinerary} tabIndex={-1} aria-label="Itinerary planning">
         <nav className="quest-planning-links" aria-label="Quest planning"><span><Icon name="compass" size={17} />Itinerary ideas</span><Link to={`/travel-dna/group-dna?roomId=${roomId}`}><Icon name="spark" size={15} />Our Travel DNA</Link><Link to={`/travel-dna/preferences?roomId=${roomId}`}>My travel preferences <Icon name="northeast" size={14} /></Link></nav>
+        <QuestShortlist roomId={roomId} onDiscuss={(label, detail) => discuss({ label, detail })} />
         <div className="quest-ideas-heading"><div><p className="eyebrow">THE WORLD IS STILL OPEN</p><h2>Which way <em>shall we go?</em></h2></div>{data && <p>{data.results.length} starting {data.results.length === 1 ? 'point' : 'points'}<br /><span>Explore one, then talk it over.</span></p>}</div>
         {error ? <ErrorState message={error} retry={retry} /> : !data ? <LoadingState label="Gathering ideas for your crew…" /> : data.results.length ? <RecommendationCards results={data.results} roomId={roomId} travelDna={data.travelDna} workspace onDiscuss={discuss} /> : <EmptyState title="Your ideas are still taking shape." description="Share your travel style to find a starting point, and keep dreaming with your crew in the meantime." to={`/travel-dna/preferences?roomId=${roomId}`} label="Share my travel style" icon="spark" />}
       </section>
-      <QuestChat roomId={roomId} open={chatOpen} onClose={() => setChatOpen(false)} focusRequest={focusRequest} context={chatContext} onClearContext={(context) => setChatContext((current) => current === context ? null : current)} onUnreadChange={setUnread} />
+      <QuestChat roomId={roomId} open={chatOpen} onClose={() => setChatOpen(false)} focusRequest={focusRequest} context={chatContext} onClearContext={(context) => setChatContext((current) => current === context ? null : current)} onUnreadChange={setUnread} onQuestNoteApplied={retry} />
     </div>
     <nav className="quest-mobile-dock" aria-label="Quest workspace"><button type="button" onClick={() => { itinerary.current?.scrollIntoView({ block: 'start' }); itinerary.current?.focus({ preventScroll: true }) }}><Icon name="compass" size={19} /><span>The itinerary</span></button><button type="button" className="quest-dock-chat" onClick={openChat} aria-haspopup="dialog" aria-expanded={chatOpen}><Icon name="chat" size={20} /><span>Crew chat</span>{unread > 0 ? <span className="quest-unread-count">{unread}</span> : <Icon name="arrow" size={17} />}</button></nav>
     <QuestInviteDialog roomId={roomId} open={inviteOpen} onClose={() => setInviteOpen(false)} />
