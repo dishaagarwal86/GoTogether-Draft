@@ -1,12 +1,12 @@
 # Group decision: from group chat to a plan everyone accepts
 
 Date: 2026-10-06
-Status: design approved in chat; spec awaiting review
+Status: approved; amended 2026-10-07 with private needs and decisions made while planning
 Base commit: `8c55b75` (journey redesign and invitation inbox merged)
 
 ## Goal
 
-A group of friends goes from "we should go somewhere" to one trip that everyone has accepted, without anyone revealing their budget to the others.
+A group of friends goes from "we should go somewhere" to one trip that everyone has accepted, without anyone having to explain their budget, health, or mobility limits to the others: *a trip everyone can say yes to, without anyone having to explain why.*
 
 The demo succeeds when two friends join from a link and answer in under a minute each, the plans show every person's fit, a typed change re-ranks the plans, and the quest is marked decided.
 
@@ -28,14 +28,25 @@ All AI output and form input is validated against these lists. Anything else is 
 - **Feelings** (up to three): Adventure, Food & Culture, Relaxation, Nature, Nightlife, Wellness. These match the catalogue's `moods`.
 - **Pace** (one): Slow & relaxed, A balanced mix, Busy & activity-filled. These match the catalogue's `ai_context.pace`.
 - **Budget band** (one, private): Budget-friendly, Moderate, Premium, Flexible.
-- **No-gos** (any): `hiking`, `water-activities`, `late-nights`, `early-starts`, `big-crowds`, `remote-places`, shown as Hiking, Water activities, Late nights, Early starts, Big crowds, Remote places.
+- **No-gos** (any, private): `hiking`, `water-activities`, `late-nights`, `early-starts`, `big-crowds`, `remote-places`, `lots-of-walking`, shown as Hiking, Water activities, Late nights, Early starts, Big crowds, Remote places, Lots of walking.
+
+## Private needs
+
+Budget bands and no-gos are private needs. They act as hard limits on every plan but are never attributed to anyone:
+
+- Reasons never mention a budget band or a no-go.
+- Clash notes never name anyone.
+- The crew status never includes anyone's band or no-gos.
+- A member only ever receives their own chat suggestion.
+
+Walking levels come from the synthetic catalogue's descriptions, so they're an estimate. Real use needs proper accessibility data.
 
 ## Data changes
 
 New migration `database/migrations/004_group_decision.sql`. Every statement is idempotent (`if not exists`).
 
 - New table `trip_room_links`: `id` text primary key, `trip_room_id` (cascade delete), `token_hash` unique, `created_by` (users), `expires_at`, `revoked_at` nullable, `created_at`.
-- New table `trip_room_votes`: `id` text primary key, `trip_room_id` (cascade delete), `user_id` (cascade delete), `itinerary_id`, `created_at`, `updated_at`, unique (`trip_room_id`, `user_id`).
+- New table `trip_room_votes`: `trip_room_id` (cascade delete), `user_id` (cascade delete), `itinerary_id`, `created_at`, `updated_at`, primary key (`trip_room_id`, `user_id`).
 - `trip_rooms`: add `chat_suggestions` jsonb, `group_limits` jsonb default `'{}'`, `decided_itinerary_id` text, `decided_at` timestamptz.
 - `users`: add `is_guest` boolean not null default false.
 - `itinerary_catalogue`: add `activity_tags` jsonb not null default `'[]'`.
@@ -44,7 +55,7 @@ New migration `database/migrations/004_group_decision.sql`. Every statement is i
 
 ## Catalogue tags and seeding
 
-The seed logic moves into `backend/src/services/catalogueSeed.ts` as `seedCatalogue()`. The existing `npm run seed:catalogue` script calls it, and the backend calls it on start-up when `itinerary_catalogue` is empty. Rows that already exist but have no tags get their tags filled in.
+The seed logic moves into `backend/src/services/catalogueSeed.ts` as `seedCatalogue()`. The existing `npm run seed:catalogue` script calls it, and the backend calls it on every start-up. It only inserts trips that are missing, and fills in tags for existing trips that have none.
 
 Tags per trip:
 
@@ -54,6 +65,7 @@ Tags per trip:
 - `early-starts`: the anchors mention sunrise, morning, alms, or balloon, or the pace is Busy & activity-filled.
 - `big-crowds`: location is City.
 - `remote-places`: location is Hidden gems, or the anchors mention remote.
+- `lots-of-walking`: the trip has the `hiking` tag, or the anchors mention walk, lanes, streets, paths, or ruins.
 
 ## Migrations on start-up
 
@@ -108,7 +120,7 @@ Pure functions in `backend/src/services/groupScoring.ts`. Inputs: members with s
 - **Fair compromise:** highest minimum fit among the remaining trips. Ties go to the higher group score.
 - **Unexpected discovery:** highest group score among the remaining trips with location type Hidden gems, or otherwise the next best remaining trip.
 
-Each path lists `members: [{ userId, name, fit, reason }]`. Reasons never mention budget:
+Each path lists `members: [{ userId, name, fit, reason }]`. Reasons never mention a budget band or a no-go:
 
 - Feelings and pace both match: "Relaxation and Wellness, at a slow pace"
 - Feelings only: "Relaxation and Wellness"
@@ -125,11 +137,11 @@ Each path lists `members: [{ userId, name, fit, reason }]`. Reasons never mentio
 
 ## Typed changes
 
-`POST /api/trip-rooms/:roomId/changes` (member) with `{ text }` turns the text into `{ target: 'me' | 'group', addNoGo, removeNoGo, budgetBand, pace, addFeelings }`, using the AI provider or keyword rules. It applies the change to the sender's own answers (`me`) or to the group limits (`group`, which only accepts a budget band and no-gos), and returns `{ summary, source }`.
+`POST /api/trip-rooms/:roomId/changes` (member) with `{ text }` turns the text into `{ target: 'me' | 'group', addNoGo, removeNoGo, budgetBand, pace, addFeelings }`. Keyword rules run first, so the demo stays fast and predictable; the AI provider is used only when they find nothing. It applies the change to the sender's own answers (`me`) or to the group limits (`group`, which only accepts a budget band and no-gos), and returns `{ summary, source }`.
 
 Keyword rules:
 
-- A negative word (can't, cannot, no, don't, avoid, hate, not) next to a no-go keyword adds that no-go.
+- A negative word (can't, cannot, no, nobody, don't, avoid, hate, not, never, skip, without) in the same text as a no-go keyword adds that no-go. "Fine with", "okay with", "happy to", or "can do" next to a no-go keyword removes it.
 - "cheaper" or "lower budget" lowers the sender's band by one step. Flexible becomes Moderate.
 - "slower" or "more relaxed" sets Slow & relaxed. "busier" or "more active" sets Busy & activity-filled.
 - "we", "everyone", or "nobody" targets the group.
@@ -138,7 +150,7 @@ Text that can't be parsed returns 422 with "I couldn't turn that into a change â
 
 ## Deciding
 
-- `PUT /api/trip-rooms/:roomId/vote` (member) with `{ itineraryId }` saves the member's vote. When every accepted member has voted for the same trip, the quest records `decided_itinerary_id` and `decided_at`. Returns `{ decided }`, which is null or `{ itineraryId, title, decidedAt, minutesToDecide, lowestFit }`. `minutesToDecide` counts from the first share link (or from when the quest was created, if there is no link).
+- `PUT /api/trip-rooms/:roomId/vote` (member) with `{ itineraryId }` saves the member's vote. When every member who has saved answers has voted for the same trip, the quest records `decided_itinerary_id` and `decided_at`. Returns `{ decided }`, which is null or `{ itineraryId, title, decidedAt, minutesToDecide, lowestFit }`. `minutesToDecide` counts from the first share link (or from when the quest was created, if there is no link). If a vote later breaks the agreement, the decision is cleared. Members without saved answers (for example, someone who joined twice from a new phone) don't block a decision.
 - `GET /api/trip-rooms/:roomId/crew` (member) returns `{ members: [{ userId, name, role, isGuest, answered, votedFor }], clashes, decided }`. It never includes budgets.
 
 ## Front end
@@ -153,20 +165,25 @@ New files:
 - `components/crew/MemberFits.tsx`
 - `components/crew/ChangeBox.tsx`
 - `components/crew/GoingButton.tsx`
+- `components/crew/DecidedBanner.tsx`
+- `hooks/useCrew.ts` and `hooks/useLiveQuestRecommendations.ts`
+- `styles/crew.css`
 - `apis/crew.ts`
 
 Small edits to existing files:
 
 - `AppShell.tsx`: add the `/join/:token` route.
+- `App.tsx`: import `styles/crew.css`.
 - `AuthContext.tsx`: accept a session token returned by joining.
-- `QuestDetailPage.tsx`: show the crew panel and the quick-answers form.
+- `apis/quests.ts`: add the new recommendation fields to its types.
+- `QuestDetailPage.tsx`: show the crew panel, the quick-answers form, the decided banner, and a notice when limits block every trip.
 - `RecommendationCards.tsx`: show each member's fit and the "We're going" button.
 
 The crew panel and the recommendations refresh every 4 seconds. Once the quest is decided, a banner shows the trip, minutes to decide, the lowest fit, and a WhatsApp share link (`https://wa.me/?text=â€¦`).
 
 ## Errors
 
-- **AI unavailable or invalid JSON:** fall back to keywords. The response has `source: 'keywords'` and the UI labels it "basic matching".
+- **AI unavailable or invalid JSON:** fall back to keywords. The response has `source: 'keywords'`, and the chat-reading result is labelled "basic matching".
 - **Link missing, expired, or revoked:** 404. The join page explains this and links home.
 - **Not a member:** 403. Not the owner, for link actions: 403.
 - **Invalid input:** 400 with a plain message.
