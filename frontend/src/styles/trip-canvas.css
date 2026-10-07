@@ -195,3 +195,11 @@
 .canvas-idea-results { display:flex; justify-content:space-between; align-items:center; margin:2px 0 6px; font-size:11px; color:#7b8470; }
 .canvas-idea-results button { border:0; background:none; color:#7b6a45; text-decoration:underline; font-size:11px; cursor:pointer; }
 .canvas-focus-hide[hidden], .canvas-dock[hidden] { display:none !important; }
+
+/* Custom activity in the ideas panel */
+.canvas-idea-custom { margin:4px 0 16px; padding:14px; border:1px dashed #c9c69f; border-radius:8px; background:#fbf8ec; }
+.canvas-idea-custom label { display:flex; align-items:center; gap:6px; margin-bottom:8px; font-size:12px; font-weight:600; color:#4e5d45; }
+.canvas-idea-custom > div { display:flex; gap:6px; }
+.canvas-idea-custom input { flex:1; min-width:0; padding:9px 12px; border:1px solid #d5d5bb; border-radius:6px; background:#fffdf7; font-size:12px; }
+.canvas-idea-custom button { padding:0 14px; border:0; border-radius:6px; background:#3f5a45; color:#fff; font-size:12px; cursor:pointer; }
+.canvas-idea-custom button:disabled { opacity:.45; cursor:default; }
