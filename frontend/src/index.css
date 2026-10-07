@@ -34,6 +34,13 @@ textarea {
     font: inherit;
 }
 
+/* A placeholder is supporting guidance, never entered content. Keep it
+   visually quieter across every form while preserving readable contrast. */
+:where(input, textarea)::placeholder {
+    color: #8a8f98 !important;
+    opacity: 1;
+}
+
 button {
     cursor: pointer;
 }
