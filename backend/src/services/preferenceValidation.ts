@@ -6,7 +6,7 @@ export function validatePreferencePayload(value: unknown) {
   const input = record(value)
   if (JSON.stringify(input).length > 16000) throw new HttpError(400, 'These preferences are too long.')
   const output: Record<string, unknown> = {}
-  for (const key of ['tripRoomId', 'budget', 'pace', 'activitiesMustHave', 'activitiesPreferred', 'noGo', 'discovery', 'companions']) {
+  for (const key of ['tripRoomId', 'budget', 'pace', 'activitiesMustHave', 'activitiesPreferred', 'noGo', 'discovery', 'companions', 'displayName']) {
     if (input[key] === undefined) continue
     if (input[key] === null) { output[key] = null; continue }
     if (typeof input[key] !== 'string' || input[key].length > 1000) throw new HttpError(400, `Invalid ${key}.`)
@@ -34,6 +34,7 @@ export function validatePreferencePayload(value: unknown) {
     if (typeof input.kidsInvolved !== 'boolean') throw new HttpError(400, 'Invalid child traveller selection.')
     output.kidsInvolved = input.kidsInvolved
   }
+  if (input.submitted !== undefined) { if (typeof input.submitted !== 'boolean') throw new HttpError(400, 'Invalid preference confirmation.'); output.submitted = input.submitted }
   if (input.personalizationEnabled !== undefined) { if (typeof input.personalizationEnabled !== 'boolean') throw new HttpError(400, 'Invalid personalization selection.'); output.personalizationEnabled = input.personalizationEnabled }
   if (input.dayStart !== undefined) { if (typeof input.dayStart !== 'string' || input.dayStart && !/^(?:0[5-9]|1[0-4]):[0-5]\d$/.test(input.dayStart)) throw new HttpError(400, 'Choose a morning start time.'); output.dayStart = input.dayStart }
   for (const key of ['dates', 'locationPreferences']) {
@@ -47,6 +48,10 @@ export function validatePreferencePayload(value: unknown) {
       if (item === undefined) continue
       if (field === 'flexible' || field === 'fixed') { if (typeof item !== 'boolean') throw new HttpError(400, `Invalid ${field} selection.`); result[field] = item }
       else { if (item !== null && (typeof item !== 'string' || item.length > 150)) throw new HttpError(400, `Invalid ${field}.`); result[field] = item }
+    }
+    if (key === 'dates') {
+      for (const field of ['start', 'end']) if (result[field] && (typeof result[field] !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(String(result[field])) || !Number.isFinite(Date.parse(String(result[field]))) || new Date(String(result[field])).toISOString().slice(0, 10) !== result[field])) throw new HttpError(400, 'Choose valid travel dates.')
+      if (!result.flexible && result.start && result.end && String(result.start) > String(result.end)) throw new HttpError(400, 'Your return date must follow your departure date.')
     }
     output[key] = result
   }

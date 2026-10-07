@@ -3,7 +3,7 @@ import { apiUrl } from '../services/apiUrl'
 export type Quest = { id: string; name: string; tripName: string; members: number; createdAt: string; role: 'owner' | 'member'; inviteStatus: string }
 export type QuestMessage = { id: string; senderId: string; senderName: string; body: string; createdAt: string }
 export type QuestNote = { id: string; type: 'activity' | 'mood' | 'budget' | 'accommodation' | 'no_go'; suggestion: string; proposedAction: string; confidence: number; mentionedBy: string[]; messageIds: string[]; groupSupportCount: number; requiresGroupConfirmation: true; status: 'suggested' | 'accepted' | 'dismissed'; chosenAction: string | null }
-export type QuestRecommendation = { id: string; title: string; destination: string; country: string; duration_days: number; budget: string; estimated_cost_usd: number; seasons: string[]; moods: string[]; short_description: string; daily_plan: unknown; matchedPreferences: string[]; compromises: string[]; label: string }
+export type QuestRecommendation = { id: string; title: string; destination: string; country: string; duration_days: number; budget: string; estimated_cost_usd: number; seasons: string[]; moods: string[]; short_description: string; daily_plan: unknown; matchedPreferences: string[]; compromises: string[]; label: string; score?: number; personalFit?: number | null }
 export type QuestDna = { sharedVibe: string[]; budgetStyle: string; noGoActivities: string[] }
 export type QuestReadinessOption = { id: 'comfort' | 'experiences'; title: string; summary: string; detail: string; outcome: string }
 export type QuestReadiness = { totalMembers: number; completedMembers: number; readinessState: 'gathering' | 'deciding' | 'unlocked'; mainTension: string | null; recommendedAction: string; options: QuestReadinessOption[]; selectedOption: string | null; explanation: string }
@@ -15,7 +15,7 @@ export type SharedPick = Omit<QuestPick, 'shared'> & { addedBy: { id: string; na
 export type ShortlistData = { myPicks: QuestPick[]; sharedShortlist: SharedPick[]; members: { id: string; name: string }[] }
 async function request<T>(path: string, options?: RequestInit) { const token = localStorage.getItem(sessionKey); const response = await fetch(apiUrl(path), { ...options, headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}), ...options?.headers } }); const body = await response.json() as { data?: T; error?: string }; if (!response.ok) throw new Error(body.error ?? 'Could not load your quests.'); return body.data as T }
 export const getUserQuests = (userId: string) => request<Quest[]>(`/users/${userId}/trip-rooms`)
-export const inviteToQuest = (questId: string, email: string) => request<{ email: string; delivered: boolean; reason?: string }>(`/trip-rooms/${questId}/invites`, { method: 'POST', body: JSON.stringify({ email }) })
+export const inviteToQuest = (questId: string, email: string) => request<{ email: string; delivered: boolean; reason?: string; inviteUrl: string }>(`/trip-rooms/${questId}/invites`, { method: 'POST', body: JSON.stringify({ email }) })
 export const getQuestMessages = (questId: string) => request<QuestMessage[]>(`/trip-rooms/${questId}/messages`)
 export const sendQuestMessage = (questId: string, body: string) => request<QuestMessage>(`/trip-rooms/${questId}/messages`, { method: 'POST', body: JSON.stringify({ body }) })
 export const getQuestNotes = (questId: string) => request<{ enabled: boolean; notes: QuestNote[] }>(`/trip-rooms/${questId}/quest-notes`)
@@ -28,3 +28,20 @@ export const getQuestShortlist = (questId: string) => request<ShortlistData>(`/t
 export const createQuestPick = (questId: string, pick: { type: PickType; title: string; destination?: string; estimatedPrice?: number | ''; note?: string; link?: string }) => request<{ id: string }>(`/trip-rooms/${questId}/picks`, { method: 'POST', body: JSON.stringify(pick) })
 export const shareQuestPick = (questId: string, pickId: string) => request<{ ok: true }>(`/trip-rooms/${questId}/picks/${pickId}/share`, { method: 'POST' })
 export const reactToQuestPick = (questId: string, sharedPickId: string, reaction: PickReaction, note?: string) => request<{ ok: true }>(`/trip-rooms/${questId}/shared-picks/${sharedPickId}/reaction`, { method: 'POST', body: JSON.stringify({ reaction, note }) })
+
+export type JourneyPerson = { id: string; name: string; role: string; status: 'invited' | 'expired' | 'joined' | 'ready'; inviteId?: string }
+export type JourneyResponse = { people: { id: string; name: string; isMe: boolean; reaction: 'love' | 'works' | 'concern' | null; note: string }[]; answered: number; concerns: number; agreed: boolean }
+export type QuestJourney = { currentPlan: Pick<import('../services/workingPlanApi').WorkingPlan, 'title' | 'catalogueId' | 'destination' | 'country' | 'days'> | null; ready: boolean; participants: JourneyPerson[]; totalMembers: number; memberCount: number; results: QuestRecommendation[]; allResults: QuestRecommendation[]; travelDna: QuestDna | null; blockers: string[]; preferenceVersion: string; questReadiness: QuestReadiness; availability: { start: string | null; end: string | null; days: number | null; conflict: boolean }; options: Record<string, JourneyResponse>; planReview: (JourneyResponse & { version: string; revision: number; preferencesChanged: boolean; canConfirm: boolean; status: 'agreed' | 'review' }) | null }
+export const getQuestJourney = (id: string) => request<QuestJourney>(`/trip-rooms/${id}/journey`)
+export type JourneyVote = { kind: 'option' | 'plan'; optionId?: string; version: string; reaction: 'love' | 'works' | 'concern'; note?: string }
+export const respondToJourney = (id: string, body: JourneyVote) => request<{ ok: boolean }>(`/trip-rooms/${id}/responses`, { method: 'POST', body: JSON.stringify(body) })
+export const getJoinLink = (id: string, rotate = false) => request<{ url: string }>(`/trip-rooms/${id}/join-link`, { method: 'POST', body: JSON.stringify({ rotate }) })
+export const manageCrew = (id: string, body: { action: 'resize' | 'remove'; members?: number; participantId?: string }) => request<{ ok: boolean }>(`/trip-rooms/${id}/crew`, { method: 'POST', body: JSON.stringify(body) })
+export const sharedInvitation = (token: string) => request<{ roomId: string; name: string; host: string; totalMembers: number; completedMembers: number }>(`/join-room/${token}`)
+export const joinSharedRoom = (token: string) => request<{ roomId: string }>(`/join-room/${token}`, { method: 'POST' })
+export const guestJourney = (token: string, guestSessionId: string) => request<QuestJourney>(`/invites/${token}/journey`, { method: 'POST', body: JSON.stringify({ guestSessionId }) })
+export const guestRespond = (token: string, guestSessionId: string, response: JourneyVote) => request<{ ok: boolean }>(`/invites/${token}/response`, { method: 'POST', body: JSON.stringify({ guestSessionId, response }) })
+
+export const createQuest = (name: string, members: number, inviteEmail?: string) => request<Quest>('/trip-rooms', { method: 'POST', body: JSON.stringify({ name, tripName: name, members, inviteEmail }) })
+
+export const changeTravelMode = (id: string, mode: 'solo' | 'group', requestId: string) => request<{ roomId: string; copied: boolean; mode: 'solo' | 'group' }>(`/trip-rooms/${id}/travel-mode`, { method: 'POST', body: JSON.stringify({ mode, requestId }) })

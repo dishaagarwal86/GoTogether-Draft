@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { createQuestPick, type QuestDna, type QuestRecommendation } from '../apis/quests'
-import { askCompanion, companionHistory, personaliseItinerary, savedPersonalStory, sourceLabel, type CompanionReply } from '../services/companionApi'
+import { ItineraryInsights } from './ItineraryInsights'
 import { photoFallback, recommendationPhoto } from '../services/itineraryPresentation'
 import { Icon } from './Ui'
 import { TravelPlanningOptions } from './TravelPlanningOptions'
@@ -21,40 +21,13 @@ const dayTitle = (day: Day, destination: string) => {
 
 export function ItineraryStory({ trip, roomId, travelDna, onDiscuss }: { trip: QuestRecommendation; roomId: string; travelDna?: QuestDna | null; onDiscuss?: (context: ChatContext) => void }) {
   const days = readDays(trip.daily_plan)
-  const [personalStory, setPersonalStory] = useState<Awaited<ReturnType<typeof personaliseItinerary>>['data'] | null>(null)
-  const [personalising, setPersonalising] = useState(false)
-  const [explanation, setExplanation] = useState<CompanionReply | null>(null)
-  const [explaining, setExplaining] = useState(false)
-  const [storyError, setStoryError] = useState('')
   const [picked, setPicked] = useState(false)
-  const requestId = useRef(0)
+  const [pickError, setStoryError] = useState('')
   const dayRefs = useRef<Array<HTMLElement | null>>([])
-  useEffect(() => {
-    let active = true
-    savedPersonalStory(roomId, trip.id).then(result => { if (active) setPersonalStory(result.data) }).catch(() => { if (active) setStoryError('Saved itinerary notes could not be loaded. You can try personalising again.') })
-    companionHistory('explain', roomId).then(items => { if (active) setExplanation(items.find(item => item.itineraryId === trip.id) ?? null) }).catch(() => { /* The explain action remains available if history cannot load. */ })
-    return () => { active = false }
-  }, [roomId, trip.id, travelDna])
-  const explain = async () => {
-    setExplaining(true); setStoryError('')
-    try { setExplanation(await askCompanion({ task: 'explain', roomId, itineraryId: trip.id })) }
-    catch (error) { setStoryError(error instanceof Error ? error.message : 'Please try again.') }
-    finally { setExplaining(false) }
-  }
   const context = { label: `${trip.destination} · ${trip.duration_days} days`, detail: trip.title }
   const discussionAction = (value: ChatContext, label: string, className = 'text-button') => onDiscuss
     ? <button type="button" className={className} onClick={() => onDiscuss(value)}><Icon name="chat" size={17} />{label}</button>
     : <Link className={className} to={`/quests/${roomId}#crew-chat`} state={{ chatContext: value }}><Icon name="chat" size={17} />{label}</Link>
-  const personalise = async () => {
-    if (personalising) return
-    const id = ++requestId.current
-    setPersonalising(true); setStoryError('')
-    try {
-      const result = await personaliseItinerary(roomId, trip.id)
-      if (id === requestId.current) setPersonalStory(result.data)
-    } catch { if (id === requestId.current) setStoryError('The Companion couldn’t personalise this just now. Your original itinerary is still here; try again when you’re ready.') }
-    finally { if (id === requestId.current) setPersonalising(false) }
-  }
   const savePick = async () => {
     try {
       await createQuestPick(roomId, { type: 'itinerary', title: trip.title, destination: `${trip.destination}, ${trip.country}`, estimatedPrice: trip.estimated_cost_usd, note: trip.short_description })
@@ -78,9 +51,9 @@ export function ItineraryStory({ trip, roomId, travelDna, onDiscuss }: { trip: Q
         <div className="itinerary-moments">{([{ key: 'morning', label: 'Morning', icon: 'sun' }, { key: 'afternoon', label: 'Afternoon', icon: 'sunset' }, { key: 'evening', label: 'Evening', icon: 'moon' }] as const).map(({ key, label, icon }) => day[key] && <div className={`itinerary-moment itinerary-moment-${key}`} key={key}><span><Icon name={icon} size={20} /></span><div><h4>{label}</h4><p>{day[key]}</p></div></div>)}</div>
       </article>)}</div>
     </> : <p className="itinerary-open-days">The day-by-day details are still open. Use this idea as the starting point for your conversation.</p>}
-    <div className="itinerary-ai-explanation"><button type="button" className="secondary-button" disabled={explaining} onClick={explain}>{explaining ? 'Looking at your shared fit…' : 'Explain this match'}<Icon name="spark" size={17} /></button>{explanation && <div role="status"><small>{sourceLabel(explanation.source)}</small><p>{explanation.summary}</p>{explanation.notice && <p className="companion-notice">{explanation.notice}</p>}</div>}{storyError && <p className="form-error" role="alert">{storyError}</p>}</div>
     <TravelPlanningOptions trip={trip} />
     <footer className="itinerary-next-step"><div><Icon name="people" size={23} /><div><h3>The destination is the setting. Your people make the story.</h3><p>Bring an idea to the conversation before deciding.</p></div></div><div className="itinerary-next-actions"><button className="secondary-button" type="button" onClick={() => void savePick()} disabled={picked}>{picked ? 'Saved to My Picks' : 'Save to My Picks'} <Icon name={picked ? 'check' : 'heart'} size={16} /></button>{discussionAction(context, 'Talk it over with your crew', 'primary-button')}</div></footer>
-    <details className="itinerary-companion"><summary><Icon name="spark" size={19} /><span>Make it a little more you.<small>Personalise this idea with the Companion</small></span><Icon name="plus" size={17} /></summary><div><p>Give this starting point a little of your crew’s personality.</p><button className="secondary-button" type="button" disabled={personalising} onClick={personalise}>{personalising ? 'Finding your story…' : 'Personalise with Companion'}<Icon name="spark" size={17} /></button>{personalStory && <section className="companion-story" aria-live="polite"><p className="eyebrow">{sourceLabel(personalStory.source)}</p>{personalStory.notice && <p className="companion-notice">{personalStory.notice}</p>}<h3>{personalStory.resultTitle}</h3><p>{personalStory.scrapbookIntro}</p><ul>{(personalStory.whyItWorks ?? []).map((item) => <li key={item}>{item}</li>)}</ul><p>{personalStory.tradeoffNote}</p><div className="story-days">{personalStory.days.map((day) => <article key={day.day}><b>Day {day.day}</b><p>{day.note}</p></article>)}</div></section>}</div></details>
+    {pickError && <p className="form-error" role="alert">{pickError}</p>}
+    <ItineraryInsights key={trip.id} trip={trip} roomId={roomId} version={JSON.stringify(travelDna)} />
   </section>
 }

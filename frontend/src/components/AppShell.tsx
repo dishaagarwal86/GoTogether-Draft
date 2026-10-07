@@ -15,6 +15,7 @@ import { AuthPrompt } from './AuthPrompt'
 import { GroupDnaPage } from '../pages/GroupDnaPage'
 import { PlanPathsPage } from '../pages/PlanPathsPage'
 import { InvitePage } from '../pages/InvitePage'
+import { SharedJoinPage } from '../pages/SharedJoinPage'
 import { JoinQuestPage } from '../pages/JoinQuestPage'
 import { QuestDetailPage } from '../pages/QuestDetailPage'
 import { LandingConcept } from '../pages/LandingConcept'
@@ -48,7 +49,7 @@ function AppLayout() {
     <main id="main-content" className={isLanding ? 'landing-main' : isAuth ? 'journey-auth-main' : 'journey-main'}><Routes>
       <Route path="/" element={<HomePage />} /><Route path="/landing-concept" element={<LandingConcept />} />
       <Route path="/login" element={<LoginPage />} /><Route path="/signup" element={<SignUpPage />} />
-      <Route path="/invite/:token" element={<InvitePage key={location.pathname} />} /><Route path="/join/:token" element={<JoinQuestPage key={location.pathname} />} /><Route path="/explore" element={<ExplorePage key={location.pathname + location.search} />} />
+      <Route path="/join-room/:token" element={<SharedJoinPage key={location.pathname} />} /><Route path="/invite/:token" element={<InvitePage key={location.pathname} />} /><Route path="/join/:token" element={<JoinQuestPage key={location.pathname} />} /><Route path="/explore" element={<ExplorePage key={location.pathname + location.search} />} />
       <Route path="/inspiration" element={<Navigate to="/explore" replace />} />
       <Route path="/workspace-preview" element={<WorkspacePreviewPage />} />
       <Route element={<RequireAuth />}>

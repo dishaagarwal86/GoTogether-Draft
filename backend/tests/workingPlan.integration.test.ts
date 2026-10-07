@@ -4,6 +4,7 @@ import { test } from 'node:test'
 import { app } from '../src/app.js'
 import { registerUser } from '../src/services/authService.js'
 import { createRoom } from '../src/services/roomService.js'
+import { respondToJourney } from '../src/services/questJourney.js'
 import { recommendForQuest } from '../src/services/recommendationService.js'
 import { create } from '../src/services/apiStore.js'
 import { closeDatabase, deleteRows, upsertRow } from '../src/storage.js'
@@ -23,9 +24,11 @@ test(`working itinerary contract (${process.env.DATABASE_PROVIDER})`, async t =>
   try {
     const owner = await registerUser({ firstName: 'Plan', lastName: 'Owner', email: `plan-${randomUUID()}@example.invalid`, password: 'Synthetic planning 2026!' }); users.push(owner.user.id)
     const member = await registerUser({ firstName: 'Plan', lastName: 'Member', email: `plan-${randomUUID()}@example.invalid`, password: 'Synthetic planning 2026!' }); users.push(member.user.id)
-    room = (await createRoom({ name: 'Working plan fixture', tripName: 'Kyoto', ownerId: owner.user.id, members: 2 })).id
-    await create('preferences', 'pref_plan', { userId: owner.user.id, tripRoomId: room, budget: 'Flexible', daysCount: 4, moodPreferences: ['Food & Culture'] })
-    const trip = (await recommendForQuest(room)).results[0]
+    room = (await createRoom({ name: 'Working plan fixture', tripName: 'Kyoto', ownerId: owner.user.id, members: 1 })).id
+    await create('preferences', 'pref_plan', { userId: owner.user.id, tripRoomId: room, budget: 'Flexible', daysCount: 4, moodPreferences: ['Food & Culture'], dates: { flexible: true }, pace: 'A balanced mix', submitted: true })
+    const recommendations = await recommendForQuest(room)
+    const trip = recommendations.results[0]
+    await respondToJourney(room, owner.user.id, { kind: 'option', optionId: trip.id, version: recommendations.preferenceVersion, reaction: 'works' })
     let plan: any
     const path = `/working-plans/${room}`
     const change = (command: Record<string, unknown>, revision = plan.revision, requestId = randomUUID()) => request(path + '/changes', owner.token, { ...command, expectedRevision: revision, requestId })

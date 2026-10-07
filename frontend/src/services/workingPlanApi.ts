@@ -4,7 +4,7 @@ import { apiUrl } from './apiUrl'
 export type PlanItem = { id: string; title: string; kind: 'experience' | 'food' | 'stay' | 'transport' | 'free'; time: string; duration: number; note: string; locked: boolean }
 export type PlanDay = { id: string; title: string; items: PlanItem[] }
 export type WorkingPlan = { learningPrompt?: LearningPrompt | null; title: string; destination: string; country: string; catalogueId: string; days: PlanDay[]; revision: number; canUndo: boolean; updatedAt: string }
-export type PlanCommand = { type: 'move' | 'add' | 'remove' | 'update' | 'lock' | 'undo' | 'rename' | 'proposal'; proposalId?: string; itemId?: string; dayId?: string; index?: number; title?: string; kind?: PlanItem['kind']; time?: string; duration?: number; note?: string }
+export type PlanCommand = { type: 'move' | 'add' | 'remove' | 'update' | 'lock' | 'undo' | 'rename' | 'proposal' | 'itinerary'; proposalId?: string; catalogueId?: string; itemId?: string; dayId?: string; index?: number; title?: string; kind?: PlanItem['kind']; time?: string; duration?: number; note?: string }
 export class PlanError extends Error { status: number; constructor(message: string, status: number) { super(message); this.status = status } }
 async function request<T>(roomId: string, suffix = '', body?: unknown): Promise<T> {
   const response = await fetch(apiUrl(`/working-plans/${encodeURIComponent(roomId)}${suffix}`), { method: body ? 'POST' : 'GET', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${localStorage.getItem('gotogether.session-token') ?? ''}` }, body: body ? JSON.stringify(body) : undefined, signal: AbortSignal.timeout(15000) })

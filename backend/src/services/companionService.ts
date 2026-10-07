@@ -68,7 +68,7 @@ export async function askCompanion(userId: string, input: unknown) {
   if (request.roomId) await assertQuestMember(request.roomId, userId)
   const own = request.roomId ? await ownPreference(userId, request.roomId) : undefined
   const plan = request.roomId ? await recommendForQuest(request.roomId) : undefined
-  const trip = request.itineraryId ? plan?.results.find(item => item.id === request.itineraryId) : undefined
+  const trip = request.itineraryId ? plan?.allResults.find(item => item.id === request.itineraryId) : undefined
   if (request.itineraryId && !trip) throw new HttpError(409, 'This itinerary no longer matches the quest. Refresh your travel ideas.')
   const history = request.task === 'chat' ? (await aiHistory(userId, request.roomId, 'chat')).slice(0, 6).reverse().map(item => ({ message: item.data.message, summary: item.data.summary })) : []
   const crew = request.includeCrew && request.roomId ? (await listQuestMessages(request.roomId, userId)).slice(-20).map(item => ({ traveller: item.senderName, message: item.body })) : undefined

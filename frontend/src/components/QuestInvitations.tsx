@@ -49,7 +49,7 @@ export function QuestInvitations() {
       if (!mounted.current) return
       setInvites((current) => current.filter((item) => item.id !== invite.id))
       setOpen(false)
-      navigate(`/quests/${result.roomId}`)
+      navigate(`/quests/${result.roomId}?tab=crew&preferences=1`)
     } catch { if (mounted.current) setJoinError('We couldn’t join this quest. Refresh your invitations or try joining again.') }
     finally { if (mounted.current) setJoining('') }
   }

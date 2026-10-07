@@ -1,3 +1,4 @@
+import { confirmRoomPreferences, chooseSoloPlan } from './journey-actions.mjs'
 import { chromium } from 'playwright'
 import assert from 'node:assert/strict'
 import { mkdir, writeFile } from 'node:fs/promises'
@@ -21,17 +22,18 @@ let account
 const api = async path => (await (await page.request.get(base + '/api' + path, { headers: { Authorization: `Bearer ${account.token}` } })).json()).data
 const start = async () => {
   await page.getByLabel('Your trip idea').fill('6 days in Kyoto, food and local culture.')
-  await page.getByRole('button', { name: 'Show me a starting point' }).click()
+  await page.getByRole('button', { name: 'Just me', exact: true }).click()
+    await page.getByRole('button', { name: 'Start my solo trip', exact: true }).click()
   await page.waitForURL('**/quests/room_*')
-  await page.getByRole('region', { name: 'Trip workspace', exact: true }).waitFor()
-  return page.url().split('/').at(-1)
+  await confirmRoomPreferences(page, '6')
+  return chooseSoloPlan(page)
 }
 try {
-  await page.goto(base + '/login')
+  await page.goto(base + '/login', { waitUntil: 'domcontentloaded' })
   const response = await page.request.post(base + '/api/auth/signup', { data: { firstName: 'Travel', lastName: 'Memory', email: `personalization-${Date.now()}@example.invalid`, password: 'Synthetic travel 2026!' } })
   assert.equal(response.status(), 201); account = (await response.json()).data
   await page.evaluate(value => { localStorage.setItem('gotogether.session-token', value.token); localStorage.setItem('gotogether.current-user-id', value.user.id) }, account)
-  await page.goto(base + '/travel-dna/new')
+  await page.goto(base + '/travel-dna/new', { waitUntil: 'domcontentloaded' })
   const room = await start()
   const editTime = async time => {
     await page.locator('.canvas-activity').first().getByRole('button', { name: 'Edit / replace' }).click()
@@ -53,13 +55,14 @@ try {
   await page.getByRole('heading', { name: 'Mornings around 12:00' }).waitFor()
   await shot('02-travel-style-desktop')
   check('Confirmed memory opens in the private profile and survives reload')
-  await page.goto(base + '/travel-dna/new')
+  await page.goto(base + '/travel-dna/new', { waitUntil: 'domcontentloaded' })
+  await page.getByRole('button', { name: 'Just me', exact: true }).click()
   await page.locator('.quick-start-memory').getByText('Mornings around 12:00').waitFor()
   await shot('03-returning-traveller')
   const nextRoom = await start()
   assert.equal((await api(`/working-plans/${nextRoom}`)).days[0].items[0].time, '12:00')
   check('The next matching trip visibly uses the confirmed later start')
-  await page.goto(base + `/quests/${room}`)
+  await page.goto(base + `/quests/${room}`, { waitUntil: 'domcontentloaded' })
   await Promise.all([page.waitForResponse(res => res.url().endsWith('/changes') && res.request().method() === 'POST'), page.getByRole('button', { name: 'Undo', exact: true }).click()])
   assert.equal((await api('/me/travel-style')).memories.length, 0)
   check('Undo cancels the source learning without changing other saved trips')
@@ -74,6 +77,7 @@ try {
   assert.deepEqual((await api(`/working-plans/${room}`)).days, before.days)
   await shot('04-review-ai-changes')
   await page.setViewportSize({ width: 390, height: 844 })
+  await page.getByRole('navigation', { name: 'Workspace tools' }).getByRole('button', { name: 'Companion', exact: true }).click()
   await page.getByRole('button', { name: 'Apply these changes' }).scrollIntoViewIfNeeded()
   await shot('04b-mobile-apply-preview')
   await page.getByRole('button', { name: 'Apply these changes' }).click()
@@ -85,7 +89,7 @@ try {
   check('Reviewed fallback edits preserve locks, require Apply, and use no credits')
   await page.setViewportSize({ width: 390, height: 844 })
   await shot('05-mobile-companion')
-  await page.goto(base + '/travel-style?tab=history')
+  await page.goto(base + '/travel-style?tab=history', { waitUntil: 'domcontentloaded' })
   await page.getByLabel('Paste a past itinerary').fill('Day 1: Tea houses in the morning and a long lunch, then a pottery workshop.\nDay 2: A quiet garden walk and a cooking class with our friends.')
   await page.getByRole('button', { name: 'Turn this into day cards' }).click()
   await page.getByLabel('Chapter name').fill('Kyoto last spring')

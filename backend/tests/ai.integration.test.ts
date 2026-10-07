@@ -30,7 +30,7 @@ test(`AI HTTP and persistence contract (${process.env.DATABASE_PROVIDER})`, asyn
     const owner = await registerUser({ firstName: 'AI', lastName: 'Owner', email: `ai-${randomUUID()}@example.invalid`, password: 'Synthetic password 2026!' }); users.push(owner.user.id)
     const other = await registerUser({ firstName: 'AI', lastName: 'Member', email: `ai-${randomUUID()}@example.invalid`, password: 'Synthetic password 2026!' }); users.push(other.user.id)
     roomId = (await createRoom({ name: 'AI fixture', tripName: 'A shared trip', ownerId: owner.user.id, members: 2 })).id
-    const pref = await entities.create('preferences', 'pref_ai', { userId: owner.user.id, tripRoomId: roomId, budget: 'Premium', daysCount: 6, moodPreferences: ['Food & Culture'] })
+    const pref = await entities.create('preferences', 'pref_ai', { userId: owner.user.id, tripRoomId: roomId, budget: 'Premium', daysCount: 6, moodPreferences: ['Food & Culture'], dates: { flexible: true }, submitted: true })
     let suggestion = ''
     let firstChat = ''
     await t.test('AI and recommendation endpoints require authentication and membership', async () => {
@@ -38,7 +38,7 @@ test(`AI HTTP and persistence contract (${process.env.DATABASE_PROVIDER})`, asyn
       assert.equal((await request('/personalise-itinerary', undefined, {})).status, 401)
       assert.equal((await request('/itineraries/ai-generate', undefined, { roomId })).status, 401)
       assert.equal((await request('/itineraries/ai-generate', other.token, { roomId })).status, 403)
-      assert.equal((await request('/itineraries/ai-generate', owner.token, { roomId })).status, 503)
+      assert.equal((await request('/itineraries/ai-generate', owner.token, { roomId })).status, 409)
       assert.equal((await request(`/recommendations/quests/${roomId}`)).status, 401)
       assert.equal((await request('/companion', other.token, { task: 'chat', roomId, message: 'Hello' })).status, 403)
       assert.equal((await request(`/companion/history?roomId=${roomId}`, other.token)).status, 403)
@@ -99,6 +99,8 @@ test(`AI HTTP and persistence contract (${process.env.DATABASE_PROVIDER})`, asyn
       assert.equal((await selectRows('trip_room_messages', ['id'], [{ column: 'trip_room_id', operator: 'eq', value: roomId }])).length, 1)
     })
     await t.test('personalisation validates a canonical trip and restores saved notes', async () => {
+      await entities.create('preferences', 'pref_ai', { userId: other.user.id, tripRoomId: roomId, budget: 'Premium', daysCount: 6, moodPreferences: ['Food & Culture'], dates: { flexible: true }, pace: 'A balanced mix', submitted: true })
+      assert.equal((await request('/itineraries/ai-generate', owner.token, { roomId })).status, 503)
       const plan = await recommendForQuest(roomId)
       const trip = plan.results[0]; assert.ok(trip)
       assert.equal((await request('/personalise-itinerary', owner.token, { roomId, itineraryId: 'fabricated', itinerary: { id: 'fabricated', dayPlan: [] } })).status, 409)

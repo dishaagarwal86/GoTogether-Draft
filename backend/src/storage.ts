@@ -2,7 +2,7 @@ import { query, verifyPostgresConnection, closePool } from './db.js'
 import { getDatabaseConfig } from './databaseConfig.js'
 import { getSupabase, verifySupabaseConnection } from './supabase.js'
 
-const tables = ['users', 'user_sessions', 'preferences', 'contacts', 'itineraries', 'flights', 'hotels', 'activities', 'suggested_itineraries', 'country_itineraries', 'itinerary_catalogue', 'trip_rooms', 'trip_room_people', 'trip_room_invites', 'trip_room_messages', 'quest_note_settings', 'quest_notes', 'guest_invite_preferences', 'quest_picks', 'quest_shared_picks', 'quest_pick_reactions', 'ai_records', 'ai_rate_limits', 'quest_working_plans', 'travel_profiles', 'travel_edit_events', 'travel_imports', 'travel_memories', 'travel_wallets', 'travel_ledger', 'travel_ai_jobs'] as const
+const tables = ['users', 'user_sessions', 'preferences', 'contacts', 'itineraries', 'flights', 'hotels', 'activities', 'suggested_itineraries', 'country_itineraries', 'itinerary_catalogue', 'trip_rooms', 'trip_room_people', 'trip_room_invites', 'trip_room_messages', 'quest_note_settings', 'quest_notes', 'guest_invite_preferences', 'quest_picks', 'quest_shared_picks', 'quest_pick_reactions', 'ai_records', 'ai_rate_limits', 'quest_working_plans', 'travel_profiles', 'travel_edit_events', 'travel_imports', 'travel_memories', 'travel_wallets', 'travel_ledger', 'travel_ai_jobs', 'quest_journey_responses', 'quest_join_links', 'quest_mode_changes'] as const
 export type Table = typeof tables[number]
 export type Row = Record<string, unknown>
 export type Filter = { column: string; operator: 'eq' | 'gt' | 'lt' | 'ilike'; value: string } | { column: string; operator: 'in'; value: string[] } | { column: string; operator: 'is'; value: null }
@@ -150,9 +150,9 @@ export async function verifyDatabaseConnection() {
   if (isSupabase()) await verifySupabaseConnection()
   else await verifyPostgresConnection()
   try {
-    await Promise.all(['ai_records', 'ai_rate_limits', 'quest_working_plans', 'travel_memories', 'travel_wallets'].map(table => selectRows(table as Table, [table === 'travel_wallets' ? 'user_id' : 'id'], [], { limit: 1 })))
+    await Promise.all(['ai_records', 'ai_rate_limits', 'quest_working_plans', 'travel_memories', 'travel_wallets', 'quest_journey_responses', 'quest_join_links', 'quest_mode_changes'].map(table => selectRows(table as Table, [table === 'travel_wallets' ? 'user_id' : table === 'quest_mode_changes' ? 'room_id' : 'id'], [], { limit: 1 })))
   } catch {
-    throw new Error('The planning schema is unavailable. Apply database/migrations/004_ai_records.sql and database/migrations/007_quest_working_plans.sql and database/migrations/008_travel_memory_and_perks.sql to the selected database and verify backend access.')
+    throw new Error('The planning schema is unavailable. Apply database/migrations/004_ai_records.sql and database/migrations/007_quest_working_plans.sql and database/migrations/008_travel_memory_and_perks.sql and database/migrations/009_group_journey.sql and database/migrations/010_solo_travel.sql to the selected database and verify backend access.')
   }
 }
 

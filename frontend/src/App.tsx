@@ -6,6 +6,7 @@ import './styles/journey.css'
 import './styles/quest-workspace.css'
 import './styles/trip-canvas.css'
 import './styles/travel-memory.css'
+import './styles/group-room.css'
 
 function App() {
   return <BrowserRouter><AppShell /></BrowserRouter>

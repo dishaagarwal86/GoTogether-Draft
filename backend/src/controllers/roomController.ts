@@ -1,3 +1,4 @@
+import { HttpError } from '../services/access.js'
 import type { Request, Response } from 'express'
 import { createRoom, inviteToRoom, listRooms, updateRoom } from '../services/roomService.js'
 import { rememberContact } from '../services/contactService.js'
@@ -17,6 +18,7 @@ export async function postRoom(request: Request, response: Response) {
     if (inviteEmail?.trim() && response.locals.userId) await rememberContact(response.locals.userId, { email: inviteEmail })
     response.status(201).json({ data: room })
   } catch (error) {
+    if (error instanceof HttpError) return response.status(error.status).json({ error: error.message })
     const message = error instanceof Error ? error.message : ''
     if (/trip_room_invites|schema cache|relation .* does not exist/i.test(message)) {
       response.status(503).json({ error: 'Invitations need one database setup step. Run database/migrations/002_trip_room_invites.sql in your configured database, then try again.' })
@@ -37,6 +39,7 @@ export async function postRoomInvite(request: Request, response: Response) {
     await rememberContact(response.locals.userId, { name: typeof request.body?.name === 'string' ? request.body.name : undefined, email })
     return response.status(201).json({ data: invite })
   } catch (error) {
+    if (error instanceof HttpError) return response.status(error.status).json({ error: error.message })
     const message = error instanceof Error ? error.message : ''
     if (/trip_room_invites|schema cache|relation .* does not exist/i.test(message)) {
       return response.status(503).json({ error: 'Invitations need one database setup step. Run database/migrations/002_trip_room_invites.sql in your configured database.' })
