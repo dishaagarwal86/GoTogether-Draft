@@ -22,6 +22,7 @@ import { DashboardPage } from '../pages/DashboardPage'
 import { EmptyState, Icon, LoadingState } from './Ui'
 import { TravelCanvas } from './TravelArtwork'
 import { WorkspacePreviewPage } from '../pages/WorkspacePreviewPage'
+import { CrewPage } from '../pages/CrewPage'
 
 export function AppShell() { return <AuthProvider><AppLayout /></AuthProvider> }
 function RequireAuth() {
@@ -51,7 +52,7 @@ function AppLayout() {
       <Route path="/inspiration" element={<Navigate to="/explore" replace />} />
       <Route path="/workspace-preview" element={<WorkspacePreviewPage />} />
       <Route element={<RequireAuth />}>
-        <Route path="/travel-style" element={<TravelStylePage />} /><Route path="/dashboard" element={<DashboardPage />} /><Route path="/profile" element={<ProfilePage />} />
+        <Route path="/travel-style" element={<TravelStylePage />} /><Route path="/dashboard" element={<DashboardPage />} /><Route path="/profile" element={<ProfilePage />} /><Route path="/crew" element={<CrewPage />} />
         <Route path="/trips" element={<PlanTripPage />} /><Route path="/plan" element={<Navigate to="/trips" replace />} />
         <Route path="/saved" element={<ExplorePage key={location.pathname + location.search} savedOnly />} /><Route path="/quests/:roomId" element={<QuestDetailPage key={location.pathname} />} />
         <Route path="/travel-dna/new" element={<CreateRoomPage key={location.search} />} /><Route path="/travel-dna/preferences" element={<QuestionsPage key={location.search} />} />

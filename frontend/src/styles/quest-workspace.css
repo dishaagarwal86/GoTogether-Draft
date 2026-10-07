@@ -2,6 +2,21 @@
 .journey-shell .journey-main:has(.quest-workspace-page) { width: min(1320px,calc(100% - 80px)); max-width: 1320px; padding-top: 25px; }
 .journey-shell:has(.quest-workspace-page)>.travel-canvas { opacity: .35; }
 .quest-workspace-page { min-width: 0; }
+.contacts-panel { margin-top:28px; padding:26px; border:1px solid var(--line); background:var(--paper); color:var(--ink); }
+.contacts-panel h2 { margin:5px 0 8px; }.contacts-panel>div>p:last-child { max-width:540px; color:var(--muted); }
+.contacts-form { display:grid; grid-template-columns:1fr 1.3fr auto; gap:12px; align-items:end; margin-top:20px; }
+.contacts-form label { display:grid; gap:6px; color:var(--ink); font-size:11px; font-weight:700; }
+.contacts-form input { min-height:43px; padding:10px 12px; border:1px solid var(--line); background:#fff; color:var(--ink); font:inherit; }
+.contacts-list { display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:10px; margin-top:18px; }
+.contacts-list article,.quest-contact-picker button { display:grid; grid-template-columns:32px 1fr auto; gap:9px; align-items:center; padding:10px; border:1px solid var(--line); background:#fff; color:var(--ink); text-align:left; }
+.contacts-list article>span,.quest-contact-picker button>span { display:grid; place-items:center; width:32px; height:32px; border-radius:50%; background:var(--ocean); color:var(--ink); font-weight:800; }
+.contacts-list strong,.quest-contact-picker strong { display:block; color:var(--ink); font-size:12px; }.contacts-list small,.quest-contact-picker small { display:block; overflow:hidden; color:var(--muted); font-size:9px; text-overflow:ellipsis; white-space:nowrap; }
+.contacts-list button { border:0; background:transparent; color:var(--coral); font-size:20px; cursor:pointer; }
+.quest-contact-picker { margin:18px 0; }.quest-contact-picker>p { color:var(--coral); font-size:9px; font-weight:800; letter-spacing:1px; }
+.quest-contact-picker>div { display:grid; grid-template-columns:repeat(auto-fit,minmax(155px,1fr)); gap:8px; max-height:160px; overflow:auto; }
+.quest-contact-picker button { grid-template-columns:28px minmax(0,1fr); cursor:pointer; }.quest-contact-picker button>span { width:28px; height:28px; }.quest-contact-picker button small { grid-column:2; }
+.quest-contact-picker button.is-selected { border-color:var(--coral); background:#ffe2da; }
+@media(max-width:650px) { .contacts-form { grid-template-columns:1fr; }.contacts-form .primary-button { justify-content:center; }.contacts-panel { padding:20px; } }
 .quest-workspace-breadcrumb { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 20px; }
 .quest-workspace-breadcrumb>span { color: #75826a; font: italic 14px var(--serif); }
 .quest-workspace-header { display: flex; align-items: center; justify-content: space-between; gap: 28px; padding-bottom: 23px; margin-bottom: 25px; border-bottom: 1px solid #c9cfba; }

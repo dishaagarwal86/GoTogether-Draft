@@ -1,5 +1,6 @@
 import type { Request, Response } from 'express'
 import { createRoom, inviteToRoom, listRooms, updateRoom } from '../services/roomService.js'
+import { rememberContact } from '../services/contactService.js'
 
 export async function getRooms(_request: Request, response: Response) {
   response.json({ data: await listRooms() })
@@ -12,7 +13,9 @@ export async function postRoom(request: Request, response: Response) {
     return
   }
   try {
-    response.status(201).json({ data: await createRoom({ name, tripName, members, inviteEmail, ownerId }) })
+    const room = await createRoom({ name, tripName, members, inviteEmail, ownerId })
+    if (inviteEmail?.trim() && response.locals.userId) await rememberContact(response.locals.userId, { email: inviteEmail })
+    response.status(201).json({ data: room })
   } catch (error) {
     const message = error instanceof Error ? error.message : ''
     if (/trip_room_invites|schema cache|relation .* does not exist/i.test(message)) {
@@ -31,6 +34,7 @@ export async function postRoomInvite(request: Request, response: Response) {
   try {
     const invite = await inviteToRoom(roomId ?? '', email)
     if (!invite) return response.status(404).json({ error: 'Quest not found.' })
+    await rememberContact(response.locals.userId, { name: typeof request.body?.name === 'string' ? request.body.name : undefined, email })
     return response.status(201).json({ data: invite })
   } catch (error) {
     const message = error instanceof Error ? error.message : ''
