@@ -1,21 +1,65 @@
-import { destinationPhotos } from '../data/destinationPhotos'
-import { useState, type FormEvent } from 'react'
+import { useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext'
+import { getQuestRecommendations } from '../apis/quests'
+import { saveTravelDna } from '../apis/travelDna'
+import { startWorkingPlan } from '../services/workingPlanApi'
+import { readStored } from '../services/journeyStorage'
 import { Icon } from '../components/Ui'
-import { TravelArtwork } from '../components/TravelArtwork'
-import { draftKey, emptyDraft, readStored, writeStored, type QuestDraft } from '../services/journeyStorage'
+import { DetailedCreateRoomPage } from './DetailedCreateRoomPage'
+import { destinationPhotos } from '../data/destinationPhotos'
 import { exploreItineraries } from '../data/exploreItineraries'
-import coast from '../assets/coast-hero.png'
+import type { AnswerValue } from '../data/Questions'
+
+type Seed = { note: string; destination?: string; days: string; budget: string; pace: string; roomId?: string }
+const starts = [
+  { place: 'Kyoto', mood: 'Little lanes. Long lunches.', image: destinationPhotos.kyoto, note: 'Four days in Kyoto, food and local culture, at a relaxed pace.' },
+  { place: 'Bali', mood: 'A little less on the agenda.', image: destinationPhotos.bali, note: 'Four days in Bali, nature, good food and slow mornings.' },
+  { place: 'Kerala', mood: 'Take the scenic route.', image: destinationPhotos.kerala, note: 'Three days in Kerala, backwaters and a relaxed pace.' },
+]
+const destinations = ['Santorini', 'Bali', 'Amalfi Coast', 'Kyoto', 'Interlaken', 'Marrakech', 'Barcelona', 'Cappadocia', 'Kerala', 'Reykjavík', 'Queenstown', 'Tulum', 'Hoi An', 'Cape Town', 'Madeira', 'Banff', 'Zanzibar', 'Oaxaca', 'Edinburgh', 'Luang Prabang', 'Palawan', 'Patagonia', 'Ubud', 'Valletta']
 
 export function CreateRoomPage() {
+  const [params] = useSearchParams()
+  return params.get('details') === '1' ? <DetailedCreateRoomPage /> : <QuickStart />
+}
+function QuickStart() {
   const { user } = useAuth()
   const navigate = useNavigate()
   const [params] = useSearchParams()
-  const inspiration = exploreItineraries.find((trip) => trip.id === params.get('inspiration'))
-  const key = draftKey(user!.id)
-  const [draft, setDraft] = useState<QuestDraft>(() => { const saved = readStored(key, emptyDraft); return inspiration && !saved.name ? { ...saved, name: `Our ${inspiration.destination} chapter`, answers: { ...saved.answers, destination: inspiration.destination } } : saved })
-  const update = (field: 'name' | 'email', value: string) => { const next = { ...draft, [field]: value }; setDraft(next); writeStored(key, next) }
-  const submit = (event: FormEvent<HTMLFormElement>) => { event.preventDefault(); if (!draft.name.trim()) return; writeStored(key, { ...draft, name: draft.name.trim(), email: draft.email.trim() }); navigate('/travel-dna/preferences') }
-  return <section className="builder-page"><div className="builder-topbar"><Link to="/trips" className="back-link">← Your quests</Link><span>01 <i>/</i> START SOMETHING GOOD</span></div><div className="builder-grid"><div className="builder-copy"><p className="eyebrow">A BIG MEMORY. A SMALL FIRST STEP.</p><h1>Every great trip<br />starts with<br /><em>“what if?”</em></h1><p className="builder-intro">Give your adventure a name. Bring your people in.<br />The destination can take shape after every voice is heard.</p><form className="journey-form" onSubmit={submit}><label htmlFor="quest-name">What shall we call this quest?<input id="quest-name" value={draft.name} onChange={(event) => update('name', event.target.value)} placeholder="The long-overdue getaway" maxLength={100} required autoFocus /></label><div className="name-suggestions"><span>A little inspiration:</span>{['The great escape', 'Just us, somewhere', 'A weekend well spent'].map((name) => <button type="button" onClick={() => update('name', name)} key={name}>{name} ↗</button>)}</div><label htmlFor="crew-email">Bring your first travel buddy <span className="field-optional">Optional</span><input id="crew-email" type="email" value={draft.email} onChange={(event) => update('email', event.target.value)} placeholder="friend@example.com" /></label><p className="input-note"><Icon name="people" size={15} />We’ll send their invitation when you save your quest. You can add more people later.</p><button className="primary-button" type="submit">Find our travel style <Icon /></button><p className="draft-note"><Icon name="check" size={14} />Your draft stays in this browser as you go.</p></form></div><aside className="builder-postcard"><TravelArtwork motif="stamp" className="postcard-keepsake-stamp" /><TravelArtwork motif="camera" className="postcard-keepsake-camera" /><img src={inspiration ? destinationPhotos[inspiration.id] ?? inspiration.image : coast} alt="A sunlit coastal village waiting to be explored" /><div><p>{inspiration ? inspiration.destination : 'Somewhere we’ll talk about for years.'}</p><span>Wish we were here. <Icon name="heart" size={18} /></span></div><p className="postcard-footnote">The destination is the setting.<br />Your people make the story.</p></aside></div></section>
+  const inspiration = exploreItineraries.find(trip => trip.id === params.get('inspiration'))
+  const key = `gotogether.quick-start.${user!.id}`
+  const [seed, setSeed] = useState<Seed>(() => readStored(key, { note: inspiration ? `A few good days in ${inspiration.destination}.` : '', destination: inspiration?.destination ?? '', days: '4', budget: 'Flexible', pace: '' }))
+  const [busy, setBusy] = useState(false)
+  const [stage, setStage] = useState('')
+  const [error, setError] = useState('')
+  const [stored, setStored] = useState(false)
+  const update = (next: Seed) => { setSeed(next); setError(''); try { localStorage.setItem(key, JSON.stringify(next)); setStored(true) } catch { setStored(false) } }
+  const choose = (start: typeof starts[number]) => update({ ...seed, note: start.note, destination: start.place, days: start.place === 'Kerala' ? '3' : '4', pace: 'Slow & relaxed' })
+  const begin = async () => {
+    if (busy) return
+    setBusy(true); setError(''); setStage('Saving your starting idea…')
+    const words = seed.note.toLowerCase()
+    const destination = seed.destination?.trim() ?? ''
+    const days = seed.days
+    const wanted = words.replace(/(?:\bno\b|\bskip\b|\bavoid\b)\s+[^.!?;\n]+/g, '')
+    const moods = [/food|culture/.test(wanted) ? 'Food & local culture' : '', /nature|garden|forest/.test(wanted) ? 'Nature' : '', /relax|slow|beach/.test(wanted) ? 'Relaxation' : '', /adventure/.test(wanted) ? 'Adventure' : ''].filter(Boolean).slice(0, 3)
+    const noGo = seed.note.match(/(?:\bno\b|\bskip\b|\bavoid\b)\s+[^.!?;\n]+/gi)?.join('; ') ?? ''
+    const answers: Record<string, AnswerValue> = { destination, destinationFixed: destination ? 'yes' : '', flexibleDates: 'yes', tripLength: `${days} days`, budget: seed.budget, pace: seed.pace || (/relaxed|slow/.test(wanted) ? 'Slow & relaxed' : ''), tripFeeling: moods, niceToHave: seed.note, noGo }
+    try {
+      const saved = await saveTravelDna(destination ? `Our ${destination} chapter` : 'Our next escape', answers, undefined, { roomId: seed.roomId, onRoomCreated: id => update({ ...seed, roomId: id }) })
+      setStage('Gathering a few good possibilities…')
+      // The quest is already durable if recommendations or plan creation fail.
+      // The workspace can recover that step without creating another quest.
+      try { const ideas = await getQuestRecommendations(saved.roomId); const exact = ideas.results.find(trip => trip.duration_days === Number(days)); if (exact) await startWorkingPlan(saved.roomId, exact.id) } catch { /* The destination screen offers a retry. */ }
+      try { localStorage.removeItem(key) } catch { /* A completed draft does not block navigation. */ }
+      navigate(`/quests/${saved.roomId}`)
+    } catch (reason) { setError(reason instanceof Error ? reason.message : 'We could not save your idea. Your text is still here.') }
+    finally { setBusy(false) }
+  }
+  return <section className="quick-start"><div className="quick-start-top"><Link to="/trips">← Your travel book</Link><Link to="/workspace-preview">Try the workspace <Icon name="northeast" size={15} /></Link></div><div className="quick-start-heading"><span className="quick-start-emblem"><Icon name="plane" size={28} /></span><p className="canvas-kicker">BIG MEMORIES START WITH A LITTLE WHAT IF</p><h1>Where shall<br />we <em>disappear to?</em></h1><p>A place, a feeling, a half-formed idea.<br />Bring what you have. We’ll start there.</p></div>
+    <form className="quick-start-composer" onSubmit={event => { event.preventDefault(); void begin() }}><label className="sr-only" htmlFor="trip-idea">Your trip idea</label><textarea id="trip-idea" value={seed.note} onChange={event => { const note = event.target.value; const count = note.match(/\b(\d{1,2}|one|two|three|four|five|six|seven|eight|nine|ten)\s+days?\b/i)?.[1]?.toLowerCase(); const number = count ? Number(count) || ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'].indexOf(count) + 1 : 0; update({ ...seed, note, destination: destinations.find(value => note.toLowerCase().includes(value.toLowerCase())) ?? seed.destination, days: number > 0 && number <= 30 ? String(number) : seed.days }) }} maxLength={900} rows={3} placeholder="A few days in Kyoto. Good food, slow mornings, and room to wander…" disabled={busy} /><div className="quick-start-choices"><label><Icon name="pin" size={15} /><span className="sr-only">Destination</span><input aria-label="Destination" placeholder="Anywhere · or name a place" maxLength={100} value={seed.destination ?? ''} onChange={event => update({ ...seed, destination: event.target.value })} disabled={busy} /></label><label><Icon name="calendar" size={15} /><span className="sr-only">Trip length</span><select value={seed.days} onChange={event => update({ ...seed, days: event.target.value })} disabled={busy}>{Array.from({ length: 30 }, (_, index) => index + 1).map(days => <option value={days} key={days}>{days} days</option>)}</select></label><label><Icon name="wallet" size={15} /><span className="sr-only">Budget style</span><select value={seed.budget} onChange={event => update({ ...seed, budget: event.target.value })} disabled={busy}><option value="Flexible">Budget open</option><option>Budget-friendly</option><option>Moderate</option><option>Premium</option></select></label><label><Icon name="sun" size={15} /><span className="sr-only">Travel pace</span><select value={seed.pace} onChange={event => update({ ...seed, pace: event.target.value })} disabled={busy}><option value="">Find our rhythm</option><option value="Slow & relaxed">Take it slow</option><option value="A balanced mix">A little of everything</option><option value="Busy & activity-filled">Make the most of it</option></select></label></div><div className="quick-start-submit"><span>{busy ? stage : stored ? 'Your idea is saved in this browser' : 'Dates can wait. Everything is editable.'}</span><button type="submit" disabled={busy}>{busy ? 'A little moment…' : 'Show me a starting point'}<Icon size={18} /></button></div>{error && <p className="form-error" role="alert">{error}</p>}</form>
+    <div className="quick-start-secondary"><span>Prefer to get specific?</span><Link to="/travel-dna/new?details=1">Add dates and details <Icon name="northeast" size={13} /></Link></div>
+    <div className="quick-start-inspiration"><div><p className="canvas-kicker">OR FOLLOW A LITTLE CURIOSITY</p><span>You don’t have to know yet.</span></div><div className="quick-start-postcards">{starts.map(start => <button type="button" key={start.place} disabled={busy} onClick={() => choose(start)}><img src={start.image} alt="" /><div><small>A POSSIBLE NEXT CHAPTER</small><strong>{start.place}</strong><span>{start.mood}</span></div><i><Icon name="northeast" size={18} /></i></button>)}</div></div>
+  </section>
 }

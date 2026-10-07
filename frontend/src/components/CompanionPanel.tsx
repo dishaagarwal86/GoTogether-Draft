@@ -3,7 +3,7 @@ import { applyCompanionSuggestion, askCompanion, companionHistory, sourceLabel, 
 
 const fieldNames: Record<string, string> = { moods: 'Travel interests', budget: 'Budget', pace: 'Pace', mustHave: 'Must-do', noGo: 'Things to skip', daysCount: 'Trip length (days)' }
 
-export function CompanionPanel({ roomId, mode = 'extract' }: { roomId: string; mode?: 'extract' | 'chat' }) {
+export function CompanionPanel({ roomId, mode = 'extract', context }: { roomId: string; mode?: 'extract' | 'chat'; context?: { label: string; detail: string } | null }) {
   const inputId = useId()
   const [message, setMessage] = useState('')
   const [history, setHistory] = useState<CompanionReply[]>([])
@@ -24,7 +24,8 @@ export function CompanionPanel({ roomId, mode = 'extract' }: { roomId: string; m
     if (!message.trim() || loading) return
     setLoading(true); setError('')
     try {
-      const reply = await askCompanion({ task: mode, roomId, message: message.trim(), includeCrew })
+      const question = context ? `About ${context.label}: ${context.detail.slice(0, 700)}\n\n${message.trim()}` : message.trim()
+      const reply = await askCompanion({ task: mode, roomId, message: question.slice(0, 4000), includeCrew })
       setHistory(items => [...items, { ...reply, message: message.trim() }]); setSelected([]); setMessage('')
     } catch (error) { setError(error instanceof Error ? error.message : 'Please try again.') } finally { setLoading(false) }
   }
@@ -42,6 +43,7 @@ export function CompanionPanel({ roomId, mode = 'extract' }: { roomId: string; m
     <p>{mode === 'chat' ? 'Explore ideas with your private planning companion. Your saved preferences and itinerary options guide the conversation.' : 'Paste your travel notes, then review the suggestions. Apply only the fields you want to change in your own preferences.'}</p>
     {history.length > 0 && <div className="companion-history" role="log" aria-label="Saved Companion conversation">{history.slice(mode === 'chat' ? -10 : -1).map(item => <article key={item.id}>{item.message && <p className="companion-user-note"><strong>You</strong><br />{item.message}</p>}<small>{sourceLabel(item.source)}</small><p className="companion-reply">{item.summary}</p>{item.notice && <p className="companion-notice">{item.notice}</p>}</article>)}</div>}
     {mode === 'extract' && latest?.extracted && Object.keys(latest.extracted).length > 0 && <fieldset className="companion-suggestions"><legend>Review changes to your preferences</legend>{Object.entries(latest.extracted).map(([field, value]) => <label key={field}><input type="checkbox" checked={(latest.applied ? latest.appliedFields ?? [] : selected).includes(field)} disabled={applying || latest.applied} onChange={event => setSelected(values => event.target.checked ? [...values, field] : values.filter(value => value !== field))} /><span><strong>{fieldNames[field]}</strong>{Array.isArray(value) ? value.join(' · ') : String(value)}</span></label>)}<button className="secondary-button" type="button" disabled={applying || latest.applied || !selected.length} onClick={apply}>{latest.applied ? 'Preferences applied' : applying ? 'Applying…' : 'Apply selected preferences'}</button>{latest.applied && <p role="status">Your preferences are saved. Your quest’s travel ideas have been refreshed.</p>}</fieldset>}
+    {context && <p className="canvas-context"><strong>{context.label}</strong><br />{context.detail}</p>}
     <label htmlFor={inputId}>{mode === 'chat' ? 'Ask your Companion' : 'Your travel notes'}</label>
     <textarea id={inputId} value={message} maxLength={4000} onChange={event => setMessage(event.target.value)} placeholder={mode === 'chat' ? 'What are the trade-offs between our options?' : 'I love food and nature. A relaxed pace, and no hiking.'} rows={3} />
     {mode === 'chat' && <label className="companion-crew-choice"><input type="checkbox" checked={includeCrew} onChange={event => setIncludeCrew(event.target.checked)} /><span>Include recent crew chat in this request<small>Send up to 20 messages to the AI provider for context.</small></span></label>}

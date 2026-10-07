@@ -2,9 +2,19 @@
 
 Date: 2026-10-07
 
-Status: proposed UX direction for review. Complements the [personalization design](2026-10-07-travel-personalization-design.md) and [approved group decision design](2026-10-06-group-decision-design.md). Anonymous organizer drafts and deferred account creation below extend the approved signed-in organizer flow; they are proposed additions, not implemented behavior.
+Status: first workspace implementation available locally on `feat/trip-workspace`; later personalization features remain proposed. Complements the [personalization design](2026-10-07-travel-personalization-design.md) and [approved group decision design](2026-10-06-group-decision-design.md). Anonymous organizer drafts and deferred account creation below extend the approved signed-in organizer flow; they are proposed additions, not implemented behavior.
 
 Make a useful trip visible early, then let people shape it in one persistent workspace. The main interaction is choosing and arranging experiences. Short questions appear where their answers change the plan. Chat helps express complex wishes, and ordinary controls handle precise changes. Users can always see their trip, their progress, and what will happen next.
+
+## First implementation
+
+The first iteration implements short entry with editable place/length/budget/pace, a shared saved itinerary canvas, drag and tap movement, inline add/replace, locks, persistent undo, and contextual private Companion / shared Crew panels. A public `/workspace-preview` uses the same component with clearly labelled sample data. Accepted members can read the shared plan; the host applies edits. Revision checks and request IDs prevent stale overwrites and duplicate retries. Times stay unchanged on movement, with visible schedule warnings.
+
+Starting plans use the curated catalogue. Fixed destinations are respected, and a template with a different duration requires explicit selection. Live AI-generated edit proposals, maps, activity search, editable trip duration, history imports, travel memory, and points/credits are not part of this iteration. Full preferences remain available. Manual changes do not automatically become personality evidence.
+
+Validation: production builds, unit tests, PostgreSQL and local PostgREST provider contracts, 14 workspace browser checks, and 18 existing journey checks. External model and email calls are disabled in the local review environment. Apply `007_quest_working_plans.sql` before deploying the saved editor. See [the README](../../../README.md#editable-trip-workspace) for startup and persistence details.
+
+The remaining sections describe the broader design direction. The friction analysis below records the flow before this implementation.
 
 ## Friction in the current journey
 

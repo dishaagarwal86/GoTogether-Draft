@@ -5,6 +5,7 @@ import { aiHistory, contextKey, ownedAiRecord, reserveAiRequest, saveAiRecord, t
 import { generateAi } from './aiProvider.js'
 import { recommendForQuest } from './recommendationService.js'
 import { listQuestMessages } from './chatService.js'
+import { getWorkingPlan } from './workingPlan.js'
 import { budgets, moods, paces, record, strings, text, validateExtracted, type ExtractedPreferences } from './travelPreferences.js'
 
 export type CompanionTask = Exclude<AiTask, 'personalise'>
@@ -71,7 +72,8 @@ export async function askCompanion(userId: string, input: unknown) {
   if (request.itineraryId && !trip) throw new HttpError(409, 'This itinerary no longer matches the quest. Refresh your travel ideas.')
   const history = request.task === 'chat' ? (await aiHistory(userId, request.roomId, 'chat')).slice(0, 6).reverse().map(item => ({ message: item.data.message, summary: item.data.summary })) : []
   const crew = request.includeCrew && request.roomId ? (await listQuestMessages(request.roomId, userId)).slice(-20).map(item => ({ traveller: item.senderName, message: item.body })) : undefined
-  const context = { preferences: request.preferences ?? cleanPreferences(own?.data), group: plan?.travelDna, itineraries: trip ? [trip] : plan?.results, blockers: plan?.blockers, history, crew }
+  const workingPlan = request.task === 'chat' && request.roomId ? await getWorkingPlan(request.roomId, userId) : undefined
+  const context = { preferences: request.preferences ?? cleanPreferences(own?.data), group: plan?.travelDna, itineraries: trip ? [trip] : plan?.results, workingPlan, blockers: plan?.blockers, history, crew }
   const key = contextKey({ task: request.task, roomId: request.roomId, context, message: request.message })
   await reserveAiRequest(userId)
   const fallback: Reply = request.task === 'extract'

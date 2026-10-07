@@ -38,12 +38,12 @@ export function validatePreferencePayload(value: unknown) {
     if (input[key] === undefined) continue
     if (input[key] === null) { output[key] = null; continue }
     const values = record(input[key])
-    const allowed = key === 'dates' ? ['start', 'end', 'flexible'] : ['scope', 'destination']
+    const allowed = key === 'dates' ? ['start', 'end', 'flexible'] : ['scope', 'destination', 'fixed']
     const result: Record<string, unknown> = {}
     for (const field of allowed) {
       const item = values[field]
       if (item === undefined) continue
-      if (field === 'flexible') { if (typeof item !== 'boolean') throw new HttpError(400, 'Invalid flexible dates.'); result[field] = item }
+      if (field === 'flexible' || field === 'fixed') { if (typeof item !== 'boolean') throw new HttpError(400, `Invalid ${field} selection.`); result[field] = item }
       else { if (item !== null && (typeof item !== 'string' || item.length > 150)) throw new HttpError(400, `Invalid ${field}.`); result[field] = item }
     }
     output[key] = result

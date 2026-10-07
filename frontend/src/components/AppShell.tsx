@@ -20,6 +20,7 @@ import { LandingConcept } from '../pages/LandingConcept'
 import { DashboardPage } from '../pages/DashboardPage'
 import { EmptyState, Icon, LoadingState } from './Ui'
 import { TravelCanvas } from './TravelArtwork'
+import { WorkspacePreviewPage } from '../pages/WorkspacePreviewPage'
 
 export function AppShell() { return <AuthProvider><AppLayout /></AuthProvider> }
 function RequireAuth() {
@@ -47,6 +48,7 @@ function AppLayout() {
       <Route path="/login" element={<LoginPage />} /><Route path="/signup" element={<SignUpPage />} />
       <Route path="/invite/:token" element={<InvitePage key={location.pathname} />} /><Route path="/join/:token" element={<JoinQuestPage key={location.pathname} />} /><Route path="/explore" element={<ExplorePage key={location.pathname + location.search} />} />
       <Route path="/inspiration" element={<Navigate to="/explore" replace />} />
+      <Route path="/workspace-preview" element={<WorkspacePreviewPage />} />
       <Route element={<RequireAuth />}>
         <Route path="/dashboard" element={<DashboardPage />} /><Route path="/profile" element={<ProfilePage />} />
         <Route path="/trips" element={<PlanTripPage />} /><Route path="/plan" element={<Navigate to="/trips" replace />} />

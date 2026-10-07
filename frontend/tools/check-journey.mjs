@@ -2,7 +2,6 @@ import { chromium } from 'playwright'
 import assert from 'node:assert/strict'
 import { mkdir, writeFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
-import { checkQuestWorkspace } from './check-quest-workspace.mjs'
 import { checkInvitations } from './check-invitations.mjs'
 import { checkCompanion } from './check-companion.mjs'
 const base = process.env.JOURNEY_TEST_URL ?? 'http://127.0.0.1:5186'
@@ -48,7 +47,7 @@ try {
   await page.getByRole('heading', { name: 'Good to see you, Avery.' }).waitFor()
   await page.getByRole('heading', { name: 'Your first “remember when” starts here.' }).waitFor()
   await screenshot('03-dashboard-empty', true)
-  await page.goto(`${base}/travel-dna/new`)
+  await page.goto(`${base}/travel-dna/new?details=1`)
   await page.getByLabel('What shall we call this quest?').fill(`Our Kyoto chapter ${suffix}`)
   await screenshot('04-new-quest', true)
   await page.reload()
@@ -82,19 +81,20 @@ try {
   await page.getByRole('button', { name: 'Save my preferences' }).click()
   await page.waitForURL('**/quests/room_*')
   roomId = page.url().split('/').at(-1)
-  await page.getByRole('status').filter({ hasText: 'Your preferences are saved' }).waitFor()
-  await page.getByRole('button', { name: /^Explore this itinerary/ }).first().waitFor()
+  await page.getByRole('button', { name: 'Make this our plan', exact: true }).first().click()
+  await page.getByRole('region', { name: 'Trip workspace', exact: true }).waitFor()
   await screenshot('09-quest-workspace', true)
   check('Quest saves to database and shows real recommendations')
+  await page.getByRole('navigation', { name: 'Workspace tools' }).getByRole('button', { name: 'Crew', exact: true }).click()
   await page.getByLabel('Message your crew').fill('Let’s leave room for one long lunch.')
   await page.getByRole('button', { name: 'Send', exact: true }).click()
   await page.getByText('Let’s leave room for one long lunch.', { exact: true }).waitFor()
   await page.reload()
+  await page.getByRole('navigation', { name: 'Workspace tools' }).getByRole('button', { name: 'Crew', exact: true }).click()
   await page.getByText('Let’s leave room for one long lunch.', { exact: true }).waitFor()
   check('Chat sends and persists across reload')
-  await checkQuestWorkspace(page, { base, apiBase, roomId, screenshot, check })
   await checkCompanion(page, { base, roomId, screenshot, check })
-  await page.getByRole('link', { name: 'Our Travel DNA' }).click()
+  await page.goto(`${base}/travel-dna/group-dna?roomId=${roomId}`)
   await page.getByRole('heading', { name: /This is how your group.*travels best/ }).waitFor()
   await screenshot('10-travel-dna', true)
   await page.getByRole('link', { name: 'See our possible paths' }).click()

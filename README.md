@@ -83,9 +83,10 @@ The app continues the landing page’s design across public browsing and the sig
 | `/login`, `/signup` | Account access; preserves the original quest or invitation destination |
 | `/dashboard` | Personal overview, first-trip guidance, real quests, and inspiration |
 | `/trips` | Hosting/joined quest collection with search; `/plan` redirects here |
-| `/travel-dna/new` | Quest name, optional invitation, and destination inspiration |
+| `/travel-dna/new` | Short trip idea, editable place/length/budget/pace, and inspiration cards; detailed setup at `?details=1` |
+| `/workspace-preview` | Public interactive Kyoto sample; no account or API required; changes last until leaving |
 | `/travel-dna/preferences` | Four-step preferences wizard with browser draft recovery |
-| `/quests/:roomId` | Illustrated itinerary workspace with sticky desktop chat, a mobile chat sheet, contextual day discussions, and invitations |
+| `/quests/:roomId` | Saved editable day canvas, drag/tap movement, inline replacement, locks, undo, and Ideas / private Companion / shared Crew panels |
 | `/travel-dna/group-dna?roomId=…` | Travel DNA from submitted preferences, plus Companion |
 | `/travel-dna/plan-paths?roomId=…` | Compare itineraries, read daily plans, optionally personalise with Companion |
 | `/explore`, `/saved` | Filterable inspiration and a saved-place collection |
@@ -95,6 +96,20 @@ The app continues the landing page’s design across public browsing and the sig
 Quest data, submitted preferences, private Companion conversations, and personalised itinerary notes live in the selected database. Drafts and saved places are scoped to the account in the current browser; they do not sync between devices. Places saved before signing in transfer to that account. Companion suggestions clearly show when AI is unavailable and a local fallback is used. Extracted preferences require review before being applied to the caller’s own answers. AI explanations and personal notes preserve the curated itinerary. See [AI setup and behavior](backend/README.md#companion-and-recommendation-behavior), including the required `004_ai_records.sql` migration before deployment.
 
 Signed-in travellers can also open the invitation bell in the navigation to view and accept pending quest invitations. The inbox checks for updates every 30 seconds and when opened, and works with either database provider. It uses the signed-in email address, so recipients can join even when invitation email delivery is unavailable.
+
+### Editable trip workspace
+
+Apply `database/migrations/007_quest_working_plans.sql` to the selected database before deploying this version of the backend. Keep the existing migrations, including the AI, guest, quest notes, and shortlist tables. The new table uses one row per quest with a revision and up to 30 undo snapshots. Its RLS is enabled; access goes through the authenticated backend with the server database role. No browser database credentials are needed.
+
+`GET /api/working-plans/:roomId` returns the shared plan to accepted members. The quest host can choose a canonical recommendation with `POST /api/working-plans/:roomId` and submit validated commands to `POST /api/working-plans/:roomId/changes`. Commands include `expectedRevision` and a unique `requestId`; atomic compare-and-swap rejects stale writes, and known retries do not apply twice. Locks prevent edits, removal, and movement until unlocked. Undo persists across reloads. Members suggest changes through Crew; only the host edits the shared plan in this release. Legacy user and room endpoints now enforce session identity and quest membership as well.
+
+Quick start reflects recognized places and durations as editable controls. A chosen destination stays fixed unless changed in preferences. It automatically opens a saved starting plan only when its duration matches; otherwise the traveller sees each available template’s duration before choosing. Dates stay flexible. The first draft comes from the curated catalogue, with suggested times and unconfirmed costs/availability. There is no claim of generated or validated travel arrangements.
+
+Manual changes do not automatically train a personality profile. Companion can read the saved plan and discuss an attached activity; reviewed AI edit proposals, cross-trip learning, past-trip imports, points/credits, maps, and guest draft transfer remain future work. Existing personal itinerary notes, shortlist, guest invitations, and crew discussion remain available.
+
+Run `npm run dev` and open `/workspace-preview` to try the sample. A signed-in quest requires the backend, migrations, and seeded catalogue. The interactive sample uses the same canvas component and needs none of those services.
+
+For a separate local review environment, start the isolated fixtures and build the backend using the commands below, then run `npm --prefix frontend run dev:workspace`. It serves the UI on `http://127.0.0.1:5191` and the API on port 3017. Create a new local account to try saving and returning to quests. This environment uses test data; external AI and email are disabled, and stopping/removing the fixture database discards its data.
 
 ### Local browser verification
 
@@ -109,4 +124,4 @@ npm --prefix frontend run test:journey
 
 To check a separately hosted API configuration using the same isolated fixtures, run `JOURNEY_DIRECT_API=1 npm --prefix frontend run test:journey`. This sets `VITE_API_URL` to the local test API and exercises cross-origin browser requests. Production frontend builds can set `VITE_API_URL` to the backend origin as shown in `frontend/.env.example`; the backend's `FRONTEND_URL` must allow the frontend origin.
 
-The browser check requires Google Chrome (or set `PLAYWRIGHT_CHANNEL=chromium` after installing Playwright’s Chromium). Its runner starts temporary API/frontend processes on ports 3016/5186 against the test database on 55436, then stops those processes. It verifies sign-up, protected-route return, draft recovery, quest creation, chat persistence, preference edits, saved places, profile readback, missing quests, sign-in/sign-out, and responsive layouts. Workspace checks cover contextual day discussions, failed-send retries, unread messages, keyboard focus, sticky chat, and preserving the itinerary position and message draft when mobile chat closes. Screenshots and a JSON report are written to `frontend/.journey-test-results/` (ignored by Git). Synthetic records stay in the isolated test database until its containers are removed.
+The browser check requires Google Chrome (or set `PLAYWRIGHT_CHANNEL=chromium` after installing Playwright’s Chromium). Its runner starts temporary API/frontend processes on ports 3016/5186 against the test database on 55436, then stops those processes. It verifies sign-up, protected-route return, draft recovery, quest creation, chat persistence, preference edits, saved places, profile readback, missing quests, sign-in/sign-out, and responsive layouts. The workspace suite covers pointer and tap movement, locks, inline editing, undo after reload, destination matching, private versus shared messages, failed-save retry, stale revision recovery, mobile panel focus, and reduced motion. The journey suite also covers existing detailed setup, AI fallback and reviewed preference extraction, guest invitations, and account flows. Screenshots and a JSON report are written to `frontend/.journey-test-results/` (ignored by Git). Synthetic records stay in the isolated test database until its containers are removed.

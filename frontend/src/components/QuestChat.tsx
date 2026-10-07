@@ -4,16 +4,16 @@ import { useAuth } from '../auth/AuthContext'
 import { Icon } from './Ui'
 import type { ChatContext } from './ItineraryStory'
 
-type Props = { roomId: string; open: boolean; onClose: () => void; focusRequest: number; context: ChatContext | null; onClearContext: (context: ChatContext) => void; onUnreadChange: (count: number) => void; onQuestNoteApplied?: () => void }
+type Props = { roomId: string; open: boolean; onClose: () => void; focusRequest: number; context: ChatContext | null; onClearContext: (context: ChatContext) => void; onUnreadChange: (count: number) => void; onQuestNoteApplied?: () => void; embedded?: boolean }
 const isSmallScreen = () => window.matchMedia('(max-width: 1020px)').matches
 function messageDate(value: string) {
   const date = new Date(value)
   return date.toDateString() === new Date().toDateString() ? 'Today' : date.toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' })
 }
 function QuestNoteCard({ note, busy, showImpact, onImpact, onApply, onDismiss }: { note: QuestNote; busy: boolean; showImpact: boolean; onImpact: () => void; onApply: (note: QuestNote, action: 'must_have' | 'nice_to_have') => void; onDismiss: (note: QuestNote) => void }) {
-  return <aside className="quest-note-card" aria-label="Quest Note suggestion"><p className="eyebrow">QUEST NOTE ✦</p><strong>{note.groupSupportCount} {note.groupSupportCount === 1 ? 'person mentioned' : 'people mentioned'} {note.suggestion.toLowerCase().replace(/[.]$/, '')}.</strong><p>Want to add this to your quest? It stays optional until someone chooses an action.</p><div className="quest-note-actions"><button type="button" className="secondary-button" disabled={busy} onClick={() => onApply(note, 'must_have')}>Make it a group must-have</button><button type="button" className="secondary-button" disabled={busy} onClick={() => onApply(note, 'nice_to_have')}>Add as a nice-to-have</button><button type="button" className="text-button" onClick={onImpact}>See itinerary impact</button><button type="button" className="text-button" disabled={busy} onClick={() => onDismiss(note)}>Not now</button></div>{showImpact && <p className="quest-note-impact">Adding this keeps the trip within budget, but replaces the free afternoon on Day 3.</p>}</aside>
+  return <aside className="quest-note-card" aria-label="Quest Note suggestion"><p className="eyebrow">QUEST NOTE ✦</p><strong>{note.groupSupportCount} {note.groupSupportCount === 1 ? 'person mentioned' : 'people mentioned'} {note.suggestion.toLowerCase().replace(/[.]$/, '')}.</strong><p>Want to add this to your quest? It stays optional until someone chooses an action.</p><div className="quest-note-actions"><button type="button" className="secondary-button" disabled={busy} onClick={() => onApply(note, 'must_have')}>Make it a group must-have</button><button type="button" className="secondary-button" disabled={busy} onClick={() => onApply(note, 'nice_to_have')}>Add as a nice-to-have</button><button type="button" className="text-button" onClick={onImpact}>See itinerary impact</button><button type="button" className="text-button" disabled={busy} onClick={() => onDismiss(note)}>Not now</button></div>{showImpact && <p className="quest-note-impact">This updates your shared preferences for future recommendations. Your saved itinerary stays as it is until your host edits it.</p>}</aside>
 }
-export function QuestChat({ roomId, open, onClose, focusRequest, context, onClearContext, onUnreadChange, onQuestNoteApplied }: Props) {
+export function QuestChat({ roomId, open, onClose, focusRequest, context, onClearContext, onUnreadChange, onQuestNoteApplied, embedded = false }: Props) {
   const { user } = useAuth()
   const [compact, setCompact] = useState(isSmallScreen)
   const [messages, setMessages] = useState<QuestMessage[]>([])
@@ -41,18 +41,18 @@ export function QuestChat({ roomId, open, onClose, focusRequest, context, onClea
   const previousFocusRequest = useRef(0)
 
   useEffect(() => { const query = window.matchMedia('(max-width: 1020px)'); const update = () => setCompact(query.matches); query.addEventListener('change', update); return () => query.removeEventListener('change', update) }, [])
-  useEffect(() => { visible.current = !compact || open }, [compact, open])
+  useEffect(() => { visible.current = embedded ? open : !compact || open }, [compact, open, embedded])
   useEffect(() => { onUnreadChange(unread) }, [unread, onUnreadChange])
   useEffect(() => { let active = true; getQuestNotes(roomId).then((state) => { if (active) { setNotesEnabled(state.enabled); setNotes(state.notes) } }).catch(() => { if (active) setNotesError('Quest Notes are unavailable until the latest database migration is applied.') }); return () => { active = false } }, [roomId])
   useEffect(() => {
-    if (!compact || !open) { dialog.current?.close(); return }
+    if (embedded || !compact || !open) { dialog.current?.close(); return }
     const previous = document.activeElement as HTMLElement | null
     const overflow = document.body.style.overflow
     const element = dialog.current
     element?.showModal()
     document.body.style.overflow = 'hidden'
     return () => { element?.close(); document.body.style.overflow = overflow; if (previous?.isConnected) previous.focus({ preventScroll: true }) }
-  }, [compact, open])
+  }, [compact, open, embedded])
 
   const scrollLatest = () => {
     if (thread.current) thread.current.scrollTop = thread.current.scrollHeight
@@ -166,5 +166,5 @@ export function QuestChat({ roomId, open, onClose, focusRequest, context, onClea
       <div className="crew-compose-actions"><span>Make room for every voice.</span><button className="primary-button" type="submit" disabled={sending || !text.trim()}>{sending ? 'Sending…' : 'Send'}<Icon size={16} /></button></div>
     </form>
   </>
-  return compact ? <dialog ref={dialog} className="crew-chat-panel crew-chat-dialog" id="crew-chat" aria-labelledby="crew-chat-title" onCancel={(event) => { event.preventDefault(); onClose() }} onClick={(event) => { if (event.target === event.currentTarget) onClose() }}>{content}</dialog> : <aside className="crew-chat-panel" id="crew-chat" aria-labelledby="crew-chat-title">{content}</aside>
+  return compact && !embedded ? <dialog ref={dialog} className="crew-chat-panel crew-chat-dialog" id="crew-chat" aria-labelledby="crew-chat-title" onCancel={(event) => { event.preventDefault(); onClose() }} onClick={(event) => { if (event.target === event.currentTarget) onClose() }}>{content}</dialog> : <aside className="crew-chat-panel" id="crew-chat" aria-labelledby="crew-chat-title">{content}</aside>
 }

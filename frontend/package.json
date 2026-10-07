@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:workspace": "node tools/run-journey-check.mjs --preview",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "preview": "vite preview",
