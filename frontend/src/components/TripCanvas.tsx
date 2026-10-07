@@ -1,8 +1,12 @@
 import { useEffect, useRef, useState, type ReactNode, type FormEvent, type PointerEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { Icon } from './Ui'
-import { dayWarnings, type PlanCommand, type PlanItem, type WorkingPlan } from '../services/workingPlanApi'
+import { dayWarnings, getAreaIdeas, getConfirmations, setConfirmation, type AreaIdea, type Confirmations, type IdeaCategory, type PlanCommand, type PlanItem, type WorkingPlan } from '../services/workingPlanApi'
 import { destinationPhotos } from '../data/destinationPhotos'
+import type { BookingTrip, QuestDna } from '../apis/quests'
+import { useActivityPhoto } from '../services/activityPhotos'
+import { photoFallback, recommendationPhoto } from '../services/itineraryPresentation'
+import { TravelPlanningOptions } from './TravelPlanningOptions'
 import coast from '../assets/coast-hero.png'
 
 type Panel = 'ideas' | 'companion' | 'crew'
@@ -14,6 +18,7 @@ type Props = {
   renderCompanion: (context: Context | null, dayId: string) => ReactNode;
   renderCrew: (open: boolean, context: Context | null, clear: () => void, close: () => void) => ReactNode;
   learning?: ReactNode; extraIdeas?: (discuss: (label: string, detail: string) => void) => ReactNode; unread?: number;
+  trip?: BookingTrip | null; travelDna?: QuestDna | null; notice?: ReactNode; focusMode?: boolean;
 }
 const types: Record<PlanItem['kind'], { label: string; icon: string }> = {
   experience: { label: 'Explore', icon: 'compass' }, food: { label: 'Food & drink', icon: 'sun' },
@@ -26,7 +31,7 @@ const ideaItems: Array<{ title: string; kind: PlanItem['kind']; note: string }> 
   { title: 'A neighbourhood wander', kind: 'experience', note: 'Choose a route and confirm walking distance and accessibility.' },
 ]
 
-export function TripCanvas({ plan, saving, error, status, readOnly = false, preview = false, onChange, onReload, onRetry, onInvite, preferencesUrl, roomId = 'preview', learning, renderCompanion, renderCrew, extraIdeas, unread = 0 }: Props) {
+export function TripCanvas({ plan, saving, error, status, readOnly = false, preview = false, onChange, onReload, onRetry, onInvite, preferencesUrl, roomId = 'preview', learning, renderCompanion, renderCrew, extraIdeas, unread = 0, trip, travelDna, notice, focusMode = false }: Props) {
   const viewKey = `gotogether.workspace-view.${roomId}`
   const [dayId, setDayId] = useState(() => { try { return sessionStorage.getItem(viewKey) || plan.days[0].id } catch { return plan.days[0].id } })
   const day = plan.days.find(item => item.id === dayId) ?? plan.days[0]
@@ -45,6 +50,18 @@ export function TripCanvas({ plan, saving, error, status, readOnly = false, prev
   const dayHeading = useRef<HTMLHeadingElement>(null)
   const drag = useRef<{ id: string; x: number; y: number; active: boolean } | null>(null)
   const blocked = saving || readOnly
+  const [confirmState, setConfirmState] = useState<Confirmations | null>(null)
+  const confirmations = confirmState?.confirmations ?? {}
+  const memberCount = confirmState?.memberCount ?? 0
+  useEffect(() => {
+    if (preview) return
+    let active = true
+    const load = () => getConfirmations(roomId).then(value => { if (active) setConfirmState(value) }).catch(() => { /* confirmations are optional */ })
+    load()
+    const timer = window.setInterval(load, 30000)
+    return () => { active = false; window.clearInterval(timer) }
+  }, [roomId, preview])
+  const toggleConfirm = (itemId: string, confirmed: boolean) => { void setConfirmation(roomId, itemId, confirmed).then(setConfirmState).catch(() => setAnnouncement('Your confirmation could not be saved. Please try again.')) }
   const image = destinationPhotos[plan.destination.toLowerCase()] ?? coast
   const warnings = dayWarnings(day)
   const openPanel = (next: Panel) => { setPanel(next); setEditor(null); setMoveItem(null) }
@@ -128,7 +145,7 @@ export function TripCanvas({ plan, saving, error, status, readOnly = false, prev
       <div><p className="canvas-kicker"><span /> YOUR TRAVEL BOOK · DRAFT</p>{renaming ? <form className="canvas-rename" onSubmit={event => { event.preventDefault(); const title = String(new FormData(event.currentTarget).get('title')); void apply({ type: 'rename', title }, 'Trip renamed.').then(ok => { if (ok) setRenaming(false) }) }}><label className="sr-only" htmlFor="canvas-title">Trip name</label><input id="canvas-title" name="title" defaultValue={plan.title} maxLength={100} required autoFocus /><button disabled={blocked}>Save</button><button type="button" onClick={() => setRenaming(false)}>Cancel</button></form> : <h1>{plan.title}<button className="canvas-edit-title" onClick={() => setRenaming(true)} disabled={blocked} aria-label="Rename trip"><Icon name="edit" size={17} /></button></h1>}<p className="canvas-cover-note">A few good days. A little room for the unexpected.</p><div className="canvas-trip-meta"><span><Icon name="pin" size={15} />{plan.destination}, {plan.country}</span><span><Icon name="calendar" size={15} />{plan.days.length} days · draft itinerary</span><span><Icon name="wallet" size={15} />Costs to confirm</span></div></div>
       <div className="canvas-cover-stamp" aria-hidden="true"><Icon name="compass" size={33} /><span>TAKE THE<br />SCENIC ROUTE</span></div>
     </header>
-    <div className="canvas-toolbar"><div className="canvas-save-state" role="status"><Icon name={error ? 'clock' : 'check'} size={15} />{saving ? 'Saving your change…' : status}</div><div><button className="canvas-plain" disabled={blocked || !plan.canUndo} onClick={() => void apply({ type: 'undo' }, 'Last change undone.')}><Icon name="undo" size={16} />Undo</button>{preferencesUrl && <Link className="canvas-plain" to={preferencesUrl}><Icon name="sliders" size={16} />My needs</Link>}{onInvite && <button className="canvas-share" onClick={onInvite}><Icon name="people" size={16} />Invite your people</button>}</div></div>
+    {notice}<div className="canvas-focus-hide" hidden={focusMode}><div className="canvas-toolbar"><div className="canvas-save-state" role="status"><Icon name={error ? 'clock' : 'check'} size={15} />{saving ? 'Saving your change…' : status}</div><div><button className="canvas-plain" disabled={blocked || !plan.canUndo} onClick={() => void apply({ type: 'undo' }, 'Last change undone.')}><Icon name="undo" size={16} />Undo</button>{preferencesUrl && <Link className="canvas-plain" to={preferencesUrl}><Icon name="sliders" size={16} />My needs</Link>}{onInvite && <button className="canvas-share" onClick={onInvite}><Icon name="people" size={16} />Invite your people</button>}</div></div>
     {error && <div className="canvas-save-error" role="alert"><span>{error}</span>{onRetry && <button disabled={saving} onClick={() => { void onRetry().then(ok => { if (ok) { setEditor(null); setMoveItem(null); setAnnouncement('Your change is saved.') } }) }}>Retry my change</button>}{onReload && <button onClick={onReload}>Load latest plan</button>}</div>}
     {learning}
     {readOnly && <p className="canvas-viewer-note">Your host edits the shared plan. Open Crew to suggest a change.</p>}
@@ -140,9 +157,11 @@ export function TripCanvas({ plan, saving, error, status, readOnly = false, prev
         <div className={`canvas-timeline ${dragging ? 'is-dragging' : ''}`}>
           {day.items.map((item, index) => <div className={`canvas-slot ${drop === `${day.id}:${index}` ? 'is-drop-target' : ''}`} data-drop-day={day.id} data-drop-index={index} key={item.id}>
             <div className="canvas-time"><span>{item.time}</span><i /></div>
-            <article className={`canvas-activity kind-${item.kind} ${item.locked ? 'is-locked' : ''} ${dragging === item.id ? 'being-dragged' : ''}`} aria-label={item.title} data-item-id={item.id}>
+            <article className={`canvas-activity kind-${item.kind} ${item.kind !== 'free' ? 'has-photo' : ''} ${item.locked ? 'is-locked' : ''} ${dragging === item.id ? 'being-dragged' : ''}`} aria-label={item.title} data-item-id={item.id}>
+              {item.kind !== 'free' && <ActivityPhoto title={item.title} imageQuery={item.imageQuery} destination={plan.destination} fallback={recommendationPhoto({ destination: plan.destination, cover_image: trip?.cover_image })} />}
               <div className="canvas-activity-top"><span className="canvas-type"><Icon name={types[item.kind].icon} size={15} />{types[item.kind].label}</span><div>{item.locked && <span className="canvas-lock-label"><Icon name="lock" size={12} />Locked</span>}<button className="canvas-drag-handle" aria-label={`Drag ${item.title}`} title="Drag to another position or day. Use Move for tap and keyboard controls." disabled={blocked || item.locked} onPointerDown={event => pointerDown(event, item)} onPointerMove={pointerMove} onPointerUp={pointerUp} onPointerCancel={cancelDrag} onKeyDown={event => { if (event.key === 'Escape') cancelDrag() }}><Icon name="grip" size={18} /></button></div></div>
               <h3>{item.title}</h3><p className="canvas-activity-note">{item.note}</p><div className="canvas-activity-meta"><span><Icon name="clock" size={13} />{item.duration} min suggested</span><span>{item.kind === 'free' ? 'Unscheduled possibilities' : 'Details to confirm'}</span></div>
+              {!preview && <ConfirmRow people={confirmations[item.id] ?? []} memberCount={memberCount} onToggle={confirmed => toggleConfirm(item.id, confirmed)} />}
               <div className="canvas-card-actions"><button disabled={blocked || item.locked} onClick={() => { setEditor({ item }); setMoveItem(null) }}>Edit / replace</button><button disabled={blocked || item.locked} aria-expanded={moveItem === item.id} onClick={() => { setMoveItem(moveItem === item.id ? null : item.id); setEditor(null) }}>Move</button><button disabled={blocked} onClick={() => void apply({ type: 'lock', itemId: item.id }, item.locked ? 'Activity unlocked.' : 'Activity locked. Unlock it before moving or editing.')} aria-label={`${item.locked ? 'Unlock' : 'Lock'} ${item.title}`}><Icon name="lock" size={14} /></button><button onClick={() => ask(item)} aria-label={`Ask Companion about ${item.title}`}><Icon name="spark" size={15} /></button><button onClick={() => ask(item, true)} aria-label={`Discuss ${item.title} with crew`}><Icon name="chat" size={15} /></button><button className="canvas-remove" disabled={blocked || item.locked} aria-label={`Remove ${item.title}`} onClick={() => void apply({ type: 'remove', itemId: item.id }, 'Activity removed. You can undo this change.')}><Icon name="close" size={14} /></button></div>
               {moveItem === item.id && <div className="canvas-move-menu" aria-label={`Move ${item.title}`}><span>Move to a day</span><div>{plan.days.map(value => <button key={value.id} disabled={blocked} onClick={() => void apply({ type: 'move', itemId: item.id, dayId: value.id, index: value.items.length }, `Moved to ${value.title}.`)}>{value.title}</button>)}</div><div><button disabled={blocked || index === 0} onClick={() => void apply({ type: 'move', itemId: item.id, dayId: day.id, index: index - 1 }, 'Moved earlier in the day.')}>↑ Move earlier</button><button disabled={blocked || index === day.items.length - 1} onClick={() => void apply({ type: 'move', itemId: item.id, dayId: day.id, index: index + 1 }, 'Moved later in the day.')}>↓ Move later</button></div></div>}
             </article>
@@ -150,18 +169,90 @@ export function TripCanvas({ plan, saving, error, status, readOnly = false, prev
           <div className={`canvas-add-slot ${drop === `${day.id}:${day.items.length}` ? 'is-drop-target' : ''}`} data-drop-day={day.id} data-drop-index={day.items.length}><button disabled={blocked} onClick={() => { setEditor({}); setMoveItem(null) }}><Icon name="plus" size={18} />Add a little something<span>An experience, a meal, or room to breathe</span></button></div>
         </div>
         {editor && <ItemEditor key={editor.item?.id ?? editor.suggestion?.title ?? 'new'} item={editor.item} suggestion={editor.suggestion} busy={blocked} onClose={() => setEditor(null)} onSave={input => apply({ ...input, type: editor.item ? 'update' : 'add', itemId: editor.item?.id, dayId: day.id }, editor.item ? 'Activity updated.' : 'A new moment added.')} />}
+        {trip && <div className="canvas-bookings"><TravelPlanningOptions trip={trip} travelDna={travelDna} /></div>}
         <p className="canvas-footnote"><Icon name="compass" size={15} />A draft to make your own. Check opening hours, travel times and costs before you go.</p>
       </section>
       <aside ref={side} className={`canvas-panel ${panel ? 'is-open' : ''}`} aria-label="Planning tools" role={compact && panel ? 'dialog' : undefined} aria-modal={compact && panel ? true : undefined}>
         <div className="canvas-panel-tabs">{(['ideas', 'companion', 'crew'] as Panel[]).map(value => <button key={value} onClick={() => setPanel(value)} aria-pressed={panel === value}><Icon name={value === 'ideas' ? 'compass' : value === 'companion' ? 'spark' : 'people'} size={16} />{value === 'ideas' ? 'Ideas' : value === 'companion' ? 'Companion' : 'Crew'}{value === 'crew' && unread > 0 && <b>{unread}</b>}</button>)}<button className="canvas-panel-close" aria-label="Close planning panel" onClick={() => setPanel(null)}><Icon name="close" size={17} /></button></div>
-        <div hidden={panel !== 'ideas'} className="canvas-panel-body"><p className="canvas-kicker">LEAVE ROOM FOR A DETOUR</p><h2>A little <em>inspiration.</em></h2><p>Small ideas for {plan.destination}. Add one, then make it your own.</p><div className="canvas-idea-photo"><img src={image} alt="Travel inspiration" /><span><Icon name="plane" size={16} />Wish we were here.</span></div>{ideaItems.map(idea => <article className={`canvas-idea kind-${idea.kind}`} key={idea.title}><span><Icon name={types[idea.kind].icon} size={20} /></span><div><strong>{idea.title}</strong><small>{idea.kind === 'free' ? 'A little space in your day' : 'Idea · details to research'}</small></div><button disabled={blocked} aria-label={`Add ${idea.title}`} onClick={() => { setEditor({ suggestion: idea }); if (window.innerWidth <= 900) setPanel(null); window.requestAnimationFrame(() => document.querySelector('.canvas-item-editor')?.scrollIntoView({ block: 'center' })) }}><Icon name="plus" size={17} /></button></article>)}{extraIdeas && <details className="canvas-shortlist"><summary>Saved picks & crew shortlist</summary>{extraIdeas((label, detail) => { setCrewContext({ label, detail }); openPanel('crew') })}</details>}</div>
+        <div hidden={panel !== 'ideas'} className="canvas-panel-body"><p className="canvas-kicker">LEAVE ROOM FOR A DETOUR</p><h2>A little <em>inspiration.</em></h2><p>{readOnly ? `Things to do in ${plan.destination}. Suggest one to your crew and your host can add it.` : `Things to do in ${plan.destination}. Add one to a day, then make it your own.`}</p>{preview ? <div className="canvas-idea-photo"><img src={image} alt="Travel inspiration" /><span><Icon name="plane" size={16} />Wish we were here.</span></div> : <AreaIdeas roomId={roomId} destination={plan.destination} moods={travelDna?.sharedVibe ?? []} blocked={blocked} readOnly={readOnly} onAddFree={() => { setEditor({ suggestion: ideaItems[1] }); if (window.innerWidth <= 900) setPanel(null); window.requestAnimationFrame(() => document.querySelector('.canvas-item-editor')?.scrollIntoView({ block: 'center' })) }} onAdd={idea => { setEditor({ suggestion: { title: idea.title, kind: idea.kind, note: [idea.note, idea.area && `Area: ${idea.area}.`, 'Check opening hours and availability.'].filter(Boolean).join(' ') } }); if (window.innerWidth <= 900) setPanel(null); window.requestAnimationFrame(() => document.querySelector('.canvas-item-editor')?.scrollIntoView({ block: 'center' })) }} onSuggest={idea => { setCrewContext({ label: `Idea · ${idea.title}`, detail: [idea.note, idea.area].filter(Boolean).join(' · ') }); openPanel('crew') }} />}{preview && <p className="canvas-kicker canvas-quick-kicker">QUICK ADDITIONS</p>}{(preview ? ideaItems : []).map(idea => <article className={`canvas-idea kind-${idea.kind}`} key={idea.title}><span><Icon name={types[idea.kind].icon} size={20} /></span><div><strong>{idea.title}</strong><small>{idea.kind === 'free' ? 'A little space in your day' : 'Idea · details to research'}</small></div><button disabled={blocked} aria-label={`Add ${idea.title}`} onClick={() => { setEditor({ suggestion: idea }); if (window.innerWidth <= 900) setPanel(null); window.requestAnimationFrame(() => document.querySelector('.canvas-item-editor')?.scrollIntoView({ block: 'center' })) }}><Icon name="plus" size={17} /></button></article>)}{extraIdeas && <details className="canvas-shortlist"><summary>Saved picks & crew shortlist</summary>{extraIdeas((label, detail) => { setCrewContext({ label, detail }); openPanel('crew') })}</details>}</div>
         <div hidden={panel !== 'companion'} className="canvas-panel-body canvas-companion-body"><div className="canvas-privacy"><Icon name="lock" size={13} />PRIVATE · ONLY YOU</div>{context && <button className="canvas-plain" onClick={() => setContext(null)}>Clear attached activity <Icon name="close" size={13} /></button>}{renderCompanion(context, day.id)}</div>
         <div hidden={panel !== 'crew'} className="canvas-crew-body"><div className="canvas-privacy"><Icon name="people" size={13} />SHARED · YOUR CREW</div>{renderCrew(panel === 'crew', crewContext, () => setCrewContext(null), () => setPanel(null))}</div>
       </aside>
     </div>
-    <nav className="canvas-dock" aria-label="Workspace tools"><button onClick={() => { setPanel(null); dayHeading.current?.focus({ preventScroll: true }) }} aria-pressed={!panel}><Icon name="calendar" size={18} />The plan</button>{(['ideas', 'companion', 'crew'] as Panel[]).map(value => <button key={value} onClick={() => openPanel(value)} aria-pressed={panel === value}><Icon name={value === 'ideas' ? 'compass' : value === 'companion' ? 'spark' : 'people'} size={18} />{value === 'ideas' ? 'Ideas' : value === 'companion' ? 'Companion' : 'Crew'}{value === 'crew' && unread > 0 && <b>{unread}</b>}</button>)}</nav>
+    </div>
+    <nav className="canvas-dock" aria-label="Workspace tools" hidden={focusMode}><button onClick={() => { setPanel(null); dayHeading.current?.focus({ preventScroll: true }) }} aria-pressed={!panel}><Icon name="calendar" size={18} />The plan</button>{(['ideas', 'companion', 'crew'] as Panel[]).map(value => <button key={value} onClick={() => openPanel(value)} aria-pressed={panel === value}><Icon name={value === 'ideas' ? 'compass' : value === 'companion' ? 'spark' : 'people'} size={18} />{value === 'ideas' ? 'Ideas' : value === 'companion' ? 'Companion' : 'Crew'}{value === 'crew' && unread > 0 && <b>{unread}</b>}</button>)}</nav>
     <div className="canvas-announcement" role="status">{announcement}</div>
   </section>
+}
+
+function ConfirmRow({ people, memberCount, onToggle }: { people: Array<{ name: string; isMe: boolean }>; memberCount: number; onToggle: (confirmed: boolean) => void }) {
+  const mine = people.some(person => person.isMe)
+  const names = people.map(person => person.isMe ? 'You' : person.name)
+  return <div className={`canvas-confirm ${mine ? 'is-in' : ''}`}>
+    <button type="button" aria-pressed={mine} onClick={() => onToggle(!mine)}><Icon name="check" size={14} />{mine ? "You're in" : "I'm in"}</button>
+    <span>{people.length ? `${people.length}${memberCount ? ` of ${memberCount}` : ''} in · ${names.join(', ')}` : 'No one has confirmed yet'}</span>
+  </div>
+}
+
+const categoryIcons: Record<string, string> = { breakfast: 'sun', downtime: 'leaf', local: 'spark', wander: 'compass', sights: 'pin', culture: 'heart', evening: 'moon', daytrip: 'plane' }
+const moodCategories: Record<string, string[]> = {
+  'Food & Culture': ['breakfast', 'evening', 'local', 'culture'], Relaxation: ['downtime', 'breakfast', 'wander'], Adventure: ['daytrip', 'sights'],
+  Nature: ['downtime', 'daytrip'], Nightlife: ['evening'], Wellness: ['downtime'], Shopping: ['wander'], History: ['culture', 'sights'], 'Family fun': ['sights', 'local'],
+}
+
+function AreaIdeas({ roomId, destination, moods, blocked, readOnly, onAdd, onAddFree, onSuggest }: { roomId: string; destination: string; moods: string[]; blocked: boolean; readOnly: boolean; onAdd: (idea: AreaIdea) => void; onAddFree: () => void; onSuggest: (idea: AreaIdea) => void }) {
+  const [input, setInput] = useState('')
+  const [search, setSearch] = useState('')
+  const [ideas, setIdeas] = useState<AreaIdea[] | null>(null)
+  const [categories, setCategories] = useState<IdeaCategory[]>([])
+  const [expanded, setExpanded] = useState<string[]>([])
+  const [error, setError] = useState('')
+  useEffect(() => {
+    let active = true
+    getAreaIdeas(roomId, destination, search).then(value => { if (active) { setIdeas(value.ideas); setCategories(value.categories ?? []); setError(value.ideas.length ? '' : 'No ideas came back. Try another search.') } }).catch(() => { if (active) { setIdeas([]); setError('Ideas could not load just now. Try again.') } })
+    return () => { active = false }
+  }, [roomId, destination, search])
+  const submit = (event: FormEvent) => { event.preventDefault(); setIdeas(null); setError(''); setSearch(input.trim()) }
+  const clear = () => { setInput(''); setIdeas(null); setSearch('') }
+  const priority = moods.flatMap(mood => moodCategories[mood] ?? [])
+  const ordered = [...categories].sort((a, b) => (priority.indexOf(a.id) === -1 ? 99 : priority.indexOf(a.id)) - (priority.indexOf(b.id) === -1 ? 99 : priority.indexOf(b.id)))
+  const row = (idea: AreaIdea) => <AreaIdeaRow key={idea.title} idea={idea} destination={destination} blocked={blocked} readOnly={readOnly} onAdd={onAdd} onSuggest={onSuggest} />
+  return <div className="canvas-area-ideas">
+    <form onSubmit={submit} className="canvas-idea-search"><input aria-label={`Search things to do in ${destination}`} value={input} onChange={event => setInput(event.target.value)} placeholder="Search: ramen, rainy day, kids…" maxLength={80} /><button type="submit" aria-label="Search ideas"><Icon name="spark" size={15} /></button></form>
+    {ideas === null ? <p className="canvas-idea-loading">Finding things to do in {destination}{search ? ` for “${search}”` : ''}… this can take about 20 seconds the first time.</p>
+      : search ? <>
+        <div className="canvas-idea-results"><span>Results for “{search}”</span><button type="button" onClick={clear}>Back to categories</button></div>
+        {error && <p className="canvas-idea-loading">{error}</p>}{ideas.map(row)}
+      </> : <>
+        {error && <p className="canvas-idea-loading">{error}</p>}
+        {ordered.map((category, index) => {
+          const items = ideas.filter(idea => idea.category === category.id)
+          if (!items.length && category.id !== 'downtime') return null
+          const open = expanded.includes(category.id)
+          return <details className="canvas-idea-category" key={category.id} open={index < 2}>
+            <summary><span className="canvas-idea-category-icon"><Icon name={categoryIcons[category.id] ?? 'compass'} size={17} /></span><span><strong>{category.label}</strong><small>{items.length} {items.length === 1 ? 'idea' : 'ideas'} · {category.hint}</small></span><Icon name="plus" size={14} /></summary>
+            {category.id === 'downtime' && !readOnly && <button type="button" className="canvas-idea-free" disabled={blocked} onClick={onAddFree}><Icon name="leaf" size={14} />Leave time free, no plans</button>}
+            {(open ? items : items.slice(0, 4)).map(row)}
+            {items.length > 4 && <button type="button" className="canvas-idea-more" onClick={() => setExpanded(value => open ? value.filter(id => id !== category.id) : [...value, category.id])}>{open ? 'Show fewer' : `Show ${items.length - 4} more`}</button>}
+          </details>
+        })}
+      </>}
+  </div>
+}
+
+function AreaIdeaRow({ idea, destination, blocked, readOnly, onAdd, onSuggest }: { idea: AreaIdea; destination: string; blocked: boolean; readOnly: boolean; onAdd: (idea: AreaIdea) => void; onSuggest: (idea: AreaIdea) => void }) {
+  const photo = useActivityPhoto([idea.imageQuery, `${idea.title} ${destination}`], recommendationPhoto({ destination, cover_image: null }))
+  return <article className={`canvas-idea canvas-area-idea kind-${idea.kind}`}>
+    <img src={photo} alt="" loading="lazy" onError={photoFallback} />
+    <div><strong>{idea.title}</strong><small>{[idea.area, idea.note].filter(Boolean).join(' · ')}</small></div>
+    {readOnly ? <button type="button" aria-label={`Suggest ${idea.title} to your crew`} title="Suggest to your crew" onClick={() => onSuggest(idea)}><Icon name="chat" size={16} /></button> : <button type="button" disabled={blocked} aria-label={`Add ${idea.title}`} onClick={() => onAdd(idea)}><Icon name="plus" size={17} /></button>}
+  </article>
+}
+
+function ActivityPhoto({ title, imageQuery, destination, fallback }: { title: string; imageQuery?: string; destination: string; fallback: string }) {
+  const name = title.split(' — ')[0].trim()
+  const photo = useActivityPhoto([imageQuery, name && `${name} ${destination}`, name], fallback)
+  return <img className="canvas-activity-photo" src={photo} alt={`${name}, ${destination}`} loading="lazy" onError={photoFallback} />
 }
 
 function ItemEditor({ item, suggestion, busy, onClose, onSave }: { item?: PlanItem; suggestion?: typeof ideaItems[number]; busy: boolean; onClose: () => void; onSave: (input: PlanCommand) => Promise<boolean> }) {

@@ -10,7 +10,8 @@ import { budgets, moods, paces, record, strings, text, validateExtracted, type E
 
 export type CompanionTask = Exclude<AiTask, 'personalise'>
 type CompanionRequest = { task: CompanionTask; message?: string; roomId?: string; itineraryId?: string; preferences?: Record<string, unknown>; includeCrew?: boolean }
-type Reply = { summary: string; extracted?: ExtractedPreferences }
+type Place = { name: string; tag: string; reason: string }
+type Reply = { summary: string; extracted?: ExtractedPreferences; places?: Place[] }
 const answerKeys = ['startDate', 'endDate', 'flexibleDates', 'tripLength', 'groupSize', 'destinationScope', 'destination', 'budget', 'tripFeeling', 'stayStyle', 'mustHave', 'niceToHave', 'noGo', 'pace', 'discovery', 'companions', 'ageGroups', 'priorities', 'dates', 'daysCount', 'moodPreferences', 'activitiesMustHave', 'activitiesPreferred', 'accommodationPreferences']
 
 export function cleanPreferences(value: unknown): Record<string, unknown> {
@@ -59,9 +60,19 @@ export function fallbackExtraction(message: string): ExtractedPreferences {
 }
 export function validateReply(value: unknown, task: CompanionTask): Reply {
   const parsed = record(value)
-  if (Object.keys(parsed).some(key => !['summary', ...(task === 'extract' ? ['extracted'] : [])].includes(key))) throw new Error('Unexpected AI response field.')
+  const allowedKeys = ['summary', ...(task === 'extract' ? ['extracted'] : []), ...(task === 'group-dna' ? ['places'] : [])]
+  if (Object.keys(parsed).some(key => !allowedKeys.includes(key))) throw new Error('Unexpected AI response field.')
   const summary = text(parsed.summary, 3000)
-  return task === 'extract' ? { summary, extracted: validateExtracted(parsed.extracted) } : { summary }
+  if (task === 'extract') return { summary, extracted: validateExtracted(parsed.extracted) }
+  if (task === 'group-dna') {
+    const raw = Array.isArray(parsed.places) ? parsed.places : []
+    const places: Place[] = raw.slice(0, 3).map((item: unknown) => {
+      const p = record(item ?? {})
+      return { name: text(p.name, 80), tag: text(p.tag, 40), reason: text(p.reason, 200) }
+    }).filter((p: Place) => p.name)
+    return { summary, places }
+  }
+  return { summary }
 }
 export async function askCompanion(userId: string, input: unknown) {
   const request = parseCompanionRequest(input)
@@ -80,9 +91,11 @@ export async function askCompanion(userId: string, input: unknown) {
     ? { summary: 'Review these suggestions from your notes. Only the fields you select will update your own preferences.', extracted: fallbackExtraction(request.message!) }
     : request.task === 'explain' && trip
       ? { summary: trip.destination + ': ' + (trip.matchedPreferences.join(', ') || 'a catalogue idea within the saved limits') + '. ' + trip.compromises.join(' ') }
-      : { summary: plan?.blockers.length ? plan.blockers.join(' ') : plan?.results.length ? 'Your current starting points are ' + plan.results.map(item => item.destination).join(', ') + '. Compare the interests each one matches and discuss the compromises with your crew.' : 'Start with your preferred pace, budget, and must-do activities. Save those preferences to find matching catalogue trips.' }
+      : (() => { const destinations = plan?.results.map(item => item.destination) ?? []; return { summary: plan?.blockers.length ? plan.blockers.join(' ') : destinations.length ? `Destinations to explore: ${destinations.join(', ')}.` : 'Start with your preferred pace, budget, and must-do activities.', places: destinations.slice(0, 3).map(name => ({ name, tag: 'Match', reason: 'Fits your saved preferences.' })) } })()
   const instructions = 'You are the GoTogether Companion. Give warm, concise travel advice grounded in the supplied context. Never calculate or invent scores, edit preferences, make bookings, or claim an action has been saved. Explain conflicts honestly. Task: ' + request.task +
-    '. Return {"summary":"text"}' + (request.task === 'extract' ? ' with an additional "extracted" object containing only preferences explicitly supported by the notes. Allowed keys: moods (up to 3 of ' + moods.join(', ') + '), budget (' + budgets.join(', ') + '), pace (' + paces.join(', ') + '), mustHave (text), noGo (text), daysCount (integer 1 to 30). Omit unknown or ambiguous values. The user will review each field.' : '.')
+    (request.task === 'group-dna'
+      ? '. Return JSON: {"summary":"one sentence intro","places":[{"name":"City or Region","tag":"one mood tag like Adventure or Beach or Culture","reason":"one sentence why it fits"}]} — suggest exactly 3 places that match the preferences. No markdown, no explanation.'
+      : '. Return {"summary":"text"}' + (request.task === 'extract' ? ' with an additional "extracted" object containing only preferences explicitly supported by the notes. Allowed keys: moods (up to 3 of ' + moods.join(', ') + '), budget (' + budgets.join(', ') + '), pace (' + paces.join(', ') + '), mustHave (text), noGo (text), daysCount (integer 1 to 30). Omit unknown or ambiguous values. The user will review each field.' : '.'))
   const result = await generateAi(instructions, { message: request.message, context }, value => validateReply(value, request.task), fallback)
   const saved = await saveAiRecord(userId, request.roomId, request.task, key, { ...result.value, source: result.source, notice: result.notice, message: request.message, preferences: request.preferences, itineraryId: request.itineraryId, planVersion: plan?.preferenceVersion, preferenceId: own?.id, preferenceVersion: own && contextKey(own.data) })
   return { id: saved.id, ...result.value, source: result.source, notice: result.notice }

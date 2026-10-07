@@ -4,6 +4,7 @@ import { assertPlanEditor, changeWorkingPlan, getWorkingPlan, startWorkingPlan }
 import { payload, routeParam } from './helpers.js'
 import { listPlanProposals, proposePlanChange } from '../services/planProposals.js'
 import { travelAction } from '../services/travelMemory.js'
+import { areaIdeas, castVote, listConfirmations, listVotes, setConfirmation } from '../services/questVoting.js'
 
 export const workingPlansRouter = Router()
 workingPlansRouter.use(requireUser)
@@ -13,3 +14,8 @@ workingPlansRouter.post('/:roomId/changes', async (request, response) => respons
 workingPlansRouter.get('/:roomId/proposals', async (request, response) => response.json({ data: await listPlanProposals(response.locals.userId, routeParam(request, 'roomId')) }))
 workingPlansRouter.post('/:roomId/proposals', async (request, response) => response.json({ data: await proposePlanChange(response.locals.userId, routeParam(request, 'roomId'), payload(request)) }))
 workingPlansRouter.post('/:roomId/proposals/:proposalId/dismiss', async (request, response) => { await assertPlanEditor(routeParam(request, 'roomId'), response.locals.userId); response.json({ data: await travelAction(response.locals.userId, 'dismiss', { id: routeParam(request, 'proposalId'), roomId: routeParam(request, 'roomId') }) }) })
+workingPlansRouter.get('/:roomId/votes', async (request, response) => response.json({ data: await listVotes(routeParam(request, 'roomId'), response.locals.userId) }))
+workingPlansRouter.post('/:roomId/votes', async (request, response) => response.json({ data: await castVote(routeParam(request, 'roomId'), response.locals.userId, payload(request).itineraryId) }))
+workingPlansRouter.get('/:roomId/confirmations', async (request, response) => response.json({ data: await listConfirmations(routeParam(request, 'roomId'), response.locals.userId) }))
+workingPlansRouter.post('/:roomId/confirmations', async (request, response) => response.json({ data: await setConfirmation(routeParam(request, 'roomId'), response.locals.userId, payload(request).itemId, payload(request).confirmed) }))
+workingPlansRouter.get('/:roomId/area-ideas', async (request, response) => response.json({ data: await areaIdeas(routeParam(request, 'roomId'), response.locals.userId, request.query.destination, request.query.q) }))
