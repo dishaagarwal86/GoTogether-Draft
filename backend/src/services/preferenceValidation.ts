@@ -13,6 +13,14 @@ export function validatePreferencePayload(value: unknown) {
     output[key] = input[key].trim()
   }
   if (output.tripRoomId) output.tripRoomId = text(output.tripRoomId, 150)
+  if (input.currency !== undefined) {
+    if (input.currency !== null && (typeof input.currency !== 'string' || !/^[A-Z]{3}$/.test(input.currency))) throw new HttpError(400, 'Invalid currency.')
+    output.currency = input.currency
+  }
+  if (input.homeCountry !== undefined) {
+    if (input.homeCountry !== null && (typeof input.homeCountry !== 'string' || input.homeCountry.length > 80)) throw new HttpError(400, 'Invalid home country.')
+    output.homeCountry = typeof input.homeCountry === 'string' ? input.homeCountry.trim() : null
+  }
   if (output.budget && !budgets.includes(String(output.budget))) throw new HttpError(400, 'Unknown budget.')
   if (output.pace && !paces.includes(String(output.pace))) throw new HttpError(400, 'Unknown pace.')
   for (const key of ['moodPreferences', 'accommodationPreferences', 'ageGroups', 'priorities']) {

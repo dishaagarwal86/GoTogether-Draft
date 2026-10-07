@@ -1,3 +1,4 @@
+import { getCurrencyCode } from '../utils/budgetBrackets'
 import type { AnswerValue } from '../data/Questions'
 import { apiUrl } from '../services/apiUrl'
 
@@ -17,7 +18,7 @@ export function preferenceAnswers(preference: Preference): Record<string, Answer
   const days = Number(preference.daysCount)
   return { dayStart: String(preference.dayStart ?? ''), personalizationEnabled: preference.personalizationEnabled === false ? 'no' : 'yes', startDate: dates?.start ?? '', endDate: dates?.end ?? '', flexibleDates: dates?.flexible ? 'yes' : '', tripLength: days === 2 ? 'Weekend' : days === 4 ? '3–4 days' : days === 6 ? '5–7 days' : days === 8 ? 'More than a week' : days ? `${days} days` : '', groupSize: String(preference.peopleCount || 1), destinationScope: location?.scope ?? '', destinationFixed: location?.fixed ? 'yes' : '', destination: location?.destination ?? '', travellingFrom: location?.departureCity ?? '', budget: String(preference.budget ?? ''), tripFeeling: (preference.moodPreferences as string[] ?? []).map(mood => mood === 'Food & Culture' ? 'Food & local culture' : mood), stayStyle: preference.accommodationPreferences as string[] ?? [], mustHave: String(preference.activitiesMustHave ?? ''), niceToHave: String(preference.activitiesPreferred ?? ''), noGo: String(preference.noGo ?? ''), pace: String(preference.pace ?? ''), discovery: String(preference.discovery ?? ''), companions: String(preference.companions ?? ''), ageGroups: preference.ageGroups as string[] ?? [], priorities: preference.priorities as string[] ?? [] }
 }
-export async function saveTravelDna(name: string, answers: Record<string, AnswerValue>, inviteEmail?: string, options?: { roomId?: string; onRoomCreated?: (roomId: string) => void; submitted?: boolean }) {
+export async function saveTravelDna(name: string, answers: Record<string, AnswerValue>, inviteEmail?: string, options?: { roomId?: string; onRoomCreated?: (roomId: string) => void; submitted?: boolean; homeCountry?: string | null }) {
   const userId = localStorage.getItem('gotogether.current-user-id')
   if (!userId) throw new Error('Please sign in to save your quest.')
   let roomId = options?.roomId
@@ -27,7 +28,7 @@ export async function saveTravelDna(name: string, answers: Record<string, Answer
     roomId = room.id; invitation = room.invite; options?.onRoomCreated?.(roomId)
   }
   const existing = await getRoomPreference(userId, roomId)
-  const payload = preferencePayload(answers, roomId, options?.submitted ?? true)
+  const payload = { ...preferencePayload(answers, roomId, options?.submitted ?? true), ...(options?.homeCountry ? { homeCountry: options.homeCountry, currency: getCurrencyCode(options.homeCountry) } : {}) }
   const preference = await request<{ id: string }>(`/users/${userId}/preferences${existing ? `/${existing.id}` : ''}`, { method: existing ? 'PATCH' : 'POST', body: JSON.stringify(payload) })
   window.dispatchEvent(new CustomEvent('gotogether:preferences-updated', { detail: roomId }))
   return { userId, roomId, preferenceId: preference.id, invitation }

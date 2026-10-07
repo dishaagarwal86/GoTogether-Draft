@@ -29,7 +29,7 @@ try {
     console.log(`Workspace preview: ${uiUrl}/workspace-preview\nQuick start: ${uiUrl}/travel-dna/new\nUses the isolated test database; create a local account to save trips. External AI and email are disabled.`)
     await new Promise(resolveStop => { process.once('SIGINT', resolveStop); process.once('SIGTERM', resolveStop) })
   } else {
-  const scripts = process.env.JOURNEY_TEST_SCRIPT ? [process.env.JOURNEY_TEST_SCRIPT] : ['tools/check-solo-journey.mjs', 'tools/check-group-journey.mjs', 'tools/check-workspace.mjs', 'tools/check-journey.mjs', 'tools/check-personalization.mjs', 'tools/check-presentation.mjs']
+  const scripts = process.env.JOURNEY_TEST_SCRIPT ? [process.env.JOURNEY_TEST_SCRIPT] : ['tools/check-solo-journey.mjs', 'tools/check-group-journey.mjs', 'tools/check-workspace.mjs', 'tools/check-journey.mjs', 'tools/check-personalization.mjs', 'tools/check-generated-ui.mjs', 'tools/check-presentation.mjs']
   for (const script of scripts) {
   const code = await new Promise((resolveExit, reject) => {
     const child = spawn(process.execPath, [script], { cwd: resolve(root, 'frontend'), env: { ...env, JOURNEY_TEST_URL: uiUrl }, stdio: 'inherit' })

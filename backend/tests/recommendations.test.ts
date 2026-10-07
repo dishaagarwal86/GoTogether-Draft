@@ -36,3 +36,9 @@ test('fair compromise protects the least represented traveller instead of just t
   assert.equal(result.results[1].id, 'fair')
   assert.equal(new Set(result.results.map(item => item.id)).size, result.results.length)
 })
+
+test('fixed autocomplete destinations match the city and country without relaxing either', () => {
+  const pref = preference({ location_preferences: { destination: 'Kyoto, Japan', fixed: true } })
+  const result = rankRecommendations([pref], [trip('correct', { destination: 'Kyoto', country: 'Japan' }), trip('different-city', { destination: 'Osaka', country: 'Japan' }), trip('different-country', { destination: 'Kyoto', country: 'Elsewhere' })])
+  assert.deepEqual(result.allResults.map(item => item.id), ['correct'])
+})

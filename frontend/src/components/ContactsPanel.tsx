@@ -11,8 +11,13 @@ export function ContactsPanel() {
   const [notice, setNotice] = useState('')
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
-  const reload = () => user && getContacts(user.id).then(setContacts).catch(() => setError('We couldn’t load your contacts right now.'))
-  useEffect(() => { reload() }, [user?.id])
+  const userId = user?.id
+  useEffect(() => {
+    if (!userId) return
+    let active = true
+    getContacts(userId).then(value => { if (active) setContacts(value) }).catch(() => { if (active) setError('We couldn’t load your contacts right now.') })
+    return () => { active = false }
+  }, [userId])
   const invite = async (event: FormEvent) => {
     event.preventDefault()
     if (!user || busy) return

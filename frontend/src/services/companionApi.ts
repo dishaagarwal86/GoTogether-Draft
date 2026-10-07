@@ -3,7 +3,8 @@ import { apiUrl } from './apiUrl'
 export type CompanionTask = 'extract' | 'group-dna' | 'explain' | 'chat'
 export type AiSource = 'openai' | 'ollama' | 'fallback'
 export type Extraction = { moods?: string[]; budget?: string; pace?: string; mustHave?: string; noGo?: string; daysCount?: number }
-export type CompanionReply = { id: string; summary: string; source: AiSource; notice?: string; extracted?: Extraction; message?: string; applied?: boolean; appliedFields?: string[]; itineraryId?: string; preferences?: unknown; createdAt?: string }
+export type CompanionPlace = { name: string; tag: string; reason: string }
+export type CompanionReply = { id: string; summary: string; source: AiSource; notice?: string; extracted?: Extraction; places?: CompanionPlace[]; message?: string; applied?: boolean; appliedFields?: string[]; itineraryId?: string; preferences?: unknown; createdAt?: string }
 export type PersonalStory = { id: string; resultTitle: string; scrapbookIntro: string; whyItWorks: string[]; tradeoffNote: string; days: Array<{ day: number; note: string }>; source: AiSource; notice?: string }
 type CompanionRequest = { task: CompanionTask; message?: string; roomId?: string; itineraryId?: string; preferences?: unknown; includeCrew?: boolean }
 async function request<T>(path: string, body?: unknown): Promise<T> {

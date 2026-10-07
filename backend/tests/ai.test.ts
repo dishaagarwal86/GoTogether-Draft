@@ -47,7 +47,7 @@ test('provider calls enforce bounds and expose failures as fallbacks without net
     calls++
     assert.equal(request.max_output_tokens, 2500)
     assert.ok(options.signal instanceof AbortSignal)
-    assert.equal(this._client.timeout, 15000)
+    assert.equal(this._client.timeout, 10000)
     assert.equal(this._client.maxRetries, 0)
     assert.equal(request.input[0].role, 'system')
     assert.equal(request.input[1].role, 'user')
@@ -71,4 +71,36 @@ test('provider calls enforce bounds and expose failures as fallbacks without net
     process.env.OLLAMA_API_KEY = ''; process.env.OPENAI_API_KEY = ''
     assert.equal((await run()).source, 'fallback'); assert.equal(calls, before)
   } finally { for (const key of keys) { if (original[key] === undefined) delete process.env[key]; else process.env[key] = original[key] } }
+})
+
+test('near-JSON from reasoning models is repaired before validation', async () => {
+  const { extractJson } = await import('../src/services/aiProvider.js')
+  assert.deepEqual(extractJson('```json\n{"summary":"ok"}\n```'), { summary: 'ok' })
+  const days = (extractJson('{"days":[{"day":1,"a":{"x":1}},"{day":2,"b":1},{"day":3,"c":{"y":1}},"day":4,\\u0022d\\u0022:1}]}') as { days: Array<{ day: number }> }).days
+  assert.deepEqual(days.map(day => day.day), [1, 2, 3, 4])
+})
+
+test('AI itineraries keep stay nights within the trip length', async () => {
+  const { mergePlannerPreferences, normaliseItineraries } = await import('../src/services/aiItineraryService.js')
+  const merged = mergePlannerPreferences([{ budget: 'Moderate', days_count: 3, dates: { start: '2026-11-01', end: '2026-11-30' }, location_preferences: { destination: 'Japan' }, mood_preferences: [], activities_must_have: null, activities_preferred: null, accommodation_preferences: [], data: {} }])
+  const [trip] = normaliseItineraries({ itineraries: [{ destination: 'Osaka', travel_dates: { start: '2026-11-10', end: '2026-11-30' }, days: Array.from({ length: 3 }, () => ({ morning: { activity: 'Breakfast' }, afternoon: { activity: 'Museum' }, evening: { activity: 'Dinner' } })), stays: [{ name: 'Inn', price_per_night: 100 }] }] }, merged)
+  assert.equal(trip.stays[0].nights, 2)
+  assert.equal(trip.stays[0].totalPrice, 200)
+  assert.equal(trip.travel_dates.end, '2026-11-12')
+})
+
+test('generated itineraries reject invalid dates, currencies, missing activities and wrong durations', async () => {
+  const { mergePlannerPreferences, normaliseItineraries } = await import('../src/services/aiItineraryService.js')
+  const preferences = { budget: 'Moderate', days_count: 3, dates: { start: '2026-11-01', end: '2026-11-10' }, location_preferences: { destination: 'Japan', fixed: true }, mood_preferences: [], activities_must_have: null, activities_preferred: null, accommodation_preferences: [], data: {} }
+  const merged = mergePlannerPreferences([preferences, { ...preferences, dates: { start: '2026-11-05', end: '2026-11-08' } }])
+  assert.equal(merged.availability.start, '2026-11-05')
+  assert.equal(merged.availability.end, '2026-11-08')
+  const draft = { destination: 'Osaka', country: 'Japan', currency: 'USD', travel_dates: { start: '2026-11-05', end: '2026-11-07' }, days: Array.from({ length: 3 }, () => ({ morning: { activity: 'Breakfast' }, afternoon: { activity: 'Museum' }, evening: { activity: 'Dinner' } })), stays: [{ name: 'A stay idea', stars: 5, review_score: 9.9, highlights: ['Free cancellation'], price_per_night: 100 }] }
+  const [trip] = normaliseItineraries([draft], merged)
+  assert.equal(trip.stays[0].reviewScore, 0); assert.equal(trip.stays[0].stars, 0); assert.deepEqual(trip.stays[0].highlights, [])
+  for (const invalid of [{ ...draft, budget: 'Premium' }, { ...draft, currency: 'INR' }, { ...draft, days: draft.days.slice(0, 2) }, { ...draft, days: [{}, {}, {}] }, { ...draft, travel_dates: { start: '2026-11-07' } }, { ...draft, travel_dates: { start: '2026-11-01' } }]) assert.deepEqual(normaliseItineraries([invalid], merged), [])
+  // An impossible supplied date is replaced by the validated shared start.
+  assert.equal(normaliseItineraries([{ ...draft, travel_dates: { start: '2026-02-30' } }], merged)[0].travel_dates.start, '2026-11-05')
+  const conflicting = mergePlannerPreferences([preferences, { ...preferences, dates: { start: '2026-12-01', end: '2026-12-10' } }])
+  assert.deepEqual(normaliseItineraries([draft], conflicting), [])
 })

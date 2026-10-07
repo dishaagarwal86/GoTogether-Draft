@@ -35,9 +35,22 @@ test(`working itinerary contract (${process.env.DATABASE_PROVIDER})`, async t =>
     await t.test('account, room and plan access cannot be forged', async () => {
       assert.equal((await request(path)).status, 401)
       assert.equal((await request(path, member.token)).status, 403)
+      assert.equal((await request(path + '/confirmations', member.token)).status, 403)
+      assert.equal((await request(path + '/area-ideas?destination=Kyoto', member.token)).status, 403)
       assert.equal((await request(`/users/${owner.user.id}`, member.token, undefined, 'DELETE')).status, 403)
       assert.equal((await request(`/trip-rooms/${room}`, member.token, { ownerId: member.user.id }, 'PATCH')).status, 403)
       assert.equal((await request('/trip-rooms', undefined, { name: 'Forged', tripName: 'Forged', ownerId: owner.user.id })).status, 401)
+    })
+    await t.test('legacy suggestion writes cannot change planning records or another user’s suggestions', async () => {
+      const ownPath = `/users/${owner.user.id}/suggested-itineraries`
+      const created = await request(ownPath, owner.token, { title: 'My manual idea', userId: member.user.id })
+      assert.equal(created.status, 201); assert.equal(created.body.data.userId, owner.user.id)
+      const id = created.body.data.id
+      assert.equal((await request(`/users/${member.user.id}/suggested-itineraries/${id}`, member.token, { title: 'Hijacked' }, 'PATCH')).status, 404)
+      assert.equal((await request(`${ownPath}/${id}`, owner.token, { title: 'Updated manual idea' }, 'PATCH')).status, 200)
+      for (const protectedId of [`aiq_v3_${room}_version`, 'confirm2-scoped-record', 'ideas3-scoped-record']) {
+        assert.equal((await request(`${ownPath}/${protectedId}`, owner.token, { results: [], confirmed: true }, 'PATCH')).status, 403)
+      }
     })
     await t.test('creation uses a current canonical recommendation and is idempotent', async () => {
       assert.equal((await request(path, owner.token, { catalogueId: 'fabricated' })).status, 409)
@@ -51,15 +64,37 @@ test(`working itinerary contract (${process.env.DATABASE_PROVIDER})`, async t =>
       assert.equal((await request(path, member.token)).status, 200)
       assert.equal((await request(path + '/changes', member.token, { type: 'rename', title: 'Hijacked', expectedRevision: 1, requestId: randomUUID() })).status, 403)
     })
+    await t.test('activity confirmations survive concurrent cards but expire after an edit', async () => {
+      const initial = await request(path + '/confirmations', member.token)
+      assert.equal(initial.status, 200)
+      const [first, second] = plan.days[0].items
+      const confirm = (itemId: string, itemVersion: string, confirmed = true) => request(path + '/confirmations', member.token, { itemId, itemVersion, confirmed })
+      const results = await Promise.all([confirm(first.id, initial.body.data.versions[first.id]), confirm(second.id, initial.body.data.versions[second.id])])
+      assert.deepEqual(results.map(result => result.status), [200, 200])
+      let state = (await request(path + '/confirmations', owner.token)).body.data
+      assert.equal(state.confirmations[first.id].length, 1); assert.equal(state.confirmations[second.id].length, 1)
+      assert.equal((await confirm('missing-activity', 'anything')).status, 404)
+      assert.equal((await confirm(first.id, 'stale-version')).status, 409)
+      const edited = await change({ type: 'update', ...first, title: 'A revised morning', itemId: first.id })
+      assert.equal(edited.status, 200); plan = edited.body.data
+      state = (await request(path + '/confirmations', owner.token)).body.data
+      assert.equal(state.confirmations[first.id], undefined); assert.equal(state.confirmations[second.id].length, 1)
+      assert.equal((await confirm(first.id, initial.body.data.versions[first.id])).status, 409)
+      assert.equal((await confirm(first.id, state.versions[first.id])).status, 200)
+      assert.equal((await confirm(second.id, state.versions[second.id], false)).status, 200)
+      assert.equal((await request(path + '/confirmations', owner.token)).body.data.confirmations[second.id], undefined)
+      plan = (await change({ type: 'undo' })).body.data
+    })
     await t.test('move, readback, retry, and undo preserve the exact activity', async () => {
       const item = plan.days[0].items[0]
       const before = structuredClone(plan.days)
       const command = { type: 'move', itemId: item.id, dayId: plan.days[1].id, index: 0 }
       const key = randomUUID()
-      const moved = await change(command, 1, key); assert.equal(moved.status, 200); plan = moved.body.data
+      const revision = plan.revision
+      const moved = await change(command, revision, key); assert.equal(moved.status, 200); plan = moved.body.data
       assert.deepEqual(plan.days[1].items[0], item)
-      assert.equal((await change(command, 1, key)).body.data.revision, 2)
-      assert.equal((await change(command, 1)).status, 409)
+      assert.equal((await change(command, revision, key)).body.data.revision, revision + 1)
+      assert.equal((await change(command, revision)).status, 409)
       assert.deepEqual((await request(path, owner.token)).body.data.days, plan.days)
       const undo = await change({ type: 'undo' }); assert.equal(undo.status, 200); plan = undo.body.data
       assert.deepEqual(plan.days, before)
@@ -68,6 +103,7 @@ test(`working itinerary contract (${process.env.DATABASE_PROVIDER})`, async t =>
       const itemId = plan.days[0].items[0].id
       plan = (await change({ type: 'lock', itemId })).body.data
       assert.equal((await change({ type: 'remove', itemId })).status, 409)
+      assert.equal((await change({ type: 'switch', catalogueId: trip.id })).status, 409)
       assert.equal((await change({ type: 'move', itemId, dayId: plan.days[1].id, index: 0 })).status, 409)
       assert.equal((await change({ type: 'add', dayId: plan.days[0].id, title: 'Invalid', kind: 'food', time: '99:99', duration: -1 })).status, 400)
       assert.equal((await change({ type: 'overwrite', days: [] })).status, 404)

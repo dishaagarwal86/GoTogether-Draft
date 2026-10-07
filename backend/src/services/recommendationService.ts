@@ -2,10 +2,11 @@ import { questParticipants, sharedAvailability } from './questParticipants.js'
 import { selectRows } from '../storage.js'
 import { budgetRank, moodName, normalize, violatesNoGo } from './travelPreferences.js'
 import { contextFor, effectiveMemories, getTravelProfile } from './travelMemory.js'
+import { aiQuestItineraries, type AiItinerary } from './aiItineraryService.js'
 import { contextKey } from './aiHistory.js'
 
 export type Preference = { user_id?: string; dates?: { start?: string | null; end?: string | null; flexible?: boolean }; budget: string | null; days_count: number | null; location_preferences: { scope?: string; destination?: string; departureCity?: string; fixed?: boolean } | null; mood_preferences: string[] | null; activities_must_have: string | null; activities_preferred: string | null; accommodation_preferences: string[] | null; data: { submitted?: boolean; noGo?: string; pace?: string; ageGroups?: string[]; companions?: string; dayStart?: string; personalizationEnabled?: boolean } }
-export type Catalogue = { id: string; title: string; destination: string; country: string; duration_days: number; budget: string; estimated_cost_usd: number; seasons: string[]; moods: string[]; location_type: string; short_description: string; why_it_fits: string; daily_plan: unknown; ai_context: { pace?: string; highlights?: string[]; avoidIf?: string[]; activityTags?: string[] } }
+export type Catalogue = Partial<Pick<AiItinerary, 'currency' | 'travel_dates' | 'flights' | 'stays' | 'source' | 'cover_image'>> & { id: string; title: string; destination: string; country: string; duration_days: number; budget: string; estimated_cost_usd: number; seasons: string[]; moods: string[]; location_type: string; short_description: string; why_it_fits: string; daily_plan: unknown; ai_context: { pace?: string; highlights?: string[]; avoidIf?: string[]; activityTags?: string[] } }
 const words = (value = '') => normalize(value).split(' ').filter(word => word.length > 3 && !['with', 'have', 'want', 'would', 'like', 'some'].includes(word))
 const fraction = (desired: string[], available: string[]) => desired.length ? desired.filter(item => available.some(value => normalize(value).includes(normalize(item)))).length / desired.length : .7
 const mean = (values: number[]) => values.reduce((total, value) => total + value, 0) / values.length
@@ -21,7 +22,7 @@ export function rankRecommendations(preferences: Preference[], catalogue: Catalo
   const pool = catalogue.filter(trip => {
     const activities = JSON.stringify([trip.daily_plan, trip.ai_context?.highlights, trip.ai_context?.avoidIf, trip.ai_context?.activityTags, trip.moods])
     return !availability.conflict && (availability.days === null || trip.duration_days <= availability.days) && budgetRank(trip.budget) <= budgetCeiling
-      && fixedPlaces.every(place => [trip.destination, trip.country].some(value => normalize(value) === place))
+      && fixedPlaces.every(place => [trip.destination, trip.country, `${trip.destination}, ${trip.country}`].some(value => normalize(value) === place))
       && preferences.every(item => !item.days_count || Math.abs(trip.duration_days - item.days_count) <= 2)
       && !noGos.some(noGo => violatesNoGo(noGo, activities))
   })
@@ -47,7 +48,7 @@ export function rankRecommendations(preferences: Preference[], catalogue: Catalo
   const picks = [best && { ...best, label: 'Best shared match' }, fair && { ...fair, label: 'Fair compromise' }, unexpected && { ...unexpected, label: 'Alternative experience' }].filter(item => Boolean(item)) as Array<NonNullable<typeof best> & { label: string }>
   return {
     memberCount: preferences.length,
-    travelDna: { sharedVibe: [...new Set(sharedMoods)].slice(0, 3), budgetStyle: ['Budget-friendly', 'Moderate', 'Premium'][budgetCeiling], noGoActivities: noGos, pacePreferences: preferences.map(item => item.data?.pace).filter(Boolean), mustHaveActivities: preferences.map(item => item.activities_must_have).filter(Boolean) },
+    travelDna: { departureCities: [...new Set(preferences.map(item => item.location_preferences?.departureCity).filter((city): city is string => Boolean(city)))], groupSize: preferences.length, sharedVibe: [...new Set(sharedMoods)].slice(0, 3), budgetStyle: ['Budget-friendly', 'Moderate', 'Premium'][budgetCeiling], noGoActivities: noGos, pacePreferences: preferences.map(item => item.data?.pace).filter(Boolean), mustHaveActivities: preferences.map(item => item.activities_must_have).filter(Boolean) },
     results: picks,
     allResults: scored.map(trip => ({ ...trip, label: picks.find(pick => pick.id === trip.id)?.label ?? 'Another matching itinerary' })),
     blockers: !picks.length ? ['No starting itinerary fits the selected destination, budget, trip length, and no-go activities. Adjust your preferences to explore other possibilities; your limits have been kept.'] : picks.length < 3 ? ['These are the available starting points within your preferences. Check the duration before choosing.'] : [],
@@ -72,12 +73,16 @@ export async function recommendForQuest(roomId: string) {
     activities_preferred: [preference.activities_preferred, ...notes('activity')].filter(Boolean).join('; '),
     data: { ...preference.data, noGo: [preference.data?.noGo, ...notes('no_go')].filter(Boolean).join('; ') },
   }))
-  const ranked = rankRecommendations(group.ready ? effectivePreferences : [], catalogue)
   const availability = sharedAvailability(savedPreferences)
+  const preferenceVersion = contextKey([group.totalMembers, group.participants.map(person => [person.id, person.status]), effectivePreferences, acceptedNotes])
+  const generated = group.ready && !availability.conflict
+    ? await aiQuestItineraries(roomId, group.participants.find(person => person.role === 'owner')?.id, effectivePreferences, preferenceVersion)
+    : { results: [], pending: false }
+  // Generated options pass the same hard filters and scoring as the catalogue.
+  const ranked = rankRecommendations(group.ready ? effectivePreferences : [], [...catalogue, ...generated.results])
   const blockers = !group.ready ? [`${group.completedMembers} of ${group.totalMembers} travellers are ready. Everyone must confirm their preferences before group matches appear.`]
     : availability.conflict ? ['Your travel dates do not overlap. Discuss another date window and update your preferences.'] : ranked.blockers
-  const preferenceVersion = contextKey([group.totalMembers, group.participants.map(person => [person.id, person.status]), effectivePreferences, acceptedNotes])
-  return { ...ranked, blockers, totalMembers: group.totalMembers, memberCount: group.completedMembers, ready: group.ready,
+  return { ...ranked, generationPending: generated.pending, blockers, totalMembers: group.totalMembers, memberCount: group.completedMembers, ready: group.ready,
     participants: group.participants.map(({ preference: _private, ...person }) => person), availability,
     questReadiness: { totalMembers: group.totalMembers, completedMembers: group.completedMembers,
       readinessState: !group.ready ? 'gathering' as const : !ranked.results.length ? 'deciding' as const : 'unlocked' as const,
