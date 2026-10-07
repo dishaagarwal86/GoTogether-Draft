@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "preview": "vite preview",
-    "test:journey": "node tools/run-journey-check.mjs"
+    "test:journey": "node tools/run-journey-check.mjs",
+    "test:static-routes": "node tools/check-static-routes.mjs"
   },
   "dependencies": {
     "react": "^19.2.8",

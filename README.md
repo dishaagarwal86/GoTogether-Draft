@@ -59,6 +59,21 @@ That starts PostgreSQL, applies `database/migrations/*.sql` to a new database vo
 
 Docker builds use the public npm registry by default. If your network requires an approved npm mirror, build with `docker compose build --build-arg NPM_REGISTRY=https://your-mirror.example/npm/`, then run `docker compose up -d`. Keep TLS certificate verification enabled.
 
+## Vercel frontend deployment
+
+Deploy the React application using the Vite framework preset. Both supported Root Directory settings have checked-in configuration:
+
+| Root Directory | Configuration | Build output |
+| --- | --- | --- |
+| `frontend` | `frontend/vercel.json` | `dist` |
+| Repository root | `vercel.json` | `frontend/dist` |
+
+These configurations build the frontend and serve `index.html` for application routes such as `/login`, `/travel-dna/new`, and `/quests/:roomId`. This lets React Router handle direct visits and page refreshes instead of Vercel returning `404 NOT_FOUND`. Deploy the application rather than the standalone landing-page file in `artifacts/`.
+
+Set `VITE_API_URL` in Vercel to the deployed backend origin (without `/api`) before building. On the backend, set `FRONTEND_URL` and `APP_URL` to the public Vercel frontend origin. The Express API and database run separately; the frontend deployment does not start them. Redeploy after changing routing configuration or build-time environment variables.
+
+Run `npm --prefix frontend run build` followed by `npm --prefix frontend run test:static-routes` to check landing-page navigation, direct links, and refreshes against the production files and both routing configurations. This local check does not contact a deployed backend.
+
 ## Application journey
 
 The app continues the landing page’s design across public browsing and the signed-in experience.
