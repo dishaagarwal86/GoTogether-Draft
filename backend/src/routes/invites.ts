@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { acceptTripRoomInvite, acceptTripRoomInviteById, getTripRoomInvite, listPendingTripRoomInvites } from '../services/invitationService.js'
+import { acceptTripRoomInvite, acceptTripRoomInviteById, claimGuestInvitePreferences, getTripRoomInvite, listPendingTripRoomInvites, saveGuestInvitePreferences } from '../services/invitationService.js'
 import { userForToken } from '../services/authService.js'
 
 export const invitesRouter = Router()
@@ -17,4 +17,10 @@ invitesRouter.get('/:token', async (request, response, next) => {
 })
 invitesRouter.post('/:token/accept', async (request, response, next) => {
   try { const user = await userForToken(bearer(request.header('authorization'))); if (!user) return response.status(401).json({ error: 'Please sign in to accept this invitation.' }); return response.json({ data: await acceptTripRoomInvite(String(request.params.token), user) }) } catch (error) { return next(error) }
+})
+invitesRouter.post('/:token/guest-preferences', async (request, response, next) => {
+  try { const sessionId = typeof request.body?.guestSessionId === 'string' ? request.body.guestSessionId : ''; const answers = request.body?.answers && typeof request.body.answers === 'object' ? request.body.answers as Record<string, unknown> : {}; return response.status(201).json({ data: await saveGuestInvitePreferences(String(request.params.token), sessionId, answers) }) } catch (error) { return next(error) }
+})
+invitesRouter.post('/:token/claim-guest', async (request, response, next) => {
+  try { const user = await userForToken(bearer(request.header('authorization'))); if (!user) return response.status(401).json({ error: 'Please sign in to save your place.' }); const sessionId = typeof request.body?.guestSessionId === 'string' ? request.body.guestSessionId : ''; return response.json({ data: await claimGuestInvitePreferences(String(request.params.token), sessionId, user) }) } catch (error) { return next(error) }
 })

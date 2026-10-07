@@ -18,6 +18,7 @@ function AuthPage({ mode }: { mode: 'login' | 'signup' }) {
   const [busy, setBusy] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const signUp = mode === 'signup'
+  const isGuestClaim = Boolean(new URLSearchParams(location.search).get('next')?.includes('/join/'))
   const next = safeNext(location.search)
   const switchTo = `${signUp ? '/login' : '/signup'}${location.search}`
   if (!ready) return <LoadingState />
@@ -29,6 +30,7 @@ function AuthPage({ mode }: { mode: 'login' | 'signup' }) {
     setBusy(true); setError('')
     try {
       const credentials = { email: String(data.get('email')).trim(), password: String(data.get('password')) }
+      if (signUp && isGuestClaim && data.get('consent') !== 'yes') throw new Error('Please confirm that you would like to create your GoTogether profile.')
       if (signUp) await signup({ ...credentials, firstName: String(data.get('firstName')).trim(), lastName: String(data.get('lastName')).trim(), country: String(data.get('country')) })
       else await login(credentials)
       navigate(next, { replace: true, state: { welcome: signUp } })
@@ -44,6 +46,7 @@ function AuthPage({ mode }: { mode: 'login' | 'signup' }) {
           <label>Email address<input name="email" type="email" autoComplete="email" placeholder="you@example.com" defaultValue={new URLSearchParams(location.search).get('email') ?? ''} required /></label>
           <label htmlFor="account-password">{signUp ? 'Create a password' : 'Password'}</label><div className="password-field"><input id="account-password" name="password" type={showPassword ? 'text' : 'password'} autoComplete={signUp ? 'new-password' : 'current-password'} placeholder={signUp ? 'At least 8 characters' : 'Your password'} minLength={signUp ? 8 : undefined} required /><button type="button" aria-label={showPassword ? 'Hide password' : 'Show password'} aria-pressed={showPassword} onClick={() => setShowPassword(!showPassword)}><Icon name="eye" size={19} /></button></div>
           {signUp && <label>Where’s home? <span className="field-optional">Optional</span><select name="country" autoComplete="country-name" defaultValue=""><option value="">Choose your country</option>{countries.map((country) => <option key={country}>{country}</option>)}</select></label>}
+          {signUp && isGuestClaim && <label className="journey-checkbox"><input name="consent" type="checkbox" value="yes" required /> I agree to create a GoTogether profile and save my place in this quest.</label>}
           {error && <p className="form-error" role="alert">{error}</p>}
           <button className="primary-button" type="submit" disabled={busy}>{busy ? 'A little moment…' : signUp ? 'Create my account' : 'Let’s get back out there'}<Icon /></button>
         </form>

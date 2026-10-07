@@ -37,5 +37,5 @@ export function PageHeading({ eyebrow, title, description, action }: { eyebrow: 
 export function EmptyState({ title, description, to, label, icon = 'compass' }: { title: string; description: string; to?: string; label?: string; icon?: string }) {
   return <div className="journey-empty"><span className="empty-symbol"><Icon name={icon} size={30} /></span><h2>{title}</h2><p>{description}</p>{to && <Link className="primary-button" to={to}>{label}<Icon /></Link>}</div>
 }
-export function LoadingState({ label = 'Gathering your next chapter…' }: { label?: string }) { return <div className="journey-loading" role="status"><span className="loading-orbit"><Icon name="compass" size={32} /></span><p>{label}</p></div> }
+export function LoadingState({ label = 'Finding a plan with room for every voice…' }: { label?: string }) { return <div className="journey-loading" role="status"><span className="loading-orbit"><Icon name="compass" size={32} /></span><p>{label}</p></div> }
 export function ErrorState({ message, retry }: { message: string; retry?: () => void }) { return <div className="journey-error" role="alert"><p>{message}</p>{retry && <button type="button" className="secondary-button" onClick={retry}>Try again <Icon /></button>}</div> }
