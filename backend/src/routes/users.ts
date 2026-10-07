@@ -1,14 +1,15 @@
 import { Router, type Request, type Response } from 'express'
-import { create, find, remove, update } from '../services/apiStore.js'
-import { notFound, payload, requireFields, routeParam } from './helpers.js'
+import { find, remove, update } from '../services/apiStore.js'
+import { notFound, payload, routeParam } from './helpers.js'
 import { listUserRooms } from '../services/roomService.js'
+import { HttpError, requireUser } from '../services/access.js'
 
 export const usersRouter = Router()
 
-usersRouter.post('/', async (request: Request, response: Response) => {
-  const input = payload(request)
-  if (!requireFields(response, input, ['name', 'email'])) return
-  response.status(201).json({ data: await create('users', 'user', input) })
+usersRouter.post('/', (_request, response) => response.status(410).json({ error: 'Create an account through /api/auth/signup.' }))
+usersRouter.use('/:userId', requireUser, (request, response, next) => {
+  if (routeParam(request, 'userId') !== response.locals.userId) throw new HttpError(403, 'This account belongs to another traveller.')
+  next()
 })
 usersRouter.get('/:userId/trip-rooms', async (request: Request, response: Response) => response.json({ data: await listUserRooms(routeParam(request, 'userId')) }))
 usersRouter.get('/:userId', async (request: Request, response: Response) => {

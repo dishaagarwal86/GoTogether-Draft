@@ -36,6 +36,9 @@ test(`AI HTTP and persistence contract (${process.env.DATABASE_PROVIDER})`, asyn
     await t.test('AI and recommendation endpoints require authentication and membership', async () => {
       assert.equal((await request('/companion', undefined, { task: 'chat', roomId, message: 'Hello' })).status, 401)
       assert.equal((await request('/personalise-itinerary', undefined, {})).status, 401)
+      assert.equal((await request('/itineraries/ai-generate', undefined, { roomId })).status, 401)
+      assert.equal((await request('/itineraries/ai-generate', other.token, { roomId })).status, 403)
+      assert.equal((await request('/itineraries/ai-generate', owner.token, { roomId })).status, 503)
       assert.equal((await request(`/recommendations/quests/${roomId}`)).status, 401)
       assert.equal((await request('/companion', other.token, { task: 'chat', roomId, message: 'Hello' })).status, 403)
       assert.equal((await request(`/companion/history?roomId=${roomId}`, other.token)).status, 403)
@@ -48,6 +51,17 @@ test(`AI HTTP and persistence contract (${process.env.DATABASE_PROVIDER})`, asyn
       assert.equal((await request(`/users/${other.user.id}/preferences`, other.token, { tripRoomId: roomId })).status, 403)
       assert.equal((await request(`/users/${owner.user.id}/preferences/${pref.id}`, owner.token, { moodPreferences: 'invalid array' }, 'PATCH')).status, 400)
       assert.equal((await request(`/users/${owner.user.id}/preferences/${pref.id}`, owner.token, { daysCount: -4 }, 'PATCH')).status, 400)
+    })
+    await t.test('merged catalogue and departure-city features use either database provider', async () => {
+      const catalogue = await request('/itineraries/catalogue')
+      assert.equal(catalogue.status, 200)
+      assert.equal(catalogue.body.data.length, 72)
+      const changed = await request(`/users/${owner.user.id}/preferences/${pref.id}`, owner.token, { locationPreferences: { destination: 'Kyoto', departureCity: 'Mumbai, India', fixed: false }, dayStart: '09:00', personalizationEnabled: false }, 'PATCH')
+      assert.equal(changed.status, 200)
+      const stored = await entities.find('preferences', pref.id)
+      assert.equal((stored?.locationPreferences as { departureCity: string }).departureCity, 'Mumbai, India')
+      assert.equal(stored?.dayStart, '09:00')
+      assert.equal(stored?.personalizationEnabled, false)
     })
     await t.test('extraction persists a visible fallback without changing preferences', async () => {
       const response = await request('/companion', owner.token, { task: 'extract', roomId, message: 'Food and nature. No hiking. A relaxed pace.' })

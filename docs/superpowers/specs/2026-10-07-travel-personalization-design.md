@@ -2,7 +2,7 @@
 
 Date: 2026-10-07
 
-Status: R&D proposal. The user selected GoTogether perks, including AI planning credits, as the initial redemption category. Reward amounts below are pilot assumptions. This proposal builds on the current local AI changes and the approved group decision design; these are separate from deployed behavior.
+Status: Broader R&D roadmap. A confirmation-based v1 is now implemented locally: saved editing, scoped memories, reviewed AI proposals, pasted history and points/credits. See [current implementation scope](../../personalization-v1.md) for delivered behavior, limits and verification. The additional capabilities below remain proposals unless listed there; local source changes do not establish deployment status.
 
 Build a persistent, editable itinerary first, then learn from changes that the traveller actually makes or accepts. Maintain a travel profile that users can inspect and correct, with evidence and context behind each preference. Past trips accelerate learning when users distinguish what they planned, what they did, and what they enjoyed. Rewards encourage useful contributions without turning generated itineraries into an unlimited source of credits.
 

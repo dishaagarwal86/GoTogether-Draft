@@ -1,3 +1,4 @@
+import { apiUrl } from '../services/apiUrl'
 import type { ExploreItinerary } from '../data/exploreItineraries'
 
 const IMAGES: Record<string, string> = {
@@ -43,14 +44,14 @@ function mapRow(row: CatalogueRow): ExploreItinerary {
 }
 
 export async function fetchCatalogue(): Promise<ExploreItinerary[]> {
-  const response = await fetch('/api/itineraries/catalogue')
+  const response = await fetch(apiUrl('/itineraries/catalogue'))
   if (!response.ok) throw new Error('Failed to load itineraries')
   const { data } = await response.json() as { data: CatalogueRow[] }
   return data.map(mapRow)
 }
 
 export async function fetchUserPreferences(userId: string): Promise<Record<string, unknown> | null> {
-  const response = await fetch(`/api/users/${userId}/preferences`)
+  const response = await fetch(apiUrl(`/users/${encodeURIComponent(userId)}/preferences`), { headers: { Authorization: `Bearer ${localStorage.getItem('gotogether.session-token') ?? ''}` } })
   if (!response.ok) return null
   const { data } = await response.json() as { data: Record<string, unknown>[] }
   return data.length > 0 ? data[0] : null
@@ -58,15 +59,15 @@ export async function fetchUserPreferences(userId: string): Promise<Record<strin
 
 type QuestResult = { id: string; title: string; destination: string; country: string; duration_days: number; budget: string; seasons: string[]; moods: string[]; location_type: string; short_description: string; why_it_fits: string; daily_plan: { day: number; morning: string; afternoon: string; evening: string }[]; score: number; label: string }
 export async function fetchQuestRecommendations(roomId: string): Promise<{ memberCount: number; results: Array<ExploreItinerary & { label: string }> }> {
-  const response = await fetch(`/api/recommendations/quests/${roomId}`)
+  const response = await fetch(apiUrl(`/recommendations/quests/${encodeURIComponent(roomId)}`), { headers: { Authorization: `Bearer ${localStorage.getItem('gotogether.session-token') ?? ''}` } })
   if (!response.ok) throw new Error('Could not load recommendations')
   const { data } = await response.json() as { data: { memberCount: number; results: QuestResult[] } }
   return { memberCount: data.memberCount, results: data.results.map((item) => ({ id: item.id, title: item.title, destination: item.destination, country: item.country, image: IMAGES[item.destination] ?? FALLBACK_IMAGE, duration: `${item.duration_days} days`, budget: item.budget as 'Budget-friendly' | 'Moderate' | 'Premium', seasons: item.seasons, moods: item.moods, locationType: item.location_type, matchScore: item.score, shortDescription: item.short_description, whyItFits: item.why_it_fits, dailyPlan: item.daily_plan.map((d) => ({ day: `Day ${d.day}`, morning: d.morning, afternoon: d.afternoon, evening: d.evening })), label: item.label })) }
 }
 export async function generateItineraries(preferences: Record<string, unknown>, roomId?: string): Promise<ExploreItinerary[]> {
-  const response = await fetch('/api/itineraries/ai-generate', {
+  const response = await fetch(apiUrl('/itineraries/ai-generate'), {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${localStorage.getItem('gotogether.session-token') ?? ''}` },
     body: JSON.stringify({ preferences, roomId }),
   })
   if (!response.ok) throw new Error('Could not generate itineraries')

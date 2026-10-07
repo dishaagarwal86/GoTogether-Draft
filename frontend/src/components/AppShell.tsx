@@ -9,6 +9,7 @@ import { ExplorePage } from '../pages/ExplorePage'
 import { GlobalNavbar } from './MainNavigation'
 import { AuthProvider, useAuth } from '../auth/AuthContext'
 import { LoginPage, SignUpPage } from '../pages/AuthPages'
+import { TravelStylePage } from '../pages/TravelStylePage'
 import { ProfilePage } from '../pages/ProfilePage'
 import { AuthPrompt } from './AuthPrompt'
 import { GroupDnaPage } from '../pages/GroupDnaPage'
@@ -20,6 +21,7 @@ import { LandingConcept } from '../pages/LandingConcept'
 import { DashboardPage } from '../pages/DashboardPage'
 import { EmptyState, Icon, LoadingState } from './Ui'
 import { TravelCanvas } from './TravelArtwork'
+import { WorkspacePreviewPage } from '../pages/WorkspacePreviewPage'
 
 export function AppShell() { return <AuthProvider><AppLayout /></AuthProvider> }
 function RequireAuth() {
@@ -35,7 +37,7 @@ function AppLayout() {
   const isAuth = ['/login', '/signup'].includes(location.pathname)
   useEffect(() => {
     if (!location.hash) window.scrollTo({ top: 0, behavior: 'instant' })
-    const titles: Record<string, string> = { '/dashboard': 'Your next chapter', '/login': 'Welcome back', '/signup': 'Join the journey', '/trips': 'My quests', '/explore': 'Find your somewhere', '/saved': 'Saved places', '/profile': 'Your profile', '/travel-dna/new': 'Start a quest', '/travel-dna/preferences': 'Your travel style', '/travel-dna/group-dna': 'Travel DNA', '/travel-dna/plan-paths': 'Your possible paths' }
+    const titles: Record<string, string> = { '/dashboard': 'Your next chapter', '/login': 'Welcome back', '/signup': 'Join the journey', '/trips': 'My quests', '/explore': 'Find your somewhere', '/saved': 'Saved places', '/profile': 'Your profile', '/travel-style': 'Your travel story', '/travel-dna/new': 'Start a quest', '/travel-dna/preferences': 'Your travel style', '/travel-dna/group-dna': 'Travel DNA', '/travel-dna/plan-paths': 'Your possible paths' }
     document.title = `${titles[location.pathname] ?? 'Good places. Better company.'} — Go.Together`
   }, [location.pathname, location.hash])
   return <div className={isLanding ? 'app-shell landing-shell gt-preview-shell' : `app-shell journey-shell${isAuth ? ' journey-auth-shell' : ''}`}>
@@ -47,8 +49,9 @@ function AppLayout() {
       <Route path="/login" element={<LoginPage />} /><Route path="/signup" element={<SignUpPage />} />
       <Route path="/invite/:token" element={<InvitePage key={location.pathname} />} /><Route path="/join/:token" element={<JoinQuestPage key={location.pathname} />} /><Route path="/explore" element={<ExplorePage key={location.pathname + location.search} />} />
       <Route path="/inspiration" element={<Navigate to="/explore" replace />} />
+      <Route path="/workspace-preview" element={<WorkspacePreviewPage />} />
       <Route element={<RequireAuth />}>
-        <Route path="/dashboard" element={<DashboardPage />} /><Route path="/profile" element={<ProfilePage />} />
+        <Route path="/travel-style" element={<TravelStylePage />} /><Route path="/dashboard" element={<DashboardPage />} /><Route path="/profile" element={<ProfilePage />} />
         <Route path="/trips" element={<PlanTripPage />} /><Route path="/plan" element={<Navigate to="/trips" replace />} />
         <Route path="/saved" element={<ExplorePage key={location.pathname + location.search} savedOnly />} /><Route path="/quests/:roomId" element={<QuestDetailPage key={location.pathname} />} />
         <Route path="/travel-dna/new" element={<CreateRoomPage key={location.search} />} /><Route path="/travel-dna/preferences" element={<QuestionsPage key={location.search} />} />

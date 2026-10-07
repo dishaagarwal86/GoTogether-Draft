@@ -46,7 +46,7 @@ try {
     try {
       assert.equal((await fetch(`${base}/plan`)).status, 404, 'Reproduces the missing SPA fallback')
       rewritesEnabled = true
-      for (const path of ['/plan', '/login', '/signup', '/dashboard', '/trips', '/travel-dna/new', '/travel-dna/preferences', '/travel-dna/group-dna?roomId=test', '/quests/test', '/invite/test', '/explore', '/saved', '/profile']) {
+      for (const path of ['/plan', '/login', '/signup', '/dashboard', '/trips', '/travel-dna/new', '/travel-dna/preferences', '/travel-dna/group-dna?roomId=test', '/quests/test', '/invite/test', '/explore', '/saved', '/profile', '/travel-style', '/workspace-preview']) {
         const result = await fetch(base + path)
         assert.equal(result.status, 200, `${configPath}: direct ${path}`)
         assert.equal(await result.text(), entry)
@@ -80,7 +80,7 @@ try {
       await page.goto(`${base}/explore`)
       await page.getByRole('button', { name: 'View itinerary' }).first().waitFor()
       assert.deepEqual(errors, [])
-      console.log(`PASS ${configPath}: production assets, 13 direct routes, landing CTA, login/signup refresh, and protected-route handoff`)
+      console.log(`PASS ${configPath}: production assets, 15 direct routes, landing CTA, login/signup refresh, and protected-route handoff`)
     } finally { await context.close(); server.closeAllConnections(); await new Promise(done => server.close(done)) }
   }
 } finally { await browser.close() }

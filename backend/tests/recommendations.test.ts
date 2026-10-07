@@ -5,6 +5,15 @@ import { rankRecommendations, type Catalogue, type Preference } from '../src/ser
 const preference = (changes: Partial<Preference> = {}): Preference => ({ budget: 'Moderate', days_count: 5, location_preferences: null, mood_preferences: ['Nature'], activities_must_have: null, activities_preferred: null, accommodation_preferences: [], data: {}, ...changes })
 const trip = (id: string, changes: Partial<Catalogue> = {}): Catalogue => ({ id, title: id, destination: id, country: 'Test', duration_days: 5, budget: 'Moderate', estimated_cost_usd: 100, seasons: [], moods: ['Nature'], location_type: 'City', short_description: id, why_it_fits: id, daily_plan: [{ day: 1, morning: 'Cooking class' }], ai_context: {}, ...changes })
 
+test('a fixed destination never silently switches countries and conflicts remain explicit', () => {
+  const kyoto = preference({ location_preferences: { destination: 'Kyoto', fixed: true } })
+  const bali = preference({ location_preferences: { destination: 'Bali', fixed: true } })
+  const catalogue = [trip('bali', { destination: 'Bali' }), trip('kyoto', { destination: 'Kyoto', moods: [] })]
+  assert.deepEqual(rankRecommendations([kyoto], catalogue).results.map(item => item.id), ['kyoto'])
+  assert.deepEqual(rankRecommendations([kyoto, bali], catalogue).results, [])
+  assert.deepEqual(rankRecommendations([preference({ location_preferences: { destination: 'Unknown place', fixed: true } })], catalogue).results, [])
+})
+
 test('fewer than three matches never relax budget, duration, or no-go filters', () => {
   const catalogue = [trip('safe'), trip('expensive', { budget: 'Premium' }), trip('long', { duration_days: 12 }), trip('hike', { daily_plan: [{ morning: 'Mountain trek' }] })]
   const ranked = rankRecommendations([preference({ data: { noGo: 'no hiking' } })], catalogue)

@@ -34,16 +34,18 @@ export function validatePreferencePayload(value: unknown) {
     if (typeof input.kidsInvolved !== 'boolean') throw new HttpError(400, 'Invalid child traveller selection.')
     output.kidsInvolved = input.kidsInvolved
   }
+  if (input.personalizationEnabled !== undefined) { if (typeof input.personalizationEnabled !== 'boolean') throw new HttpError(400, 'Invalid personalization selection.'); output.personalizationEnabled = input.personalizationEnabled }
+  if (input.dayStart !== undefined) { if (typeof input.dayStart !== 'string' || input.dayStart && !/^(?:0[5-9]|1[0-4]):[0-5]\d$/.test(input.dayStart)) throw new HttpError(400, 'Choose a morning start time.'); output.dayStart = input.dayStart }
   for (const key of ['dates', 'locationPreferences']) {
     if (input[key] === undefined) continue
     if (input[key] === null) { output[key] = null; continue }
     const values = record(input[key])
-    const allowed = key === 'dates' ? ['start', 'end', 'flexible'] : ['scope', 'destination']
+    const allowed = key === 'dates' ? ['start', 'end', 'flexible'] : ['scope', 'destination', 'departureCity', 'fixed']
     const result: Record<string, unknown> = {}
     for (const field of allowed) {
       const item = values[field]
       if (item === undefined) continue
-      if (field === 'flexible') { if (typeof item !== 'boolean') throw new HttpError(400, 'Invalid flexible dates.'); result[field] = item }
+      if (field === 'flexible' || field === 'fixed') { if (typeof item !== 'boolean') throw new HttpError(400, `Invalid ${field} selection.`); result[field] = item }
       else { if (item !== null && (typeof item !== 'string' || item.length > 150)) throw new HttpError(400, `Invalid ${field}.`); result[field] = item }
     }
     output[key] = result

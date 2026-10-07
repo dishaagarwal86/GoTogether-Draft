@@ -1,8 +1,9 @@
 import { selectRows } from '../storage.js'
 import { budgetRank, moodName, normalize, violatesNoGo } from './travelPreferences.js'
+import { contextFor, effectiveMemories, getTravelProfile } from './travelMemory.js'
 import { contextKey } from './aiHistory.js'
 
-export type Preference = { user_id?: string; budget: string | null; days_count: number | null; location_preferences: { scope?: string; destination?: string; departureCity?: string } | null; mood_preferences: string[] | null; activities_must_have: string | null; activities_preferred: string | null; accommodation_preferences: string[] | null; data: { noGo?: string; pace?: string; ageGroups?: string[] } }
+export type Preference = { user_id?: string; budget: string | null; days_count: number | null; location_preferences: { scope?: string; destination?: string; departureCity?: string; fixed?: boolean } | null; mood_preferences: string[] | null; activities_must_have: string | null; activities_preferred: string | null; accommodation_preferences: string[] | null; data: { noGo?: string; pace?: string; ageGroups?: string[]; companions?: string; dayStart?: string; personalizationEnabled?: boolean } }
 export type Catalogue = { id: string; title: string; destination: string; country: string; duration_days: number; budget: string; estimated_cost_usd: number; seasons: string[]; moods: string[]; location_type: string; short_description: string; why_it_fits: string; daily_plan: unknown; ai_context: { pace?: string; highlights?: string[]; avoidIf?: string[]; activityTags?: string[] } }
 const words = (value = '') => normalize(value).split(' ').filter(word => word.length > 3 && !['with', 'have', 'want', 'would', 'like', 'some'].includes(word))
 const fraction = (desired: string[], available: string[]) => desired.length ? desired.filter(item => available.some(value => normalize(value).includes(normalize(item)))).length / desired.length : .7
@@ -14,9 +15,11 @@ export function rankRecommendations(preferences: Preference[], catalogue: Catalo
   const budgetCeiling = Math.min(...preferences.map(item => budgetRank(item.budget ?? 'Moderate')))
   const noGos = preferences.map(item => item.data?.noGo ?? '').filter(Boolean)
   const sharedMoods = preferences.flatMap(item => (item.mood_preferences ?? []).map(moodName))
+  const fixedPlaces = preferences.filter(item => item.location_preferences?.fixed).map(item => normalize(item.location_preferences?.destination ?? '')).filter(Boolean)
   const pool = catalogue.filter(trip => {
     const activities = JSON.stringify([trip.daily_plan, trip.ai_context?.highlights, trip.ai_context?.avoidIf, trip.ai_context?.activityTags, trip.moods])
     return budgetRank(trip.budget) <= budgetCeiling
+      && fixedPlaces.every(place => [trip.destination, trip.country].some(value => normalize(value) === place))
       && preferences.every(item => !item.days_count || Math.abs(trip.duration_days - item.days_count) <= 2)
       && !noGos.some(noGo => violatesNoGo(noGo, activities))
   })
@@ -44,7 +47,7 @@ export function rankRecommendations(preferences: Preference[], catalogue: Catalo
     memberCount: preferences.length,
     travelDna: { sharedVibe: [...new Set(sharedMoods)].slice(0, 3), budgetStyle: ['Budget-friendly', 'Moderate', 'Premium'][budgetCeiling], noGoActivities: noGos, pacePreferences: preferences.map(item => item.data?.pace).filter(Boolean), mustHaveActivities: preferences.map(item => item.activities_must_have).filter(Boolean) },
     results: picks,
-    blockers: !picks.length ? ['No catalogue itinerary fits everyone’s budget, trip length, and no-go activities. Review your preferences together; none of these limits were relaxed.'] : picks.length < 3 ? ['Only these itineraries satisfy everyone’s limits. We have kept those limits intact.'] : [],
+    blockers: !picks.length ? ['No starting itinerary fits the selected destination, budget, trip length, and no-go activities. Adjust your preferences to explore other possibilities; your limits have been kept.'] : picks.length < 3 ? ['These are the available starting points within your preferences. Check the duration before choosing.'] : [],
   }
 }
 
@@ -127,7 +130,12 @@ export async function recommendForQuest(roomId: string) {
   const accepted = new Set(members.map(member => member.user_id))
   const latest = new Map<string, Preference>()
   for (const preference of preferences) if (preference.user_id && accepted.has(preference.user_id) && !latest.has(preference.user_id)) latest.set(preference.user_id, preference)
-  const savedPreferences = [...latest.values()]
+  const savedPreferences = await Promise.all([...latest.values()].map(async preference => {
+    if (!preference.user_id || preference.data?.personalizationEnabled === false) return preference
+    const memory = effectiveMemories(await getTravelProfile(preference.user_id), contextFor(preference.data?.companions))
+    return { ...preference, mood_preferences: preference.mood_preferences?.length ? preference.mood_preferences : memory.interests,
+      data: { ...preference.data, pace: preference.data?.pace || memory.pace, noGo: [preference.data?.noGo, ...memory.avoid].filter(Boolean).join('; ') } }
+  }))
   const notes = (type: AcceptedQuestNote['type']) => acceptedNotes.filter(note => note.type === type).map(note => note.suggestion)
   const effectivePreferences = savedPreferences.map(preference => ({ ...preference,
     mood_preferences: [...(preference.mood_preferences ?? []), ...notes('mood')],

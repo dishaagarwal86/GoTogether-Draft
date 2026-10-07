@@ -5,7 +5,7 @@ import { PageHeading, EmptyState } from '../components/Ui'
 import mountains from '../assets/landing/mountains.jpg'
 import { ExploreItineraryCard } from '../components/ExploreItineraryCard'
 import { ItineraryDrawer } from '../components/ItineraryDrawer'
-import type { ExploreItinerary } from '../data/exploreItineraries'
+import { exploreItineraries, type ExploreItinerary } from '../data/exploreItineraries'
 import { fetchCatalogue } from '../apis/catalogue'
 
 const filterOptions = {
@@ -28,14 +28,26 @@ export function ExplorePage({ savedOnly = false }: { savedOnly?: boolean }) {
   const [openFilter, setOpenFilter] = useState<FilterName | null>(null)
   const [selected, setSelected] = useState<ExploreItinerary | null>(null)
   const [notice, setNotice] = useState('')
+  const [catalogueNotice, setCatalogueNotice] = useState('')
+  const placeId = params.get('place')
 
   useEffect(() => {
+    let active = true
     fetchCatalogue().then((data) => {
-      setItineraries(data)
-      const placeId = params.get('place')
-      if (placeId) setSelected(data.find((item) => item.id === placeId) ?? null)
-    }).finally(() => setLoading(false))
-  }, [])
+      if (!active) return
+      // Preserve links and saved IDs from the original inspiration collection.
+      const collection = [...data, ...exploreItineraries.filter(item => !data.some(trip => trip.id === item.id))]
+      setItineraries(collection)
+      if (placeId) setSelected(collection.find(item => item.id === placeId) ?? null)
+      setCatalogueNotice('')
+    }).catch(() => {
+      if (!active) return
+      setItineraries(exploreItineraries)
+      if (placeId) setSelected(exploreItineraries.find(item => item.id === placeId) ?? null)
+      setCatalogueNotice('Showing the inspiration collection while live itineraries are unavailable.')
+    }).finally(() => { if (active) setLoading(false) })
+    return () => { active = false }
+  }, [placeId])
 
   const toggle = (value: string, current: string[], setCurrent: (next: string[]) => void) => setCurrent(current.includes(value) ? current.filter((item) => item !== value) : [...current, value])
   const activeCount = moods.length + locations.length + Number(Boolean(budget)) + Number(Boolean(season))
@@ -49,6 +61,7 @@ export function ExplorePage({ savedOnly = false }: { savedOnly?: boolean }) {
     {savedOnly ? <><PageHeading eyebrow="FOR YOUR SOMEDAY LIST" title={<>Places that made<br />you <em>pause.</em></>} description="Keep a little inspiration for the next time someone says, 'we should go somewhere.'" /><p className="saved-collection-note">Your collection is saved for this account in this browser.</p></> : <header className="explore-hero"><img src={mountains} alt="A sweeping alpine valley at golden hour" /><div className="explore-hero-overlay" /><div className="explore-hero-copy"><p className="eyebrow">THE WORLD IS STILL FULL OF FIRSTS</p><h1>Find your kind<br />of <em>somewhere.</em></h1><p>A little inspiration. A whole world of possibility.</p></div></header>}
     {savedOnly && !saved.length && <EmptyState title="Keep a little wanderlust close." description="Tap the heart on any itinerary to save it here. Your next great idea might be one scroll away." to="/explore" label="Find some inspiration" icon="heart" />}
 
+    {catalogueNotice && <p className="saved-collection-note" role="status">{catalogueNotice}</p>}
     <section className="explore-filter-wrap" aria-label="Itinerary filters"><div className="explore-filters"><div className="filter-title"><span>Filter itineraries</span>{activeCount > 0 && <b>{activeCount} active</b>}</div>{(Object.keys(filterOptions) as FilterName[]).map((name) => <div className="filter-menu" key={name}><button className={openFilter === name ? 'filter-trigger is-open' : 'filter-trigger'} type="button" onClick={() => setOpenFilter(openFilter === name ? null : name)} aria-expanded={openFilter === name}>{name}<span>{name === 'Mood' ? moods.length : name === 'Location' ? locations.length : name === 'Budget' ? budget : season} ⌄</span></button>{openFilter === name && <div className="filter-options">{filterOptions[name].map((option) => { const isActive = name === 'Mood' ? moods.includes(option) : name === 'Location' ? locations.includes(option) : name === 'Budget' ? budget === option : season === option; return <button className={isActive ? 'is-active' : ''} type="button" key={option} aria-pressed={isActive} onClick={() => name === 'Mood' ? toggle(option, moods, setMoods) : name === 'Location' ? toggle(option, locations, setLocations) : name === 'Budget' ? setBudget(budget === option ? '' : option) : setSeason(season === option ? '' : option)}>{option}{isActive && <span>✓</span>}</button> })}</div>}</div>)}<button className="reset-filters" type="button" onClick={reset} disabled={!activeCount}>Reset filters</button></div></section>
     <section className="explore-results"><div className="explore-results-heading"><div><p className="eyebrow">{loading ? 'Loading quests…' : 'Quests for your crew'}</p><h2>{resultHeading}</h2></div><p>Thoughtfully matched to the things your group cares about.</p></div>{results.length ? <div className="explore-grid">{results.map((itinerary) => <ExploreItineraryCard key={itinerary.id} itinerary={itinerary} saved={saved.includes(itinerary.id)} onSave={() => toggleSaved(itinerary.id)} onView={() => setSelected(itinerary)} />)}</div> : <div className="no-results" hidden={savedOnly && !saved.length}><span>✦</span><h2>No close matches yet.</h2><p>Try opening up a filter or two—we have more beautiful directions to explore.</p><button type="button" onClick={reset}>Reset filters</button></div>}</section>
     <ItineraryDrawer itinerary={selected} onClose={() => setSelected(null)} onUse={useInspiration} />

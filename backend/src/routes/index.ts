@@ -10,6 +10,8 @@ import { companionRouter } from './companion.js'
 import { invitesRouter } from './invites.js'
 import { personaliseItineraryRouter } from './personaliseItinerary.js'
 import { recommendationsRouter } from './recommendations.js'
+import { workingPlansRouter } from './workingPlans.js'
+import { travelMemoryRouter } from './travelMemory.js'
 
 export const apiRouter = Router()
 apiRouter.get('/health', (_request, response) => response.json({ status: 'ok' }))
@@ -17,6 +19,8 @@ apiRouter.use('/auth', authRouter)
 apiRouter.use('/companion', companionRouter)
 apiRouter.use('/personalise-itinerary', personaliseItineraryRouter)
 apiRouter.use('/recommendations', recommendationsRouter)
+apiRouter.use('/working-plans', workingPlansRouter)
+apiRouter.use('/me/travel-style', travelMemoryRouter)
 apiRouter.use('/invites', invitesRouter)
 // Users
 apiRouter.use('/users', usersRouter)
