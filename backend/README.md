@@ -24,6 +24,16 @@ npm run dev
 
 The API listens on `0.0.0.0`, uses the host's `PORT` when set, and defaults to port 3001 for local development. Set `FRONTEND_URL` to the deployed frontend origin; comma-separated origins and the existing `CLIENT_ORIGIN` setting are supported. Set `APP_URL` to the public frontend URL used in invitations. `/health` and `/api/health` report process health; startup separately checks the selected database connection. For a separately hosted frontend, set `VITE_API_URL` to this backend's public origin at frontend build time, or provide a same-origin `/api` proxy. Leaving `VITE_API_URL` empty uses relative `/api` requests and the local Vite proxy.
 
+## Render deployment
+
+For a Render backend service rooted at `backend`, use this build command:
+
+```sh
+npm ci --include=dev && npm run build
+```
+
+The `&&` ensures Render stops if dependency installation fails. This project uses the public npm registry (`https://registry.npmjs.org/`) through `backend/.npmrc`; do not configure a private registry or proxy for deployment.
+
 ## Seed the itinerary catalogue
 
 ```sh
