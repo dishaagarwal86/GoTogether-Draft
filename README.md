@@ -92,7 +92,7 @@ The app continues the landing page’s design across public browsing and the sig
 | `/invite/:token` | Invitation preview, account switching, explicit acceptance, and guest preferences |
 | `/profile` | Authenticated name and country updates |
 
-Quest data and submitted preferences live in the selected database. Drafts and saved places are scoped to the account in the current browser; they do not sync between devices. Places saved before signing in transfer to that account. Email delivery and live Companion personalisation require their existing provider configuration. The UI reports unavailable delivery or personalisation without blocking the saved quest or original itinerary.
+Quest data, submitted preferences, private Companion conversations, and personalised itinerary notes live in the selected database. Drafts and saved places are scoped to the account in the current browser; they do not sync between devices. Places saved before signing in transfer to that account. Companion suggestions clearly show when AI is unavailable and a local fallback is used. Extracted preferences require review before being applied to the caller’s own answers. AI explanations and personal notes preserve the curated itinerary. See [AI setup and behavior](backend/README.md#companion-and-recommendation-behavior), including the required `004_ai_records.sql` migration before deployment.
 
 Signed-in travellers can also open the invitation bell in the navigation to view and accept pending quest invitations. The inbox checks for updates every 30 seconds and when opened, and works with either database provider. It uses the signed-in email address, so recipients can join even when invitation email delivery is unavailable.
 

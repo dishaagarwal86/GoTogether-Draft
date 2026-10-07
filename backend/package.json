@@ -8,7 +8,7 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "seed:catalogue": "tsx ../database/seeds/seedItineraryCatalogue.ts",
-    "test": "node --import tsx --test tests/databaseConfig.test.ts",
+    "test": "node --import tsx --test tests/databaseConfig.test.ts tests/ai.test.ts tests/recommendations.test.ts",
     "test:providers": "node tests/run-provider-tests.mjs"
   },
   "dependencies": {

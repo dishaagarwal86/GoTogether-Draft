@@ -52,6 +52,32 @@ docker compose --env-file backend/.env up -d --build --no-deps backend
 
 Use `--no-deps` to avoid starting the local database for Supabase mode. When selecting PostgreSQL in Docker, its connection URL must use a reachable database hostname such as `db`, rather than the container's own `localhost`.
 
+## Companion and recommendation behavior
+
+Apply [004_ai_records.sql](../database/migrations/004_ai_records.sql) before deploying this API version. It adds private AI history and shared rate-limit slots, with RLS enabled and no browser policies. Use the backend database role (or Supabase service role). Startup checks that both tables are accessible. Existing Docker volumes also need this migration applied explicitly.
+
+Configure AI only on the backend:
+
+| Setting | OpenAI | Ollama Cloud |
+| --- | --- | --- |
+| `AI_PROVIDER` | `openai` | `ollama` |
+| API key | `OPENAI_API_KEY` | `OLLAMA_API_KEY` |
+| Model override | `OPENAI_MODEL` (default `gpt-5-mini`) | `OLLAMA_MODEL` (default `gpt-oss:20b`) |
+| Base URL | SDK default | `OLLAMA_BASE_URL` (default `https://ollama.com/v1`) |
+
+Without an explicit provider, an Ollama key takes precedence, followed by OpenAI. Missing keys, invalid output, and provider failures produce a labelled local fallback. Docker forwards these variables; pass `--env-file backend/.env` when that file supplies them. Never put AI keys in Vercel frontend variables.
+
+All Companion, personalised-story, and recommendation endpoints require a session bearer token. Quest operations also require accepted membership. Preference reads and writes are restricted to their owner. Model requests have a 15-second SDK timeout, an 18-second abort signal, no retries, a 2,500-token output cap, and server-side response validation. Each account gets ten generation attempts per fixed minute across API replicas; cached stories and history reads do not consume the quota.
+
+- `POST /api/companion`: tasks `group-dna`, `extract`, `explain`, `chat`. Send `roomId` for quest tasks, `message` for extract/chat, `itineraryId` for explain, or `preferences` for a draft group-dna request. Context is assembled on the server.
+- `GET /api/companion/history?roomId=…&task=…`: the caller’s last 50 saved results; explanations are filtered against current preferences.
+- `POST /api/companion/:id/apply`: an explicit list of extracted `fields`. Updates only the caller’s preferences, checks for intervening edits, and refreshes UI recommendations. Other crew members’ preferences are never inferred or changed from pasted notes.
+- `POST /api/personalise-itinerary`: accepts `roomId` and `itineraryId`; loads a currently eligible curated trip itself. Notes cannot structurally replace its itinerary. `GET` with the same query parameters restores saved notes. Preference changes invalidate the cached story; successful AI stories are reused, while fallback stories can be retried.
+
+Private chat sends the last six Companion exchanges. Crew chat is excluded unless the user selects the checkbox, which includes up to 20 recent messages. Records remain private to the account and cascade on account/quest deletion. No AI message is posted to shared crew chat.
+
+Recommendations remain deterministic catalogue matches. They preserve the strictest budget ceiling, the existing ±2-day duration tolerance for each member, and supported no-go phrase matches even when fewer than three trips qualify. Best shared match uses average fit; fair compromise maximises the lowest member fit among remaining options; unexpected match favours a different destination and interests. Scores are bounded to 0–100. No-go interpretation uses phrases and activity categories, not complete natural-language understanding. Curated prices/seasons are estimates, not live availability. The AI adds advice; it does not book trips or generate new catalogue entries.
+
 ## Provider checks
 
 Run these from the repository root:

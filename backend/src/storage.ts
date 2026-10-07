@@ -2,10 +2,10 @@ import { query, verifyPostgresConnection, closePool } from './db.js'
 import { getDatabaseConfig } from './databaseConfig.js'
 import { getSupabase, verifySupabaseConnection } from './supabase.js'
 
-const tables = ['users', 'user_sessions', 'preferences', 'contacts', 'itineraries', 'flights', 'hotels', 'activities', 'suggested_itineraries', 'country_itineraries', 'itinerary_catalogue', 'trip_rooms', 'trip_room_people', 'trip_room_invites', 'trip_room_messages', 'quest_note_settings', 'quest_notes', 'guest_invite_preferences', 'quest_picks', 'quest_shared_picks', 'quest_pick_reactions'] as const
+const tables = ['users', 'user_sessions', 'preferences', 'contacts', 'itineraries', 'flights', 'hotels', 'activities', 'suggested_itineraries', 'country_itineraries', 'itinerary_catalogue', 'trip_rooms', 'trip_room_people', 'trip_room_invites', 'trip_room_messages', 'quest_note_settings', 'quest_notes', 'guest_invite_preferences', 'quest_picks', 'quest_shared_picks', 'quest_pick_reactions', 'ai_records', 'ai_rate_limits'] as const
 export type Table = typeof tables[number]
 export type Row = Record<string, unknown>
-export type Filter = { column: string; operator: 'eq' | 'gt' | 'ilike'; value: string } | { column: string; operator: 'in'; value: string[] }
+export type Filter = { column: string; operator: 'eq' | 'gt' | 'lt' | 'ilike'; value: string } | { column: string; operator: 'in'; value: string[] } | { column: string; operator: 'is'; value: null }
 type SelectOptions = { orderBy?: string; ascending?: boolean; limit?: number }
 const jsonColumns = new Set(['data', 'dates', 'location_preferences', 'mood_preferences', 'activities_must_have', 'activities_preferred', 'accommodation_preferences', 'seasons', 'moods', 'daily_plan', 'ai_context', 'mentioned_by', 'message_ids'])
 
@@ -25,11 +25,12 @@ function columnsSql(columns: string[]) {
 }
 function whereSql(filters: Filter[], values: unknown[]) {
   return filters.length ? ` where ${filters.map((filter) => {
+    if (filter.operator === 'is') return `${identifier(filter.column)} is null`
     if (filter.operator === 'in') {
       values.push(filter.value)
       return `${identifier(filter.column)} = any($${values.length})`
     }
-    const operator = { eq: '=', gt: '>', ilike: 'ilike' }[filter.operator]
+    const operator = { eq: '=', gt: '>', lt: '<', ilike: 'ilike' }[filter.operator]
     if (!operator) throw new Error('Unsupported database filter.')
     values.push(filter.value)
     return `${identifier(filter.column)} ${operator} $${values.length}`
@@ -137,16 +138,22 @@ export async function insertIfMissing(table: Table, row: Row) {
   const fields = columnsSql(columns)
   if (!row.id) throw new Error('Insert-if-missing requires an id.')
   if (isSupabase()) {
-    const { error } = await getSupabase().from(table).upsert(row, { onConflict: 'id', ignoreDuplicates: true })
+    const { data, error } = await getSupabase().from(table).upsert(row, { onConflict: 'id', ignoreDuplicates: true }).select('id')
     checkError(error)
-    return
+    return Boolean(data?.length)
   }
-  await query(`insert into ${name} (${fields}) values (${columns.map((_, index) => `$${index + 1}`).join(', ')}) on conflict (id) do nothing`, preparedValues(row))
+  const result = await query(`insert into ${name} (${fields}) values (${columns.map((_, index) => `$${index + 1}`).join(', ')}) on conflict (id) do nothing returning id`, preparedValues(row))
+  return Boolean(result.rowCount)
 }
 
 export async function verifyDatabaseConnection() {
   if (isSupabase()) await verifySupabaseConnection()
   else await verifyPostgresConnection()
+  try {
+    await Promise.all(['ai_records', 'ai_rate_limits'].map(table => selectRows(table as Table, ['id'], [], { limit: 1 })))
+  } catch {
+    throw new Error('The AI history schema is unavailable. Apply database/migrations/004_ai_records.sql to the selected database and verify backend access.')
+  }
 }
 
 export async function closeDatabase() {

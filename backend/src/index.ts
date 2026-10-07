@@ -17,7 +17,7 @@ async function start() {
       return
     } catch (error) {
       if (attempt === 30) {
-        console.error(`Unable to connect using ${provider}. Check database configuration and database/migrations/001_gotogether_core.sql.`, error)
+        console.error(`Unable to start using ${provider}. Check database configuration and apply all database/migrations files in order.`, error)
         process.exit(1)
       }
       await new Promise((resolve) => setTimeout(resolve, 1000))

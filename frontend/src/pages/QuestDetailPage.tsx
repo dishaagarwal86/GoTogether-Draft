@@ -5,6 +5,7 @@ import { useQuests } from '../hooks/useQuests'
 import { useQuestRecommendations } from '../hooks/useQuestRecommendations'
 import { EmptyState, ErrorState, Icon, LoadingState } from '../components/Ui'
 import { RecommendationCards } from '../components/RecommendationCards'
+import { CompanionPanel } from '../components/CompanionPanel'
 import { QuestChat } from '../components/QuestChat'
 import { QuestShortlist } from '../components/QuestShortlist'
 import type { ChatContext } from '../components/ItineraryStory'
@@ -30,6 +31,8 @@ function QuestWorkspace({ quest }: { quest: Quest }) {
   const [unread, setUnread] = useState(0)
   const itinerary = useRef<HTMLElement>(null)
   const workspace = useRef<HTMLDivElement>(null)
+  const companion = useRef<HTMLDivElement>(null)
+  const openCompanion = () => { companion.current?.scrollIntoView({ block: 'start' }); companion.current?.querySelector('textarea')?.focus({ preventScroll: true }) }
   useLayoutEffect(() => {
     const grid = workspace.current
     if (!grid) return
@@ -53,10 +56,12 @@ function QuestWorkspace({ quest }: { quest: Quest }) {
     <header className="quest-workspace-header"><div><p className="eyebrow">YOUR SHARED TRAVEL BOOK</p><h1>{quest.name}</h1><div className="quest-workspace-meta"><span><Icon name="pin" size={14} />{quest.tripName === quest.name ? 'Somewhere good, still to be found' : `On your mind: ${quest.tripName}`}</span><span><Icon name="people" size={14} />{quest.members} planned {quest.members === 1 ? 'traveller' : 'travellers'}</span><span className="quest-role-tag">{quest.role === 'owner' ? 'You’re hosting' : 'Part of the crew'}</span></div></div><div className="quest-workspace-actions"><button type="button" className="primary-button" onClick={() => setInviteOpen(true)}><Icon name="plus" size={16} />Invite your people</button><button type="button" className="text-button quest-chat-shortcut" onClick={openChat}><Icon name="chat" size={16} />Crew chat{unread > 0 && <span className="quest-unread-count">{unread}</span>}</button></div></header>
     <div className="quest-workspace-grid" ref={workspace}>
       <section className="quest-planning-column" id="quest-itinerary" ref={itinerary} tabIndex={-1} aria-label="Itinerary planning">
-        <nav className="quest-planning-links" aria-label="Quest planning"><span><Icon name="compass" size={17} />Itinerary ideas</span><Link to={`/travel-dna/group-dna?roomId=${roomId}`}><Icon name="spark" size={15} />Our Travel DNA</Link><Link to={`/travel-dna/preferences?roomId=${roomId}`}>My travel preferences <Icon name="northeast" size={14} /></Link></nav>
+        <nav className="quest-planning-links" aria-label="Quest planning"><span><Icon name="compass" size={17} />Itinerary ideas</span><button className="text-button" type="button" onClick={openCompanion}>Ask Companion <Icon name="spark" size={15} /></button><Link to={`/travel-dna/group-dna?roomId=${roomId}`}><Icon name="spark" size={15} />Our Travel DNA</Link><Link to={`/travel-dna/preferences?roomId=${roomId}`}>My travel preferences <Icon name="northeast" size={14} /></Link></nav>
         <QuestShortlist roomId={roomId} onDiscuss={(label, detail) => discuss({ label, detail })} />
         <div className="quest-ideas-heading"><div><p className="eyebrow">THE WORLD IS STILL OPEN</p><h2>Which way <em>shall we go?</em></h2></div>{data && <p>{data.results.length} starting {data.results.length === 1 ? 'point' : 'points'}<br /><span>Explore one, then talk it over.</span></p>}</div>
+        {data?.blockers?.map(message => <p className="planning-notice" role="status" key={message}>{message}</p>)}
         {error ? <ErrorState message={error} retry={retry} /> : !data ? <LoadingState label="Gathering ideas for your crew…" /> : data.results.length ? <RecommendationCards results={data.results} roomId={roomId} travelDna={data.travelDna} workspace onDiscuss={discuss} /> : <EmptyState title="Your ideas are still taking shape." description="Share your travel style to find a starting point, and keep dreaming with your crew in the meantime." to={`/travel-dna/preferences?roomId=${roomId}`} label="Share my travel style" icon="spark" />}
+        <div ref={companion} className="quest-companion-anchor"><CompanionPanel roomId={roomId} mode="chat" /></div>
       </section>
       <QuestChat roomId={roomId} open={chatOpen} onClose={() => setChatOpen(false)} focusRequest={focusRequest} context={chatContext} onClearContext={(context) => setChatContext((current) => current === context ? null : current)} onUnreadChange={setUnread} onQuestNoteApplied={retry} />
     </div>

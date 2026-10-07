@@ -45,6 +45,7 @@ try {
     await run(provider, ['--import', 'tsx', '../database/seeds/seedItineraryCatalogue.ts'])
     await run(provider, ['--import', 'tsx', '../database/seeds/seedItineraryCatalogue.ts'])
     await run(provider, ['--import', 'tsx', '--test', 'tests/catalogue.integration.test.ts'])
+    await run(provider, ['--import', 'tsx', '--test', 'tests/ai.integration.test.ts'])
   }
 } catch (error) {
   console.error(error.message)

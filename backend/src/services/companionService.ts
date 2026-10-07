@@ -1,50 +1,105 @@
-import OpenAI from 'openai'
+import { selectRows, updateRows } from '../storage.js'
+import * as entities from './apiStore.js'
+import { assertQuestMember, HttpError } from './access.js'
+import { aiHistory, contextKey, ownedAiRecord, reserveAiRequest, saveAiRecord, type AiTask } from './aiHistory.js'
+import { generateAi } from './aiProvider.js'
+import { recommendForQuest } from './recommendationService.js'
+import { listQuestMessages } from './chatService.js'
+import { budgets, moods, paces, record, strings, text, validateExtracted, type ExtractedPreferences } from './travelPreferences.js'
 
-type CompanionRequest = {
-  task: 'extract' | 'group-dna' | 'explain'
-  message?: string
-  context?: unknown
-}
+export type CompanionTask = Exclude<AiTask, 'personalise'>
+type CompanionRequest = { task: CompanionTask; message?: string; roomId?: string; itineraryId?: string; preferences?: Record<string, unknown>; includeCrew?: boolean }
+type Reply = { summary: string; extracted?: ExtractedPreferences }
+const answerKeys = ['startDate', 'endDate', 'flexibleDates', 'tripLength', 'groupSize', 'destinationScope', 'destination', 'budget', 'tripFeeling', 'stayStyle', 'mustHave', 'niceToHave', 'noGo', 'pace', 'discovery', 'companions', 'ageGroups', 'priorities', 'dates', 'daysCount', 'moodPreferences', 'activitiesMustHave', 'activitiesPreferred', 'accommodationPreferences']
 
-const fallback = (request: CompanionRequest) => {
-  if (request.task === 'extract') {
-    const words = (request.message ?? '').toLowerCase()
-    const moods = ['adventure', 'food', 'culture', 'relaxation', 'nature', 'nightlife', 'wellness'].filter((mood) => words.includes(mood))
-    return { summary: 'I picked up the travel notes below. Review them before saving.', extracted: { moods, notes: request.message ?? '' } }
+export function cleanPreferences(value: unknown): Record<string, unknown> {
+  const input = record(value ?? {})
+  const output: Record<string, unknown> = {}
+  for (const key of answerKeys) {
+    const item = input[key]
+    if (item === undefined || item === null || item === '') continue
+    if (Array.isArray(item)) output[key] = strings(item, 12, 150)
+    else if (typeof item === 'string') output[key] = text(item, 1000)
+    else if (key === 'daysCount' && Number.isInteger(item) && Number(item) > 0 && Number(item) <= 30) output[key] = item
   }
-  if (request.task === 'group-dna') return { summary: 'Your group leans toward shared discovery, with space for different travel rhythms.' }
-  return { summary: 'This path keeps the group’s strongest shared preferences in view while protecting time for everyone to enjoy the journey.' }
+  if (JSON.stringify(output).length > 12000) throw new HttpError(400, 'These travel preferences are too long.')
+  return output
+}
+export function parseCompanionRequest(value: unknown): CompanionRequest {
+  const input = record(value)
+  if (!['extract', 'group-dna', 'explain', 'chat'].includes(String(input.task))) throw new HttpError(400, 'A valid Companion task is required.')
+  const task = input.task as CompanionTask
+  const roomId = input.roomId === undefined ? undefined : text(input.roomId, 150)
+  const message = input.message === undefined ? undefined : text(input.message, 4000)
+  if (['extract', 'chat'].includes(task) && !message) throw new HttpError(400, 'Tell the Companion what you would like to plan.')
+  if (task !== 'group-dna' && !roomId) throw new HttpError(400, 'Open a quest before using the Companion.')
+  if (input.includeCrew !== undefined && typeof input.includeCrew !== 'boolean') throw new HttpError(400, 'Invalid crew conversation selection.')
+  const itineraryId = input.itineraryId === undefined ? undefined : text(input.itineraryId, 150)
+  if (task === 'explain' && !itineraryId) throw new HttpError(400, 'Choose an itinerary to explain.')
+  return { task, message, roomId, itineraryId, includeCrew: input.includeCrew === true, preferences: task === 'group-dna' ? cleanPreferences(input.preferences) : undefined }
+}
+async function ownPreference(userId: string, roomId: string) {
+  const [item] = await selectRows<{ id: string; data: Record<string, unknown>; updated_at: string | Date }>('preferences', ['id', 'data', 'updated_at'], [{ column: 'user_id', operator: 'eq', value: userId }, { column: 'trip_room_id', operator: 'eq', value: roomId }], { orderBy: 'updated_at', limit: 1 })
+  return item ? { ...item, updated_at: new Date(item.updated_at).toISOString() } : undefined
+}
+export function fallbackExtraction(message: string): ExtractedPreferences {
+  const noGo = message.match(/(?:\bavoid\b|\bskip\b|\bno\b)\s+[^.!?;\n]+/gi)?.join('; ')
+  const wanted = message.replace(/(?:\bavoid\b|\bskip\b|\bno\b)\s+[^.!?;\n]+/gi, '').toLowerCase()
+  const extracted: ExtractedPreferences = {}
+  const matches = moods.filter(mood => mood === 'Food & Culture' ? /food|culture/.test(wanted) : wanted.includes(mood.toLowerCase())).slice(0, 3)
+  if (matches.length) extracted.moods = matches
+  if (/budget.friendly|low budget|on a budget/.test(wanted)) extracted.budget = 'Budget-friendly'
+  else if (/premium/.test(wanted)) extracted.budget = 'Premium'
+  if (/slow|relaxed/.test(wanted)) extracted.pace = 'Slow & relaxed'
+  const duration = wanted.match(/\b(\d{1,2})\s+days?\b/)
+  if (duration && Number(duration[1]) > 0 && Number(duration[1]) <= 30) extracted.daysCount = Number(duration[1])
+  if (noGo) extracted.noGo = noGo.slice(0, 1000)
+  return extracted
+}
+export function validateReply(value: unknown, task: CompanionTask): Reply {
+  const parsed = record(value)
+  if (Object.keys(parsed).some(key => !['summary', ...(task === 'extract' ? ['extracted'] : [])].includes(key))) throw new Error('Unexpected AI response field.')
+  const summary = text(parsed.summary, 3000)
+  return task === 'extract' ? { summary, extracted: validateExtracted(parsed.extracted) } : { summary }
+}
+export async function askCompanion(userId: string, input: unknown) {
+  const request = parseCompanionRequest(input)
+  if (request.roomId) await assertQuestMember(request.roomId, userId)
+  const own = request.roomId ? await ownPreference(userId, request.roomId) : undefined
+  const plan = request.roomId ? await recommendForQuest(request.roomId) : undefined
+  const trip = request.itineraryId ? plan?.results.find(item => item.id === request.itineraryId) : undefined
+  if (request.itineraryId && !trip) throw new HttpError(409, 'This itinerary no longer matches the quest. Refresh your travel ideas.')
+  const history = request.task === 'chat' ? (await aiHistory(userId, request.roomId, 'chat')).slice(0, 6).reverse().map(item => ({ message: item.data.message, summary: item.data.summary })) : []
+  const crew = request.includeCrew && request.roomId ? (await listQuestMessages(request.roomId, userId)).slice(-20).map(item => ({ traveller: item.senderName, message: item.body })) : undefined
+  const context = { preferences: request.preferences ?? cleanPreferences(own?.data), group: plan?.travelDna, itineraries: trip ? [trip] : plan?.results, blockers: plan?.blockers, history, crew }
+  const key = contextKey({ task: request.task, roomId: request.roomId, context, message: request.message })
+  await reserveAiRequest(userId)
+  const fallback: Reply = request.task === 'extract'
+    ? { summary: 'Review these suggestions from your notes. Only the fields you select will update your own preferences.', extracted: fallbackExtraction(request.message!) }
+    : request.task === 'explain' && trip
+      ? { summary: trip.destination + ': ' + (trip.matchedPreferences.join(', ') || 'a catalogue idea within the saved limits') + '. ' + trip.compromises.join(' ') }
+      : { summary: plan?.blockers.length ? plan.blockers.join(' ') : plan?.results.length ? 'Your current starting points are ' + plan.results.map(item => item.destination).join(', ') + '. Compare the interests each one matches and discuss the compromises with your crew.' : 'Start with your preferred pace, budget, and must-do activities. Save those preferences to find matching catalogue trips.' }
+  const instructions = 'You are the GoTogether Companion. Give warm, concise travel advice grounded in the supplied context. Never calculate or invent scores, edit preferences, make bookings, or claim an action has been saved. Explain conflicts honestly. Task: ' + request.task +
+    '. Return {"summary":"text"}' + (request.task === 'extract' ? ' with an additional "extracted" object containing only preferences explicitly supported by the notes. Allowed keys: moods (up to 3 of ' + moods.join(', ') + '), budget (' + budgets.join(', ') + '), pace (' + paces.join(', ') + '), mustHave (text), noGo (text), daysCount (integer 1 to 30). Omit unknown or ambiguous values. The user will review each field.' : '.')
+  const result = await generateAi(instructions, { message: request.message, context }, value => validateReply(value, request.task), fallback)
+  const saved = await saveAiRecord(userId, request.roomId, request.task, key, { ...result.value, source: result.source, notice: result.notice, message: request.message, preferences: request.preferences, itineraryId: request.itineraryId, planVersion: plan?.preferenceVersion, preferenceId: own?.id, preferenceVersion: own && contextKey(own.data) })
+  return { id: saved.id, ...result.value, source: result.source, notice: result.notice }
 }
 
-type AiProvider = 'openai' | 'ollama'
-
-function configuredProvider(): AiProvider | undefined {
-  const requested = process.env.AI_PROVIDER?.toLowerCase()
-  if (requested === 'ollama' || requested === 'openai') return requested
-  if (process.env.OLLAMA_API_KEY) return 'ollama'
-  if (process.env.OPENAI_API_KEY) return 'openai'
-  return undefined
-}
-
-export async function askCompanion(request: CompanionRequest) {
-  const provider = configuredProvider()
-  if (!provider) return { ...fallback(request), source: 'fallback' as const }
-
-  const isOllama = provider === 'ollama'
-  const apiKey = isOllama ? process.env.OLLAMA_API_KEY : process.env.OPENAI_API_KEY
-  if (!apiKey) return { ...fallback(request), source: 'fallback' as const }
-  const client = new OpenAI({
-    apiKey,
-    ...(isOllama ? { baseURL: process.env.OLLAMA_BASE_URL ?? 'https://ollama.com/v1' } : {}),
-  })
-  const prompt = `You are the GoTogether Companion for group travel. Be warm, concise and practical. Never claim to calculate scores or make bookings. Return valid JSON only with a single \"summary\" field; for task extract also include \"extracted\" with concise preference keys.\nTask: ${request.task}\nUser message: ${request.message ?? 'none'}\nContext: ${JSON.stringify(request.context ?? {})}`
-  const result = await client.responses.create({
-    model: isOllama ? (process.env.OLLAMA_MODEL ?? 'gpt-oss:20b') : (process.env.OPENAI_MODEL ?? 'gpt-5-mini'),
-    input: prompt,
-  })
-  try {
-    return { ...(JSON.parse(result.output_text) as object), source: provider }
-  } catch {
-    return { summary: result.output_text || fallback(request).summary, source: provider }
-  }
+export async function applySuggestion(userId: string, recordId: string, fields: unknown) {
+  const saved = await ownedAiRecord(userId, recordId)
+  if (saved.task !== 'extract' || !saved.trip_room_id) throw new HttpError(400, 'Choose a preference suggestion for this quest.')
+  const selected = strings(fields, 6, 30)
+  if (!selected.length) throw new HttpError(400, 'Select at least one preference to apply.')
+  const suggestions = validateExtracted(saved.data.extracted)
+  if (selected.some(key => !(key in suggestions))) throw new HttpError(400, 'Select only preferences in this suggestion.')
+  const own = await ownPreference(userId, saved.trip_room_id)
+  if (!own || own.id !== saved.data.preferenceId) throw new HttpError(409, 'Save your own preferences first, then ask the Companion again.')
+  if (saved.data.applied) return { preferenceId: own.id }
+  if (contextKey(own.data) !== saved.data.preferenceVersion) throw new HttpError(409, 'Your preferences changed since this suggestion. Shape your notes again before applying it.')
+  const names: Record<string, string> = { moods: 'moodPreferences', budget: 'budget', pace: 'pace', mustHave: 'activitiesMustHave', noGo: 'noGo', daysCount: 'daysCount' }
+  const changes = Object.fromEntries(selected.map(key => [names[key], suggestions[key as keyof ExtractedPreferences]]))
+  if (!await entities.update('preferences', own.id, changes, own.data)) throw new HttpError(409, 'Your preferences changed while applying this suggestion. Shape your notes again.')
+  await updateRows('ai_records', { data: { ...saved.data, applied: true, appliedFields: selected } }, [{ column: 'id', operator: 'eq', value: saved.id }, { column: 'user_id', operator: 'eq', value: userId }], ['id'])
+  return { preferenceId: own.id }
 }

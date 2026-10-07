@@ -18,7 +18,8 @@ async function assertQuestMember(roomId: string, userId: string) {
 export async function listQuestMessages(roomId: string, userId: string) {
   await assertQuestMember(roomId, userId)
   const messages = await selectRows<MessageRow>('trip_room_messages', messageColumns,
-    [{ column: 'trip_room_id', operator: 'eq', value: roomId }], { orderBy: 'created_at', ascending: true, limit: 200 })
+    [{ column: 'trip_room_id', operator: 'eq', value: roomId }], { orderBy: 'created_at', limit: 200 })
+  messages.reverse()
   const senderIds = [...new Set(messages.map((message) => message.sender_id))]
   const people = senderIds.length ? await selectRows<UserRow>('users', ['id', 'first_name', 'last_name'],
     [{ column: 'id', operator: 'in', value: senderIds }]) : []

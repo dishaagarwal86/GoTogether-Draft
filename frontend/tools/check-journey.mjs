@@ -4,6 +4,7 @@ import { mkdir, writeFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { checkQuestWorkspace } from './check-quest-workspace.mjs'
 import { checkInvitations } from './check-invitations.mjs'
+import { checkCompanion } from './check-companion.mjs'
 const base = process.env.JOURNEY_TEST_URL ?? 'http://127.0.0.1:5186'
 const apiBase = process.env.JOURNEY_TEST_API_URL ?? base
 assert.equal(new URL(base).hostname, '127.0.0.1', 'Browser checks must target the isolated local test runner')
@@ -92,8 +93,9 @@ try {
   await page.getByText('Let’s leave room for one long lunch.', { exact: true }).waitFor()
   check('Chat sends and persists across reload')
   await checkQuestWorkspace(page, { base, apiBase, roomId, screenshot, check })
+  await checkCompanion(page, { base, roomId, screenshot, check })
   await page.getByRole('link', { name: 'Our Travel DNA' }).click()
-  await page.getByRole('heading', { name: /Your people.*Your rhythm.*Your Travel DNA/ }).waitFor()
+  await page.getByRole('heading', { name: /This is how your group.*travels best/ }).waitFor()
   await screenshot('10-travel-dna', true)
   await page.getByRole('link', { name: 'See our possible paths' }).click()
   await page.getByRole('button', { name: 'Explore this itinerary' }).first().click()

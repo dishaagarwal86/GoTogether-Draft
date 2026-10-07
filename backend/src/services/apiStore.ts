@@ -80,7 +80,7 @@ export async function create(collection: CollectionName, prefix: string, input: 
   return entity(await insertRow<Row>(table, row, entityColumns))
 }
 
-export async function update(collection: CollectionName, entityId: string, input: Record<string, unknown>) {
+export async function update(collection: CollectionName, entityId: string, input: Record<string, unknown>, expectedData?: Record<string, unknown>) {
   const existing = await find(collection, entityId)
   if (!existing) return undefined
 
@@ -95,7 +95,9 @@ export async function update(collection: CollectionName, entityId: string, input
     }
   }
 
-  const rows = await updateRows<Row>(tables[collection], row, [{ column: 'id', operator: 'eq', value: entityId }], entityColumns)
+  const filters: Filter[] = [{ column: 'id', operator: 'eq', value: entityId }]
+  if (expectedData) filters.push({ column: 'data', operator: 'eq', value: JSON.stringify(expectedData) })
+  const rows = await updateRows<Row>(tables[collection], row, filters, entityColumns)
   return rows[0] ? entity(rows[0]) : undefined
 }
 

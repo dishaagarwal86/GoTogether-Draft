@@ -67,7 +67,7 @@ test(`database contract (${process.env.DATABASE_PROVIDER})`, async (t) => {
       assert.equal(process.env.SMTP_HOST, '')
       let inviteToken = ''
       t.mock.method(console, 'info', (...args: unknown[]) => {
-        const match = args.join(' ').match(/\/invite\/([a-f0-9]+)/)
+        const match = args.join(' ').match(/\/join\/([a-f0-9]+)/)
         if (match) inviteToken = match[1]
       })
       const guestEmail = `guest-${suffix}@example.invalid`

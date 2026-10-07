@@ -1,7 +1,52 @@
 import { selectRows } from '../storage.js'
+import { budgetRank, moodName, normalize, violatesNoGo } from './travelPreferences.js'
+import { contextKey } from './aiHistory.js'
 
-type Preference = { user_id: string; budget: string | null; days_count: number | null; location_preferences: { scope?: string } | null; mood_preferences: string[] | null; activities_must_have: string | null; activities_preferred: string | null; accommodation_preferences: string[] | null; data: { noGo?: string; pace?: string; ageGroups?: string[] } }
-type Catalogue = { id: string; title: string; destination: string; country: string; duration_days: number; budget: string; estimated_cost_usd: number; seasons: string[]; moods: string[]; location_type: string; short_description: string; why_it_fits: string; daily_plan: unknown; ai_context: { pace?: string; highlights?: string[]; avoidIf?: string[] } }
+export type Preference = { user_id?: string; budget: string | null; days_count: number | null; location_preferences: { scope?: string; destination?: string } | null; mood_preferences: string[] | null; activities_must_have: string | null; activities_preferred: string | null; accommodation_preferences: string[] | null; data: { noGo?: string; pace?: string; ageGroups?: string[] } }
+export type Catalogue = { id: string; title: string; destination: string; country: string; duration_days: number; budget: string; estimated_cost_usd: number; seasons: string[]; moods: string[]; location_type: string; short_description: string; why_it_fits: string; daily_plan: unknown; ai_context: { pace?: string; highlights?: string[]; avoidIf?: string[]; activityTags?: string[] } }
+const words = (value = '') => normalize(value).split(' ').filter(word => word.length > 3 && !['with', 'have', 'want', 'would', 'like', 'some'].includes(word))
+const fraction = (desired: string[], available: string[]) => desired.length ? desired.filter(item => available.some(value => normalize(value).includes(normalize(item)))).length / desired.length : .7
+const mean = (values: number[]) => values.reduce((total, value) => total + value, 0) / values.length
+
+export function rankRecommendations(preferences: Preference[], catalogue: Catalogue[]) {
+  if (!preferences.length) return { travelDna: null, memberCount: 0, results: [], blockers: ['Save your travel preferences to see matching itineraries.'] }
+  const budgetCeiling = Math.min(...preferences.map(item => budgetRank(item.budget ?? 'Moderate')))
+  const noGos = preferences.map(item => item.data?.noGo ?? '').filter(Boolean)
+  const sharedMoods = preferences.flatMap(item => (item.mood_preferences ?? []).map(moodName))
+  const pool = catalogue.filter(trip => {
+    const activities = JSON.stringify([trip.daily_plan, trip.ai_context?.highlights, trip.ai_context?.avoidIf, trip.ai_context?.activityTags, trip.moods])
+    return budgetRank(trip.budget) <= budgetCeiling
+      && preferences.every(item => !item.days_count || Math.abs(trip.duration_days - item.days_count) <= 2)
+      && !noGos.some(noGo => violatesNoGo(noGo, activities))
+  })
+  const scored = pool.map(trip => {
+    const highlights = trip.ai_context?.highlights ?? []
+    const fits = preferences.map(item => {
+      const mood = fraction((item.mood_preferences ?? []).map(moodName), trip.moods.map(moodName))
+      const activity = fraction(words((item.activities_must_have ?? '') + ' ' + (item.activities_preferred ?? '')), [...highlights, ...trip.moods])
+      const pace = !item.data?.pace || normalize(item.data.pace) === normalize(trip.ai_context?.pace ?? '') ? 1 : .4
+      const destination = item.location_preferences?.destination
+      const location = !destination || normalize(trip.destination + ' ' + trip.country).includes(normalize(destination)) ? 1 : .4
+      return Math.round((mood * .35 + activity * .25 + .2 + pace * .1 + location * .1) * 100)
+    })
+    const minFit = Math.min(...fits)
+    const score = Math.max(0, Math.min(100, Math.round(mean(fits) - (minFit < 30 ? 10 : 0))))
+    const matchedPreferences = [...new Set(trip.moods.filter(value => sharedMoods.includes(moodName(value))).concat(highlights.filter(value => preferences.some(item => words(item.activities_must_have ?? '').some(word => normalize(value).includes(word))))))]
+    return { ...trip, score, minFit, matchedPreferences, compromises: minFit < 50 ? ['Some travellers have fewer interests represented. Discuss optional activities together.'] : ['Fits the saved budget and trip length. Confirm the activities respect everyone’s boundaries.'] }
+  }).sort((a, b) => b.score - a.score || a.id.localeCompare(b.id))
+  const best = scored[0]
+  const fair = scored.filter(trip => trip.id !== best?.id).sort((a, b) => b.minFit - a.minFit || b.score - a.score || a.id.localeCompare(b.id))[0]
+  const novelty = (trip: typeof best) => (trip.destination !== best?.destination ? 25 : 0) + trip.moods.filter(mood => !best?.moods.includes(mood)).length * 10 + trip.score * .3
+  const unexpected = scored.filter(trip => trip.id !== best?.id && trip.id !== fair?.id).sort((a, b) => novelty(b) - novelty(a) || a.id.localeCompare(b.id))[0]
+  const picks = [best && { ...best, label: 'Best shared match' }, fair && { ...fair, label: 'Fair compromise' }, unexpected && { ...unexpected, label: 'Unexpected match' }].filter(item => Boolean(item)) as Array<NonNullable<typeof best> & { label: string }>
+  return {
+    memberCount: preferences.length,
+    travelDna: { sharedVibe: [...new Set(sharedMoods)].slice(0, 3), budgetStyle: ['Budget-friendly', 'Moderate', 'Premium'][budgetCeiling], noGoActivities: noGos, pacePreferences: preferences.map(item => item.data?.pace).filter(Boolean), mustHaveActivities: preferences.map(item => item.activities_must_have).filter(Boolean) },
+    results: picks,
+    blockers: !picks.length ? ['No catalogue itinerary fits everyone’s budget, trip length, and no-go activities. Review your preferences together; none of these limits were relaxed.'] : picks.length < 3 ? ['Only these itineraries satisfy everyone’s limits. We have kept those limits intact.'] : [],
+  }
+}
+
 type Room = { members: number }
 type AcceptedQuestNote = { type: 'activity' | 'mood' | 'budget' | 'accommodation' | 'no_go'; suggestion: string }
 export type QuestReadinessOption = { id: 'comfort' | 'experiences'; title: string; summary: string; detail: string; outcome: string }
@@ -15,10 +60,7 @@ export type QuestReadiness = {
   selectedOption: string | null
   explanation: string
 }
-const norm = (value = '') => value.toLowerCase().replace(/&/g, 'and')
-const words = (value = '') => norm(value).split(/[^a-z]+/).filter((word) => word.length > 3)
-const budgetRank = (value = '') => norm(value).includes('budget') ? 0 : norm(value).includes('premium') ? 2 : 1
-const overlap = (needles: string[], haystack: string[]) => needles.filter((item) => haystack.some((value) => norm(value).includes(norm(item)) || norm(item).includes(norm(value)))).length
+const norm = normalize
 
 function optionCost(rank: number, comfort: boolean) {
   const base = [10000, 14000, 21000][rank] ?? 14000
@@ -74,32 +116,23 @@ function buildQuestReadiness(preferences: Preference[], totalMembers: number): Q
 }
 
 export async function recommendForQuest(roomId: string) {
-  const [preferences, catalogue, rooms, acceptedNotes] = await Promise.all([
-    selectRows<Preference>('preferences', ['user_id', 'budget', 'days_count', 'location_preferences', 'mood_preferences', 'activities_must_have', 'activities_preferred', 'accommodation_preferences', 'data'], [{ column: 'trip_room_id', operator: 'eq', value: roomId }]),
+  const [preferences, catalogue, members, rooms, acceptedNotes] = await Promise.all([
+    selectRows<Preference>('preferences', ['user_id', 'budget', 'days_count', 'location_preferences', 'mood_preferences', 'activities_must_have', 'activities_preferred', 'accommodation_preferences', 'data'], [{ column: 'trip_room_id', operator: 'eq', value: roomId }], { orderBy: 'updated_at' }),
     selectRows<Catalogue>('itinerary_catalogue', ['id', 'title', 'destination', 'country', 'duration_days', 'budget', 'estimated_cost_usd', 'seasons', 'moods', 'location_type', 'short_description', 'why_it_fits', 'daily_plan', 'ai_context']),
+    selectRows<{ user_id: string }>('trip_room_people', ['user_id'], [{ column: 'trip_room_id', operator: 'eq', value: roomId }, { column: 'invite_status', operator: 'eq', value: 'accepted' }]),
     selectRows<Room>('trip_rooms', ['members'], [{ column: 'id', operator: 'eq', value: roomId }]),
     selectRows<AcceptedQuestNote>('quest_notes', ['type', 'suggestion'], [{ column: 'trip_room_id', operator: 'eq', value: roomId }, { column: 'status', operator: 'eq', value: 'accepted' }]),
   ])
-  const totalMembers = Math.max(1, Number(rooms[0]?.members) || preferences.length || 1)
-  const questReadiness = buildQuestReadiness(preferences, totalMembers)
-  if (!preferences.length) return { travelDna: null, memberCount: 0, totalMembers, questReadiness, results: [] }
-  const budgets = preferences.map((item) => budgetRank(item.budget ?? 'Moderate')); const budgetCeiling = Math.min(...budgets)
-  const noteWords = (type: AcceptedQuestNote['type']) => acceptedNotes.filter((note) => note.type === type).flatMap((note) => words(note.suggestion))
-  const noGos = [...preferences.flatMap((item) => words(item.data?.noGo ?? '')), ...noteWords('no_go')]; const moods = [...preferences.flatMap((item) => item.mood_preferences ?? []), ...noteWords('mood')]; const needs = [...preferences.flatMap((item) => words(`${item.activities_must_have ?? ''} ${item.activities_preferred ?? ''}`)), ...noteWords('activity')]; const paces = preferences.map((item) => item.data?.pace ?? '').filter(Boolean)
-  const filtered = catalogue.filter((trip) => budgetRank(trip.budget) <= budgetCeiling && !noGos.some((avoid) => (trip.ai_context?.avoidIf ?? []).some((tag) => norm(avoid).includes(norm(tag)))) && preferences.every((item) => !item.days_count || Math.abs(trip.duration_days - item.days_count) <= 2))
-  const pool = filtered.length >= 3 ? filtered : catalogue.filter((trip) => budgetRank(trip.budget) <= budgetCeiling)
-  const scored = pool.map((trip) => {
-    const mood = overlap(moods, trip.moods) / Math.max(1, moods.length)
-    const activity = overlap(needs, [...trip.moods, ...(trip.ai_context?.highlights ?? [])]) / Math.max(1, preferences.length)
-    const budget = budgetRank(trip.budget) <= budgetCeiling ? 1 : 0
-    const pace = paces.length ? paces.filter((item) => norm(item) === norm(trip.ai_context?.pace ?? '')).length / paces.length : .7
-    const fairness = preferences.map((item) => overlap(item.mood_preferences ?? [], trip.moods) + overlap(words(item.activities_must_have ?? ''), trip.ai_context?.highlights ?? []))
-    const penalty = Math.min(...fairness) === 0 ? .2 : 0
-    const moodMatches = trip.moods.filter((value) => moods.some((memberMood) => norm(value).includes(norm(memberMood))))
-    const highlightMatches = (trip.ai_context?.highlights ?? []).filter((value) => needs.some((need) => norm(value).includes(need)))
-    const matchedPreferences = [...new Set([...moodMatches, ...highlightMatches])]
-    return { ...trip, score: Math.round((mood * .35 + activity * .25 + budget * .2 + pace * .1 + .1 - penalty) * 100), matchedPreferences, compromises: penalty ? ['Some individual interests remain optional on this route.'] : ['No stated non-negotiable is broken.'] }
-  }).sort((a, b) => b.score - a.score)
-  const picks = scored.slice(0, 3)
-  return { memberCount: new Set(preferences.map((item) => item.user_id)).size, totalMembers, questReadiness, travelDna: { sharedVibe: [...new Set(moods)].slice(0, 3), budgetStyle: ['Budget-friendly', 'Moderate', 'Premium'][budgetCeiling], noGoActivities: noGos }, results: picks.map((item, index) => ({ ...item, label: ['Best shared match', 'Fair compromise', 'Unexpected match'][index] })) }
+  const accepted = new Set(members.map(member => member.user_id))
+  const latest = new Map<string, Preference>()
+  for (const preference of preferences) if (preference.user_id && accepted.has(preference.user_id) && !latest.has(preference.user_id)) latest.set(preference.user_id, preference)
+  const savedPreferences = [...latest.values()]
+  const notes = (type: AcceptedQuestNote['type']) => acceptedNotes.filter(note => note.type === type).map(note => note.suggestion)
+  const effectivePreferences = savedPreferences.map(preference => ({ ...preference,
+    mood_preferences: [...(preference.mood_preferences ?? []), ...notes('mood')],
+    activities_preferred: [preference.activities_preferred, ...notes('activity')].filter(Boolean).join(' '),
+    data: { ...preference.data, noGo: [preference.data?.noGo, ...notes('no_go')].filter(Boolean).join('; ') },
+  }))
+  const totalMembers = Math.max(1, Number(rooms[0]?.members) || members.length || 1)
+  return { ...rankRecommendations(effectivePreferences, catalogue), totalMembers, questReadiness: buildQuestReadiness(savedPreferences, totalMembers), preferenceVersion: contextKey([savedPreferences, acceptedNotes]) }
 }
