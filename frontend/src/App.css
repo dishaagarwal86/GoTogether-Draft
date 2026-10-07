@@ -237,7 +237,7 @@ main {
 .landing-topbar.is-scrolled { background: rgba(23, 59, 76, .95); border-bottom-color: rgba(255,255,255,.18); }
 .ocean-landing { min-height: 100svh; position: relative; isolation: isolate; overflow: hidden; padding: clamp(18px, 3.6vw, 54px); color: #fff; background: #f5ecdf; }
 .water-photo { position: absolute; inset: -5%; z-index: -2; }
-.water-photo { background: linear-gradient(90deg, rgba(10,38,50,.55), rgba(10,38,50,.12) 52%, rgba(10,38,50,.15)), url('./assets/coast-hero.png') center/cover; transform: scale(1.04); }
+.water-photo { background: linear-gradient(90deg, rgba(10,38,50,.55), rgba(10,38,50,.12) 52%, rgba(10,38,50,.15)), url('./assets/coast-hero.webp') center/cover; transform: scale(1.04); }
 .ocean-landing:after { content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none; background: linear-gradient(180deg, rgba(7,38,49,.15), transparent 50%, rgba(7,38,49,.33)); }
 .landing-frame { position: relative; min-height: calc(100svh - clamp(36px, 7.2vw, 108px)); max-width: 1370px; margin: auto; border: 0; border-radius: 0; overflow: hidden; background: rgba(12, 54, 63, .12); box-shadow: 0 30px 80px rgba(41, 30, 20, .23); }
 .landing-content { min-height: calc(100svh - clamp(36px, 7.2vw, 108px)); padding: 118px clamp(22px, 7vw, 110px) 80px; display: flex; justify-content: center; align-items: center; text-align: center; }.landing-copy { max-width: 620px; }.landing-kicker, .destination-title p { color: #ffd8a9; font: 10px var(--mono); letter-spacing: 1.9px; margin: 0 0 21px; text-shadow: 0 1px 8px rgba(0,35,50,.48); }.landing-copy h1 { color: #fff; font: 600 clamp(50px, 6.6vw, 92px)/.9 var(--serif); letter-spacing: -5px; margin: 0; text-shadow: 0 3px 20px rgba(0,42,62,.35); }.landing-copy h1 i { color: #f5b16d; font-weight: 500; }.landing-lede { max-width: 395px; margin: 29px auto; font-size: 14px; line-height: 1.65; color: #fff; text-shadow: 0 1px 10px rgba(0,38,56,.38); }.start-journey { color: #fff; background: #df6e4c; padding: 15px 20px; border-radius: 0; text-decoration: none; font-weight: 800; font-size: 12px; box-shadow: 0 8px 20px rgba(0,32,45,.22); }.start-journey span { margin-left: 24px; font-size: 17px; }
@@ -1138,7 +1138,7 @@ main {
     --line: rgba(210, 190, 162, .76);
     --coral: #df6e4c;
     --yellow: #eebf72;
-    background: linear-gradient(125deg, rgba(12, 54, 72, .7), rgba(63, 62, 116, .46) 58%, rgba(33, 112, 120, .38)), url('./assets/coast-hero.png') center/cover fixed;
+    background: linear-gradient(125deg, rgba(12, 54, 72, .7), rgba(63, 62, 116, .46) 58%, rgba(33, 112, 120, .38)), url('./assets/coast-hero.webp') center/cover fixed;
 }
 
 .app-shell:not(.landing-shell):not(.journey-shell) .topbar {

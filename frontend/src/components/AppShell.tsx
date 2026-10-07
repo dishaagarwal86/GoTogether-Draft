@@ -1,29 +1,32 @@
-import { useEffect } from 'react'
+import { lazy, Suspense, useEffect } from 'react'
+import { RouteErrorBoundary } from './RouteErrorBoundary'
 import { Link, Navigate, Outlet, Route, Routes, useLocation } from 'react-router-dom'
-import { HomePage } from '../pages/HomePage'
-import { CreateRoomPage } from '../pages/CreateRoomPage'
-import { PlanTripPage } from '../pages/PlanTripPage'
-import { QuestionsPage } from '../pages/QuestionsPage'
-import { RoomOverviewPage } from '../pages/RoomOverviewPage'
-import { ExplorePage } from '../pages/ExplorePage'
 import { GlobalNavbar } from './MainNavigation'
 import { AuthProvider, useAuth } from '../auth/AuthContext'
-import { LoginPage, SignUpPage } from '../pages/AuthPages'
-import { TravelStylePage } from '../pages/TravelStylePage'
-import { ProfilePage } from '../pages/ProfilePage'
 import { AuthPrompt } from './AuthPrompt'
-import { GroupDnaPage } from '../pages/GroupDnaPage'
-import { PlanPathsPage } from '../pages/PlanPathsPage'
-import { InvitePage } from '../pages/InvitePage'
-import { SharedJoinPage } from '../pages/SharedJoinPage'
-import { JoinQuestPage } from '../pages/JoinQuestPage'
-import { QuestDetailPage } from '../pages/QuestDetailPage'
-import { LandingConcept } from '../pages/LandingConcept'
-import { DashboardPage } from '../pages/DashboardPage'
 import { EmptyState, Icon, LoadingState } from './Ui'
 import { TravelCanvas } from './TravelArtwork'
-import { WorkspacePreviewPage } from '../pages/WorkspacePreviewPage'
-import { CrewPage } from '../pages/CrewPage'
+
+const HomePage = lazy(() => import('../pages/HomePage').then(module => ({ default: module.HomePage })))
+const CreateRoomPage = lazy(() => import('../pages/CreateRoomPage').then(module => ({ default: module.CreateRoomPage })))
+const PlanTripPage = lazy(() => import('../pages/PlanTripPage').then(module => ({ default: module.PlanTripPage })))
+const QuestionsPage = lazy(() => import('../pages/QuestionsPage').then(module => ({ default: module.QuestionsPage })))
+const RoomOverviewPage = lazy(() => import('../pages/RoomOverviewPage').then(module => ({ default: module.RoomOverviewPage })))
+const ExplorePage = lazy(() => import('../pages/ExplorePage').then(module => ({ default: module.ExplorePage })))
+const LoginPage = lazy(() => import('../pages/AuthPages').then(module => ({ default: module.LoginPage })))
+const SignUpPage = lazy(() => import('../pages/AuthPages').then(module => ({ default: module.SignUpPage })))
+const TravelStylePage = lazy(() => import('../pages/TravelStylePage').then(module => ({ default: module.TravelStylePage })))
+const ProfilePage = lazy(() => import('../pages/ProfilePage').then(module => ({ default: module.ProfilePage })))
+const GroupDnaPage = lazy(() => import('../pages/GroupDnaPage').then(module => ({ default: module.GroupDnaPage })))
+const PlanPathsPage = lazy(() => import('../pages/PlanPathsPage').then(module => ({ default: module.PlanPathsPage })))
+const InvitePage = lazy(() => import('../pages/InvitePage').then(module => ({ default: module.InvitePage })))
+const SharedJoinPage = lazy(() => import('../pages/SharedJoinPage').then(module => ({ default: module.SharedJoinPage })))
+const JoinQuestPage = lazy(() => import('../pages/JoinQuestPage').then(module => ({ default: module.JoinQuestPage })))
+const QuestDetailPage = lazy(() => import('../pages/QuestDetailPage').then(module => ({ default: module.QuestDetailPage })))
+const LandingConcept = lazy(() => import('../pages/LandingConcept').then(module => ({ default: module.LandingConcept })))
+const DashboardPage = lazy(() => import('../pages/DashboardPage').then(module => ({ default: module.DashboardPage })))
+const WorkspacePreviewPage = lazy(() => import('../pages/WorkspacePreviewPage').then(module => ({ default: module.WorkspacePreviewPage })))
+const CrewPage = lazy(() => import('../pages/CrewPage').then(module => ({ default: module.CrewPage })))
 
 export function AppShell() { return <AuthProvider><AppLayout /></AuthProvider> }
 function RequireAuth() {
@@ -44,9 +47,9 @@ function AppLayout() {
   }, [location.pathname, location.hash])
   return <div className={isLanding ? 'app-shell landing-shell gt-preview-shell' : `app-shell journey-shell${isAuth ? ' journey-auth-shell' : ''}`}>
     {!isLanding && !isAuth && <TravelCanvas />}
-    {!isLanding && !isAuth && <GlobalNavbar key={location.pathname} />}
+    {!isLanding && !isAuth && <GlobalNavbar />}
     {!isLanding && <a className="journey-skip" href="#main-content">Skip to content</a>}
-    <main id="main-content" className={isLanding ? 'landing-main' : isAuth ? 'journey-auth-main' : 'journey-main'}><Routes>
+    <main id="main-content" className={isLanding ? 'landing-main' : isAuth ? 'journey-auth-main' : 'journey-main'}><RouteErrorBoundary key={location.pathname}><Suspense fallback={<LoadingState label="Opening your travel space…" />}><Routes>
       <Route path="/" element={<HomePage />} /><Route path="/landing-concept" element={<LandingConcept />} />
       <Route path="/login" element={<LoginPage />} /><Route path="/signup" element={<SignUpPage />} />
       <Route path="/join-room/:token" element={<SharedJoinPage key={location.pathname} />} /><Route path="/invite/:token" element={<InvitePage key={location.pathname} />} /><Route path="/join/:token" element={<JoinQuestPage key={location.pathname} />} /><Route path="/explore" element={<ExplorePage key={location.pathname + location.search} />} />
@@ -61,7 +64,7 @@ function AppLayout() {
         <Route path="/travel-dna/plan-paths" element={<PlanPathsPage />} />
       </Route>
       <Route path="*" element={<EmptyState title="A little off the beaten path." description="This page isn’t here, but your next adventure is." to="/dashboard" label="Back to your overview" />} />
-    </Routes></main>
+    </Routes></Suspense></RouteErrorBoundary></main>
     {!isLanding && !isAuth && <footer className="journey-footer"><span>Good places. Better company.</span><Icon name="spark" size={18} /><Link to="/">The Go.Together story <span>↗</span></Link></footer>}
     <AuthPrompt />
   </div>

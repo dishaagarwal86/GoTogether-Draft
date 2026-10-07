@@ -8,7 +8,7 @@ import { TravelArtwork } from '../components/TravelArtwork'
 import { draftKey, emptyDraft, readStored, writeStored, type QuestDraft } from '../services/journeyStorage'
 import { exploreItineraries } from '../data/exploreItineraries'
 import { createQuest } from '../apis/quests'
-import coast from '../assets/coast-hero.png'
+import coast from '../assets/coast-hero.webp'
 
 export function DetailedCreateRoomPage() {
   const { user } = useAuth()

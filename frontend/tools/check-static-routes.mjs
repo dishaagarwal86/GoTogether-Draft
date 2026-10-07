@@ -6,7 +6,7 @@ import { chromium } from 'playwright'
 
 const root = resolve(import.meta.dirname, '../..')
 const browser = await chromium.launch({ channel: process.env.PLAYWRIGHT_CHANNEL ?? 'chrome', headless: true })
-const types = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg' }
+const types = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.webp': 'image/webp', '.woff2': 'font/woff2', '.woff': 'font/woff' }
 
 // Serve actual production files, with only the committed rewrite rules providing
 // the fallback. Vite dev/preview would hide a missing deployment configuration.
@@ -17,6 +17,9 @@ try {
     const output = resolve(dirname(configFile), config.outputDirectory)
     assert.equal(output, resolve(root, 'frontend/dist'))
     const entry = await readFile(resolve(output, 'index.html'), 'utf8')
+    const entryScript = entry.match(/<script[^>]+src="([^"]+)"/)?.[1]
+    assert.ok(entryScript, 'The production entry script is present')
+    assert.ok((await readFile(resolve(output, `.${entryScript}`))).byteLength < 350_000, 'Keep the initial JavaScript bundle below 350KB')
     let rewritesEnabled = false
     const server = createServer(async (request, response) => {
       const pathname = new URL(request.url, 'http://localhost').pathname
@@ -80,7 +83,16 @@ try {
       await page.goto(`${base}/explore`)
       await page.getByRole('button', { name: 'View itinerary' }).first().waitFor()
       assert.deepEqual(errors, [])
-      console.log(`PASS ${configPath}: production assets, 18 direct routes, landing CTA, login/signup refresh, and protected-route handoff`)
+      // A missed chunk during a deployment or interrupted connection must
+      // offer recovery, then succeed once the network becomes available.
+      await page.route('**/ExplorePage-*.js', route => route.abort())
+      await page.reload()
+      await page.getByText('This page couldn’t load.', { exact: false }).waitFor()
+      await page.unroute('**/ExplorePage-*.js')
+      await page.getByRole('button', { name: 'Try again' }).click()
+      await page.getByRole('button', { name: 'View itinerary' }).first().waitFor()
+      assert.deepEqual(errors, [])
+      console.log(`PASS ${configPath}: production assets, 18 direct routes, auth navigation, loading budget, and failed-download recovery`)
     } finally { await context.close(); server.closeAllConnections(); await new Promise(done => server.close(done)) }
   }
 } finally { await browser.close() }

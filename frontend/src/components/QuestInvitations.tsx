@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { getMyInvites, joinInvite, type PendingInvite } from '../apis/invites'
 import { Icon } from './Ui'
 
@@ -15,6 +15,9 @@ export function QuestInvitations() {
   const trigger = useRef<HTMLButtonElement>(null)
   const mounted = useRef(false)
   const navigate = useNavigate()
+  const { pathname } = useLocation()
+  const [menuLocation, setMenuLocation] = useState(pathname)
+  if (menuLocation !== pathname) { setMenuLocation(pathname); setOpen(false) }
 
   useEffect(() => { mounted.current = true; return () => { mounted.current = false } }, [])
   useEffect(() => {

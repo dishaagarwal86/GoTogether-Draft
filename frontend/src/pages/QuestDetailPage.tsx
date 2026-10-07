@@ -22,20 +22,23 @@ import type { Quest } from '../apis/quests'
 export function QuestDetailPage() {
   const { roomId = '' } = useParams()
   const { quests, loading, error, retry } = useQuests()
+  // Start the room's largest read alongside membership loading, rather than
+  // paying for another network round trip after the room list has arrived.
+  const journey = useQuestJourney(roomId)
   const quest = quests.find(item => item.id === roomId)
   if (loading) return <LoadingState label="Opening your travel book…" />
   if (error) return <ErrorState message={error} retry={retry} />
   if (!quest) return <EmptyState title="This quest isn’t in your travel book." description="It may be unavailable, or you may need to accept an invitation first." to="/trips" label="Back to my quests" />
-  return <QuestWorkspace key={roomId} quest={quest} refreshRooms={retry} />
+  return <QuestWorkspace key={roomId} quest={quest} refreshRooms={retry} journey={journey} />
 }
 
 
 type RoomTab = 'crew' | 'options' | 'itinerary' | 'ideas' | 'chat'
-function QuestWorkspace({ quest, refreshRooms }: { quest: Quest; refreshRooms: () => void }) {
+function QuestWorkspace({ quest, refreshRooms, journey }: { quest: Quest; refreshRooms: () => void; journey: ReturnType<typeof useQuestJourney> }) {
   const roomId = quest.id
   const navigate = useNavigate()
   const { user } = useAuth()
-  const { data, error: journeyError, retry } = useQuestJourney(roomId)
+  const { data, error: journeyError, retry } = journey
   const [params, setParams] = useSearchParams()
   const location = useLocation()
   const tab = (['crew', 'options', 'itinerary', 'ideas', 'chat'].includes(params.get('tab') ?? '') ? params.get('tab') : 'crew') as RoomTab
@@ -119,6 +122,7 @@ function QuestWorkspace({ quest, refreshRooms }: { quest: Quest; refreshRooms: (
       const result = await changeTravelMode(roomId, mode, requestId)
       navigate(`/quests/${result.roomId}?tab=${mode === 'solo' && plan ? 'itinerary' : 'crew'}`, { state: { modeNotice: result.copied ? 'Your solo copy is ready. Your shared trip is still with the crew.' : mode === 'solo' ? 'You’re travelling solo. Your saved work is right here.' : 'Room for good company. Invite someone to join you.', sourceRoom: result.copied ? roomId : undefined } })
       refreshRooms()
+      retry()
     } finally { inFlight.current = false; setSaving(false) }
   }
   const discuss = (label: string, detail: string) => { setContext({ label, detail }); setTab('chat') }

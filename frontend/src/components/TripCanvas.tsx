@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { Icon } from './Ui'
 import { dayWarnings, type PlanCommand, type PlanItem, type WorkingPlan } from '../services/workingPlanApi'
 import { destinationPhotos } from '../data/destinationPhotos'
-import coast from '../assets/coast-hero.png'
+import coast from '../assets/coast-hero.webp'
 
 type Panel = 'ideas' | 'companion' | 'crew'
 type Context = { dayId?: string; label: string; detail: string }

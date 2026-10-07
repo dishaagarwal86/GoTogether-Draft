@@ -1,0 +1,10 @@
+/* One hierarchy for every screen. Sizes follow the browser's text setting. */
+:root {
+  --text-caption: .75rem;
+  --text-small: .875rem;
+  --text-body: 1rem;
+  --text-lead: 1.125rem;
+  --text-card: 1.375rem;
+  --text-section: clamp(1.5rem, 1.25rem + 1vw, 2rem);
+  --text-page: clamp(2rem, 1.5rem + 2vw, 3rem);
+}

@@ -5,7 +5,7 @@ import { countries } from '../data/countries'
 import { Brand, Icon, LoadingState } from '../components/Ui'
 import { TravelCanvas } from '../components/TravelArtwork'
 import { safeNext } from '../services/journeyStorage'
-import coast from '../assets/coast-hero.png'
+import coast from '../assets/coast-hero.webp'
 import mountains from '../assets/landing/mountains.jpg'
 
 export function LoginPage() { return <AuthPage mode="login" key="login" /> }
