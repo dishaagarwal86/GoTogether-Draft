@@ -5,5 +5,6 @@ export const recommendationsRouter = Router()
 recommendationsRouter.get('/quests/:roomId', requireUser, async (request, response) => {
   const roomId = String(request.params.roomId)
   await assertQuestMember(roomId, response.locals.userId)
-  response.json({ data: await recommendForQuest(roomId) })
+  const result = await recommendForQuest(roomId)
+  response.json({ data: { ...result, travelDna: result.travelDna ? { ...result.travelDna, noGoActivities: [] } : null } })
 })

@@ -1,12 +1,13 @@
 import { randomUUID } from 'node:crypto'
-import { insertIfMissing, selectRows, updateRows } from '../storage.js'
+import { insertIfMissing, selectRows } from '../storage.js'
 import { assertQuestMember, HttpError } from './access.js'
 import { recommendForQuest } from './recommendationService.js'
+import { applyStartPreference, learningPrompt, questPersonalContext, questPlanningConstraints, signalFromEdit, travelRpc } from './travelMemory.js'
 
 export type PlanItem = { id: string; title: string; kind: 'experience' | 'food' | 'stay' | 'transport' | 'free'; time: string; duration: number; note: string; locked: boolean }
 export type PlanDay = { id: string; title: string; items: PlanItem[] }
 export type PlanDocument = { title: string; destination: string; country: string; catalogueId: string; days: PlanDay[] }
-type Snapshot = { label: string; document: PlanDocument }
+type Snapshot = { eventId?: string; label: string; document: PlanDocument }
 type RecordData = { document: PlanDocument; history: Snapshot[]; requests: string[] }
 type PlanRow = { id: string; revision: number; data: RecordData; updated_at: string }
 const columns = ['id', 'revision', 'data', 'updated_at']
@@ -41,6 +42,8 @@ export async function startWorkingPlan(roomId: string, userId: string, catalogue
     }) }
   })
   if (!days.length) throw new HttpError(409, 'This idea has no days yet. Choose another starting point.')
+  const personal = await questPersonalContext(userId, roomId)
+  applyStartPreference(days, personal.explicitStart || personal.effective.dayStart)
   const document: PlanDocument = { title: `${trip.destination}, together`, destination: trip.destination, country: trip.country, catalogueId: trip.id, days }
   await insertIfMissing('quest_working_plans', { id: roomId, data: { document, history: [], requests: [] } })
   return getWorkingPlan(roomId, userId)
@@ -105,16 +108,38 @@ export async function changeWorkingPlan(roomId: string, userId: string, input: R
   if (input.expectedRevision !== row.revision) throw new HttpError(409, 'The plan changed in another window. Load the latest version before applying your change.')
   let document: PlanDocument
   let history = row.data.history
+  let undoEvent: string | undefined
+  let proposalId: string | undefined
+  let signal: ReturnType<typeof signalFromEdit> = null
+  const eventId = `${roomId}:${input.requestId}`
+  const personal = await questPersonalContext(userId, roomId)
   if (input.type === 'undo') {
     if (!history.length) throw new HttpError(409, 'There are no changes to undo.')
+    undoEvent = history.at(-1)!.eventId
     document = history.at(-1)!.document
     history = history.slice(0, -1)
   } else {
-    const applied = applyPlanCommand(row.data.document, input)
-    document = applied.document
-    history = [...history, { label: applied.label, document: row.data.document }].slice(-30)
+    if (input.type === 'proposal') {
+      const [job] = await selectRows<{ id: string; base_revision: number; state: string; data: { commands: Record<string, unknown>[]; constraintsFingerprint?: string } }>('travel_ai_jobs', ['id', 'base_revision', 'state', 'data'], [{ column: 'id', operator: 'eq', value: String(input.proposalId) }, { column: 'user_id', operator: 'eq', value: userId }, { column: 'room_id', operator: 'eq', value: roomId }])
+      if (!job || job.state !== 'ready' || job.base_revision !== row.revision) throw new HttpError(409, 'This suggestion is no longer current. Ask for a new preview.')
+      if (job.data.constraintsFingerprint !== (await questPlanningConstraints(roomId)).fingerprint) throw new HttpError(409, 'Trip preferences changed since this preview. Ask for a fresh suggestion.')
+      proposalId = job.id
+      document = job.data.commands.reduce<PlanDocument>((plan, command) => applyPlanCommand(plan, command).document, row.data.document)
+      history = [...history, { eventId, label: 'Applied reviewed suggestions', document: row.data.document }].slice(-30)
+    } else {
+      const applied = applyPlanCommand(row.data.document, input)
+      document = applied.document
+      signal = personal.profile.settings.learningEnabled ? signalFromEdit(row.data.document, document, input) : null
+      history = [...history, { eventId, label: applied.label, document: row.data.document }].slice(-30)
+    }
   }
-  const [updated] = await updateRows<PlanRow>('quest_working_plans', { revision: row.revision + 1, updated_at: new Date().toISOString(), data: { document, history, requests: [...row.data.requests, input.requestId].slice(-60) } }, [{ column: 'id', operator: 'eq', value: roomId }, { column: 'revision', operator: 'eq', value: String(row.revision) }], columns)
-  if (!updated) throw new HttpError(409, 'Someone saved a change first. Load the latest version and try again.')
-  return describePlan(updated)
+  const updated = await travelRpc<PlanRow>('commit_travel_plan', {
+    p_user: userId, p_room: roomId, p_revision: row.revision, p_request: input.requestId,
+    p_data: { document, history, requests: [...row.data.requests, input.requestId].slice(-60) },
+    p_event: { type: input.type, signal, context: personal.context }, p_undo: undoEvent ?? null, p_proposal: proposalId ?? null,
+  })
+  // The revision is already durable; an optional nudge must not turn a saved
+  // edit into a misleading failure response.
+  const prompt = signal ? await learningPrompt(userId, eventId).catch(() => null) : null
+  return { ...describePlan(updated), learningPrompt: prompt }
 }

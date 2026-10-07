@@ -1,8 +1,9 @@
 import { selectRows } from '../storage.js'
 import { budgetRank, moodName, normalize, violatesNoGo } from './travelPreferences.js'
+import { contextFor, effectiveMemories, getTravelProfile } from './travelMemory.js'
 import { contextKey } from './aiHistory.js'
 
-export type Preference = { user_id?: string; budget: string | null; days_count: number | null; location_preferences: { scope?: string; destination?: string; fixed?: boolean } | null; mood_preferences: string[] | null; activities_must_have: string | null; activities_preferred: string | null; accommodation_preferences: string[] | null; data: { noGo?: string; pace?: string; ageGroups?: string[] } }
+export type Preference = { user_id?: string; budget: string | null; days_count: number | null; location_preferences: { scope?: string; destination?: string; fixed?: boolean } | null; mood_preferences: string[] | null; activities_must_have: string | null; activities_preferred: string | null; accommodation_preferences: string[] | null; data: { noGo?: string; pace?: string; ageGroups?: string[]; companions?: string; dayStart?: string; personalizationEnabled?: boolean } }
 export type Catalogue = { id: string; title: string; destination: string; country: string; duration_days: number; budget: string; estimated_cost_usd: number; seasons: string[]; moods: string[]; location_type: string; short_description: string; why_it_fits: string; daily_plan: unknown; ai_context: { pace?: string; highlights?: string[]; avoidIf?: string[]; activityTags?: string[] } }
 const words = (value = '') => normalize(value).split(' ').filter(word => word.length > 3 && !['with', 'have', 'want', 'would', 'like', 'some'].includes(word))
 const fraction = (desired: string[], available: string[]) => desired.length ? desired.filter(item => available.some(value => normalize(value).includes(normalize(item)))).length / desired.length : .7
@@ -128,7 +129,12 @@ export async function recommendForQuest(roomId: string) {
   const accepted = new Set(members.map(member => member.user_id))
   const latest = new Map<string, Preference>()
   for (const preference of preferences) if (preference.user_id && accepted.has(preference.user_id) && !latest.has(preference.user_id)) latest.set(preference.user_id, preference)
-  const savedPreferences = [...latest.values()]
+  const savedPreferences = await Promise.all([...latest.values()].map(async preference => {
+    if (!preference.user_id || preference.data?.personalizationEnabled === false) return preference
+    const memory = effectiveMemories(await getTravelProfile(preference.user_id), contextFor(preference.data?.companions))
+    return { ...preference, mood_preferences: preference.mood_preferences?.length ? preference.mood_preferences : memory.interests,
+      data: { ...preference.data, pace: preference.data?.pace || memory.pace, noGo: [preference.data?.noGo, ...memory.avoid].filter(Boolean).join('; ') } }
+  }))
   const notes = (type: AcceptedQuestNote['type']) => acceptedNotes.filter(note => note.type === type).map(note => note.suggestion)
   const effectivePreferences = savedPreferences.map(preference => ({ ...preference,
     mood_preferences: [...(preference.mood_preferences ?? []), ...notes('mood')],

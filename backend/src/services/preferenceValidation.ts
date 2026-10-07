@@ -34,6 +34,8 @@ export function validatePreferencePayload(value: unknown) {
     if (typeof input.kidsInvolved !== 'boolean') throw new HttpError(400, 'Invalid child traveller selection.')
     output.kidsInvolved = input.kidsInvolved
   }
+  if (input.personalizationEnabled !== undefined) { if (typeof input.personalizationEnabled !== 'boolean') throw new HttpError(400, 'Invalid personalization selection.'); output.personalizationEnabled = input.personalizationEnabled }
+  if (input.dayStart !== undefined) { if (typeof input.dayStart !== 'string' || input.dayStart && !/^(?:0[5-9]|1[0-4]):[0-5]\d$/.test(input.dayStart)) throw new HttpError(400, 'Choose a morning start time.'); output.dayStart = input.dayStart }
   for (const key of ['dates', 'locationPreferences']) {
     if (input[key] === undefined) continue
     if (input[key] === null) { output[key] = null; continue }

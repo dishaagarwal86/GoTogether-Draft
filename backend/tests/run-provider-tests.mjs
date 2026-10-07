@@ -47,6 +47,7 @@ try {
     await run(provider, ['--import', 'tsx', '--test', 'tests/catalogue.integration.test.ts'])
     await run(provider, ['--import', 'tsx', '--test', 'tests/ai.integration.test.ts'])
     await run(provider, ['--import', 'tsx', '--test', 'tests/workingPlan.integration.test.ts'])
+    await run(provider, ['--import', 'tsx', '--test', 'tests/travelMemory.integration.test.ts'])
   }
 } catch (error) {
   console.error(error.message)
