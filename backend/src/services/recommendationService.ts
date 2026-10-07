@@ -2,11 +2,12 @@ import { selectRows } from '../storage.js'
 import { budgetRank, moodName, normalize, violatesNoGo } from './travelPreferences.js'
 import { contextKey } from './aiHistory.js'
 
-export type Preference = { user_id?: string; budget: string | null; days_count: number | null; location_preferences: { scope?: string; destination?: string } | null; mood_preferences: string[] | null; activities_must_have: string | null; activities_preferred: string | null; accommodation_preferences: string[] | null; data: { noGo?: string; pace?: string; ageGroups?: string[] } }
+export type Preference = { user_id?: string; budget: string | null; days_count: number | null; location_preferences: { scope?: string; destination?: string; departureCity?: string } | null; mood_preferences: string[] | null; activities_must_have: string | null; activities_preferred: string | null; accommodation_preferences: string[] | null; data: { noGo?: string; pace?: string; ageGroups?: string[] } }
 export type Catalogue = { id: string; title: string; destination: string; country: string; duration_days: number; budget: string; estimated_cost_usd: number; seasons: string[]; moods: string[]; location_type: string; short_description: string; why_it_fits: string; daily_plan: unknown; ai_context: { pace?: string; highlights?: string[]; avoidIf?: string[]; activityTags?: string[] } }
 const words = (value = '') => normalize(value).split(' ').filter(word => word.length > 3 && !['with', 'have', 'want', 'would', 'like', 'some'].includes(word))
 const fraction = (desired: string[], available: string[]) => desired.length ? desired.filter(item => available.some(value => normalize(value).includes(normalize(item)))).length / desired.length : .7
 const mean = (values: number[]) => values.reduce((total, value) => total + value, 0) / values.length
+
 
 export function rankRecommendations(preferences: Preference[], catalogue: Catalogue[]) {
   if (!preferences.length) return { travelDna: null, memberCount: 0, results: [], blockers: ['Save your travel preferences to see matching itineraries.'] }
@@ -38,7 +39,7 @@ export function rankRecommendations(preferences: Preference[], catalogue: Catalo
   const fair = scored.filter(trip => trip.id !== best?.id).sort((a, b) => b.minFit - a.minFit || b.score - a.score || a.id.localeCompare(b.id))[0]
   const novelty = (trip: typeof best) => (trip.destination !== best?.destination ? 25 : 0) + trip.moods.filter(mood => !best?.moods.includes(mood)).length * 10 + trip.score * .3
   const unexpected = scored.filter(trip => trip.id !== best?.id && trip.id !== fair?.id).sort((a, b) => novelty(b) - novelty(a) || a.id.localeCompare(b.id))[0]
-  const picks = [best && { ...best, label: 'Best shared match' }, fair && { ...fair, label: 'Fair compromise' }, unexpected && { ...unexpected, label: 'Unexpected match' }].filter(item => Boolean(item)) as Array<NonNullable<typeof best> & { label: string }>
+  const picks = [best && { ...best, label: 'Best shared match' }, fair && { ...fair, label: 'Fair compromise' }, unexpected && { ...unexpected, label: preferences.length > 1 ? 'Split plan' : 'Unexpected match' }].filter(item => Boolean(item)) as Array<NonNullable<typeof best> & { label: string }>
   return {
     memberCount: preferences.length,
     travelDna: { sharedVibe: [...new Set(sharedMoods)].slice(0, 3), budgetStyle: ['Budget-friendly', 'Moderate', 'Premium'][budgetCeiling], noGoActivities: noGos, pacePreferences: preferences.map(item => item.data?.pace).filter(Boolean), mustHaveActivities: preferences.map(item => item.activities_must_have).filter(Boolean) },

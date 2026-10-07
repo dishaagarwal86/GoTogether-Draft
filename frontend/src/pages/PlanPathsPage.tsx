@@ -1,7 +1,8 @@
 import { Link, useSearchParams } from 'react-router-dom'
-import { useQuestRecommendations } from '../hooks/useQuestRecommendations'
 import { EmptyState, ErrorState, LoadingState, PageHeading } from '../components/Ui'
 import { RecommendationCards } from '../components/RecommendationCards'
+import { useQuestRecommendations } from '../hooks/useQuestRecommendations'
+
 export function PlanPathsPage() {
   const [params] = useSearchParams()
   const roomId = params.get('roomId') ?? ''

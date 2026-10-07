@@ -1,5 +1,8 @@
 export type DailyPlan = { day: string; morning: string; afternoon: string; evening: string }
 
+export type FlightInfo = { from: string; airline: string; type: string; estimatedCost: string }
+export type AccommodationInfo = { type: string; name: string; pricePerNight: string; notes: string }
+
 export type ExploreItinerary = {
   id: string
   title: string
@@ -15,6 +18,8 @@ export type ExploreItinerary = {
   shortDescription: string
   whyItFits: string
   dailyPlan: DailyPlan[]
+  flights?: FlightInfo[]
+  accommodation?: AccommodationInfo
 }
 
 const plan = (place: string): DailyPlan[] => [
