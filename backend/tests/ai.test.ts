@@ -16,7 +16,11 @@ test('provider selection is consistent, explicit, and case insensitive', () => {
 })
 test('requests and generated preferences reject unsupported or unbounded data', () => {
   assert.throws(() => parseCompanionRequest({ task: 'chat', roomId: 'room', message: 'a'.repeat(4001) }))
-  assert.throws(() => parseCompanionRequest({ task: 'extract', message: 'food' }))
+  assert.equal(parseCompanionRequest({ task: 'extract', message: 'food' }).task, 'extract')
+  assert.throws(() => parseCompanionRequest({ task: 'extract', message: 'a'.repeat(4001) }))
+  assert.throws(() => parseCompanionRequest({ task: 'extract', message: '' }))
+  assert.throws(() => parseCompanionRequest({ task: 'chat', message: 'food' }))
+  assert.throws(() => parseCompanionRequest({ task: 'explain', itineraryId: 'trip' }))
   assert.throws(() => validateExtracted({ userId: 'someone-else' }))
   assert.throws(() => validateExtracted({ daysCount: 999 }))
   assert.throws(() => validateExtracted({ moods: ['Invented interest'] }))

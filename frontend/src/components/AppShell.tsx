@@ -4,7 +4,7 @@ import { Link, Navigate, Outlet, Route, Routes, useLocation } from 'react-router
 import { GlobalNavbar } from './MainNavigation'
 import { AuthProvider, useAuth } from '../auth/AuthContext'
 import { AuthPrompt } from './AuthPrompt'
-import { EmptyState, Icon, LoadingState } from './Ui'
+import { EmptyState, LoadingState } from './Ui'
 import { TravelCanvas } from './TravelArtwork'
 
 const HomePage = lazy(() => import('../pages/HomePage').then(module => ({ default: module.HomePage })))
@@ -25,6 +25,7 @@ const QuestDetailPage = lazy(() => import('../pages/QuestDetailPage').then(modul
 const LandingConcept = lazy(() => import('../pages/LandingConcept').then(module => ({ default: module.LandingConcept })))
 const DashboardPage = lazy(() => import('../pages/DashboardPage').then(module => ({ default: module.DashboardPage })))
 const WorkspacePreviewPage = lazy(() => import('../pages/WorkspacePreviewPage').then(module => ({ default: module.WorkspacePreviewPage })))
+const PhotoCreditsPage = lazy(() => import('../pages/PhotoCreditsPage').then(module => ({ default: module.PhotoCreditsPage })))
 const CrewPage = lazy(() => import('../pages/CrewPage').then(module => ({ default: module.CrewPage })))
 
 export function AppShell() { return <AuthProvider><AppLayout /></AuthProvider> }
@@ -58,6 +59,7 @@ function AppLayout() {
       <Route path="/login" element={<LoginPage />} /><Route path="/signup" element={<SignUpPage />} />
       <Route path="/join-room/:token" element={<SharedJoinPage key={location.pathname} />} /><Route path="/invite/:token" element={<InvitePage key={location.pathname} />} /><Route path="/join/:token" element={<JoinQuestPage key={location.pathname} />} /><Route path="/explore" element={<ExplorePage key={location.pathname + location.search} />} />
       <Route path="/inspiration" element={<Navigate to="/explore" replace />} />
+      <Route path="/photo-credits" element={<PhotoCreditsPage />} />
       <Route path="/workspace-preview" element={<WorkspacePreviewPage />} />
       <Route element={<RequireAuth />}>
         <Route path="/travel-style" element={<TravelStylePage />} /><Route path="/dashboard" element={<DashboardPage />} /><Route path="/profile" element={<ProfilePage />} /><Route path="/crew" element={<CrewPage />} />
@@ -69,7 +71,7 @@ function AppLayout() {
       </Route>
       <Route path="*" element={<EmptyState title="A little off the beaten path." description="This page isn’t here, but your next adventure is." to="/dashboard" label="Back to your overview" />} />
     </Routes></Suspense></RouteErrorBoundary></main>
-    {!isLanding && !isAuth && <footer className="journey-footer"><span>Good places. Better company.</span><Icon name="spark" size={18} /><Link to="/">The Go.Together story <span>↗</span></Link></footer>}
+    {!isLanding && !isAuth && <footer className="journey-footer"><span>Good places. Better company.</span><Link to="/photo-credits">Photo credits</Link><Link to="/">The Go.Together story <span>↗</span></Link></footer>}
     <AuthPrompt />
   </div>
 }

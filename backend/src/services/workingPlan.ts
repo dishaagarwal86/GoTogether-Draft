@@ -3,8 +3,10 @@ import { insertIfMissing, selectRows } from '../storage.js'
 import { assertQuestMember, HttpError } from './access.js'
 import { agreedStartingPoint } from './questJourney.js'
 import { applyStartPreference, learningPrompt, questPersonalContext, questPlanningConstraints, signalFromEdit, travelRpc } from './travelMemory.js'
+import { resolveRealPlace } from './realPlaceService.js'
+import type { PlaceSource } from '../data/realPlaces.js'
 
-export type PlanItem = { id: string; title: string; kind: 'experience' | 'food' | 'stay' | 'transport' | 'free'; time: string; duration: number; note: string; locked: boolean; imageQuery?: string }
+export type PlanItem = { id: string; title: string; kind: 'experience' | 'food' | 'stay' | 'transport' | 'free'; time: string; duration: number; note: string; locked: boolean; imageQuery?: string; placeSource?: PlaceSource }
 export type PlanDay = { id: string; title: string; items: PlanItem[] }
 export type PlanDocument = { title: string; destination: string; country: string; catalogueId: string; preferenceVersion?: string; days: PlanDay[]; bookings?: ReturnType<typeof bookingsFor> }
 type Snapshot = { eventId?: string; label: string; document: PlanDocument }
@@ -21,10 +23,10 @@ export async function assertPlanEditor(roomId: string, userId: string) {
   if (member?.role !== 'owner') throw new HttpError(403, 'The quest host can edit the shared plan. Discuss your suggestion with the crew.')
 }
 
-type BookingSource = { destination: string; duration_days: number; budget: string; location_type: string; estimated_cost_usd: number; currency?: string; travel_dates?: unknown; flights?: unknown[]; stays?: unknown[]; cover_image?: string | null }
+type BookingSource = { destination: string; country: string; duration_days: number; budget: string; location_type: string; estimated_cost_usd: number; currency?: string; travel_dates?: unknown; flights?: unknown[]; stays?: unknown[]; cover_image?: string | null }
 function bookingsFor(trip: BookingSource) {
   if (!trip.flights?.length && !trip.stays?.length) return undefined
-  return { destination: trip.destination, duration_days: trip.duration_days, budget: trip.budget, location_type: trip.location_type, estimated_cost_usd: trip.estimated_cost_usd, currency: trip.currency, travel_dates: trip.travel_dates, flights: trip.flights, stays: trip.stays, cover_image: trip.cover_image ?? null }
+  return { destination: trip.destination, country: trip.country, duration_days: trip.duration_days, budget: trip.budget, location_type: trip.location_type, estimated_cost_usd: trip.estimated_cost_usd, currency: trip.currency, travel_dates: trip.travel_dates, flights: trip.flights, stays: trip.stays, cover_image: trip.cover_image ?? null }
 }
 
 export async function getWorkingPlan(roomId: string, userId: string) {
@@ -48,11 +50,12 @@ async function startingDocument(roomId: string, userId: string, catalogueId: unk
   const days = (Array.isArray(trip.daily_plan) ? trip.daily_plan : []).map((value, index): PlanDay => {
     const day = value as Record<string, unknown>
     return { id: randomUUID(), title: `Day ${index + 1}`, items: ['morning', 'afternoon', 'evening'].flatMap((slot, slotIndex) => {
-      const moment = (day.moments as Record<string, { activity?: unknown; detail?: unknown; imageQuery?: unknown }> | undefined)?.[slot]
+      const moment = (day.moments as Record<string, { activity?: unknown; detail?: unknown; imageQuery?: unknown; placeSource?: PlaceSource }> | undefined)?.[slot]
       const title = text(moment?.activity, 180) || text(day[slot], 180)
       const detail = text(moment?.detail, 400)
       const imageQuery = text(moment?.imageQuery, 100)
-      return title ? [{ id: randomUUID(), title: title.charAt(0).toUpperCase() + title.slice(1), kind: /dinner|food|taste|lunch|breakfast|café|cafe|restaurant|market/i.test(`${title} ${detail}`) ? 'food' : 'experience', time: ['10:00', '14:00', '19:00'][slotIndex], duration: 90, note: detail ? `${detail} Timing and availability need checking.` : 'Starting idea from the collection. Timing, location and availability need checking.', locked: false, ...(imageQuery ? { imageQuery } : {}) } satisfies PlanItem] : []
+      const place = resolveRealPlace(moment?.placeSource?.placeId, title, trip.destination, trip.country)
+      return title ? [{ id: randomUUID(), title: title.charAt(0).toUpperCase() + title.slice(1), kind: place?.kind ?? (/dinner|food|taste|lunch|breakfast|café|cafe|restaurant|market/i.test(`${title} ${detail}`) ? 'food' : 'experience'), time: ['10:00', '14:00', '19:00'][slotIndex], duration: 90, note: detail ? `${detail} Timing and availability need checking.` : 'Starting idea from the collection. Timing, location and availability need checking.', locked: false, ...(imageQuery ? { imageQuery } : {}), ...(place ? { placeSource: { ...place.source } } : {}) } satisfies PlanItem] : []
     }) }
   })
   if (!days.length) throw new HttpError(409, 'This idea has no days yet. Choose another starting point.')
@@ -78,7 +81,8 @@ export function applyPlanCommand(document: PlanDocument, command: Record<string,
   if (command.type === 'add') {
     if (!targetDay || next.days.reduce((n, day) => n + day.items.length, 0) >= 120) throw new HttpError(400, 'Choose a day with room for another idea.')
     const value = validateItem(command)
-    targetDay.items.push({ ...value, id: randomUUID(), locked: false })
+    const place = resolveRealPlace(command.placeId, value.title, document.destination, document.country, value.kind)
+    targetDay.items.push({ ...value, id: randomUUID(), locked: false, ...(place ? { placeSource: { ...place.source }, imageQuery: `${place.name} ${place.destination}` } : {}) })
     return { document: next, label: `Added ${value.title}` }
   }
   if (!item || !sourceDay) throw new HttpError(404, 'This activity is no longer in the plan.')
@@ -100,7 +104,7 @@ export function applyPlanCommand(document: PlanDocument, command: Record<string,
   }
   if (command.type === 'update') {
     const value = validateItem(command)
-    if (value.title !== item.title) delete item.imageQuery
+    if (value.title !== item.title || value.kind !== item.kind) { delete item.imageQuery; delete item.placeSource }
     Object.assign(item, value)
     return { document: next, label: `Updated ${item.title}` }
   }

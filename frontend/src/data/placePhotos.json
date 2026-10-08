@@ -1,0 +1,2822 @@
+[
+  {
+    "placeId": "kyoto-fushimi-inari",
+    "name": "Fushimi Inari Taisha",
+    "destination": "Kyoto",
+    "destinations": [
+      "Kyoto"
+    ],
+    "aliases": [
+      "Fushimi Inari Shrine"
+    ],
+    "url": "/photos/places/kyoto-fushimi-inari.webp",
+    "source": "https://commons.wikimedia.org/wiki/File:20181110_Fushimi_Inari_shrine_6.jpg",
+    "author": "Balon Greyjoy",
+    "license": "CC0",
+    "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "title": "20181110 Fushimi Inari shrine 6.jpg",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/57/20181110_Fushimi_Inari_shrine_6.jpg/3840px-20181110_Fushimi_Inari_shrine_6.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "kind": "place",
+    "variants": [
+      {
+        "url": "/photos/places/kyoto-fushimi-inari-640.webp",
+        "width": 640,
+        "height": 427
+      },
+      {
+        "url": "/photos/places/kyoto-fushimi-inari.webp",
+        "width": 1280,
+        "height": 854
+      },
+      {
+        "url": "/photos/places/kyoto-fushimi-inari-full.webp",
+        "width": 3840,
+        "height": 2560
+      }
+    ],
+    "fullUrl": "/photos/places/kyoto-fushimi-inari-full.webp",
+    "fullWidth": 3840,
+    "fullHeight": 2560
+  },
+  {
+    "placeId": "kyoto-kiyomizu-dera",
+    "name": "Kiyomizu-dera Temple",
+    "destination": "Kyoto",
+    "destinations": [
+      "Kyoto"
+    ],
+    "aliases": [
+      "Kiyomizu-dera"
+    ],
+    "url": "/photos/places/kyoto-kiyomizu-dera.webp",
+    "source": "https://commons.wikimedia.org/wiki/File:Kiyomizu-dera_in_eastern_Kyoto,_Kyoto_Prefecture;_September_2004.jpg",
+    "author": "jpvargas",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+    "title": "Kiyomizu-dera in eastern Kyoto, Kyoto Prefecture; September 2004.jpg",
+    "originalThumbnail": "https://upload.wikimedia.org/wikipedia/commons/8/89/Kiyomizu-dera_in_eastern_Kyoto%2C_Kyoto_Prefecture%3B_September_2004.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "kind": "place",
+    "variants": [
+      {
+        "url": "/photos/places/kyoto-kiyomizu-dera-640.webp",
+        "width": 640,
+        "height": 480
+      },
+      {
+        "url": "/photos/places/kyoto-kiyomizu-dera.webp",
+        "width": 1280,
+        "height": 960
+      },
+      {
+        "url": "/photos/places/kyoto-kiyomizu-dera-full.webp",
+        "width": 2272,
+        "height": 1704
+      }
+    ],
+    "fullUrl": "/photos/places/kyoto-kiyomizu-dera-full.webp",
+    "fullWidth": 2272,
+    "fullHeight": 1704
+  },
+  {
+    "placeId": "kyoto-arashiyama-bamboo",
+    "name": "Arashiyama Bamboo Forest",
+    "destination": "Kyoto",
+    "destinations": [
+      "Kyoto"
+    ],
+    "aliases": [
+      "Arashiyama Bamboo Grove"
+    ],
+    "url": "/photos/places/kyoto-arashiyama-bamboo.webp",
+    "source": "https://commons.wikimedia.org/wiki/File:Sagano_Bamboo_forest,_Arashiyama,_Kyoto.jpg",
+    "author": "Casey Yee from Vancouver, BC, Canada",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+    "title": "Sagano Bamboo forest, Arashiyama, Kyoto.jpg",
+    "originalThumbnail": "https://upload.wikimedia.org/wikipedia/commons/d/d7/Sagano_Bamboo_forest%2C_Arashiyama%2C_Kyoto.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "kind": "place",
+    "variants": [
+      {
+        "url": "/photos/places/kyoto-arashiyama-bamboo-640.webp",
+        "width": 640,
+        "height": 427
+      },
+      {
+        "url": "/photos/places/kyoto-arashiyama-bamboo.webp",
+        "width": 1280,
+        "height": 854
+      },
+      {
+        "url": "/photos/places/kyoto-arashiyama-bamboo-full.webp",
+        "width": 1500,
+        "height": 1000
+      }
+    ],
+    "fullUrl": "/photos/places/kyoto-arashiyama-bamboo-full.webp",
+    "fullWidth": 1500,
+    "fullHeight": 1000
+  },
+  {
+    "placeId": "kyoto-nishiki-market",
+    "name": "Nishiki Market",
+    "destination": "Kyoto",
+    "destinations": [
+      "Kyoto"
+    ],
+    "aliases": [],
+    "url": "/photos/places/kyoto-nishiki-market.webp",
+    "source": "https://commons.wikimedia.org/wiki/File:Nishiki_ichiba_kyoto.jpg",
+    "author": "Pitan",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "title": "Nishiki ichiba kyoto.jpg",
+    "originalThumbnail": "https://upload.wikimedia.org/wikipedia/commons/c/c7/Nishiki_ichiba_kyoto.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "kind": "place",
+    "variants": [
+      {
+        "url": "/photos/places/kyoto-nishiki-market-640.webp",
+        "width": 640,
+        "height": 854
+      },
+      {
+        "url": "/photos/places/kyoto-nishiki-market.webp",
+        "width": 1280,
+        "height": 1707
+      },
+      {
+        "url": "/photos/places/kyoto-nishiki-market-full.webp",
+        "width": 2448,
+        "height": 3264
+      }
+    ],
+    "fullUrl": "/photos/places/kyoto-nishiki-market-full.webp",
+    "fullWidth": 2448,
+    "fullHeight": 3264
+  },
+  {
+    "placeId": "kyoto-hyatt-regency",
+    "name": "Hyatt Regency Kyoto",
+    "destination": "Kyoto",
+    "destinations": [
+      "Kyoto"
+    ],
+    "aliases": [],
+    "url": "/photos/places/kyoto-hyatt-regency.webp",
+    "source": "https://commons.wikimedia.org/wiki/File:Hyatt_Regency_Kyoto.JPG",
+    "author": "moore",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "title": "Hyatt Regency Kyoto.JPG",
+    "originalThumbnail": "https://upload.wikimedia.org/wikipedia/commons/4/4d/Hyatt_Regency_Kyoto.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "kind": "stay",
+    "variants": [
+      {
+        "url": "/photos/places/kyoto-hyatt-regency-640.webp",
+        "width": 640,
+        "height": 480
+      },
+      {
+        "url": "/photos/places/kyoto-hyatt-regency.webp",
+        "width": 1280,
+        "height": 960
+      },
+      {
+        "url": "/photos/places/kyoto-hyatt-regency-full.webp",
+        "width": 3648,
+        "height": 2736
+      }
+    ],
+    "fullUrl": "/photos/places/kyoto-hyatt-regency-full.webp",
+    "fullWidth": 3648,
+    "fullHeight": 2736
+  },
+  {
+    "placeId": "bali-tanah-lot",
+    "name": "Tanah Lot",
+    "destination": "Bali",
+    "destinations": [
+      "Bali"
+    ],
+    "aliases": [
+      "Tanah Lot Temple"
+    ],
+    "url": "/photos/places/bali-tanah-lot.webp",
+    "source": "https://commons.wikimedia.org/wiki/File:Tanah_Lot_rays.jpg",
+    "author": "Zexsen Xie",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "title": "Tanah Lot rays.jpg",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/81/Tanah_Lot_rays.jpg/3840px-Tanah_Lot_rays.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "kind": "place",
+    "variants": [
+      {
+        "url": "/photos/places/bali-tanah-lot-640.webp",
+        "width": 640,
+        "height": 427
+      },
+      {
+        "url": "/photos/places/bali-tanah-lot.webp",
+        "width": 1280,
+        "height": 854
+      },
+      {
+        "url": "/photos/places/bali-tanah-lot-full.webp",
+        "width": 3840,
+        "height": 2560
+      }
+    ],
+    "fullUrl": "/photos/places/bali-tanah-lot-full.webp",
+    "fullWidth": 3840,
+    "fullHeight": 2560
+  },
+  {
+    "placeId": "bali-uluwatu",
+    "name": "Uluwatu Temple",
+    "destination": "Bali",
+    "destinations": [
+      "Bali"
+    ],
+    "aliases": [
+      "Pura Uluwatu"
+    ],
+    "url": "/photos/places/bali-uluwatu.webp",
+    "source": "https://commons.wikimedia.org/wiki/File:004_Uluwatu_Temple_Close_Up,_Pura_Uluwatu,_Bali,_photograph_by_Anandajoti_Bhikkhu.jpg",
+    "author": "Anandajoti",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "title": "004 Uluwatu Temple Close Up, Pura Uluwatu, Bali, photograph by Anandajoti Bhikkhu.jpg",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e6/004_Uluwatu_Temple_Close_Up%2C_Pura_Uluwatu%2C_Bali%2C_photograph_by_Anandajoti_Bhikkhu.jpg/3840px-004_Uluwatu_Temple_Close_Up%2C_Pura_Uluwatu%2C_Bali%2C_photograph_by_Anandajoti_Bhikkhu.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "kind": "place",
+    "variants": [
+      {
+        "url": "/photos/places/bali-uluwatu-640.webp",
+        "width": 640,
+        "height": 427
+      },
+      {
+        "url": "/photos/places/bali-uluwatu.webp",
+        "width": 1280,
+        "height": 854
+      },
+      {
+        "url": "/photos/places/bali-uluwatu-full.webp",
+        "width": 3840,
+        "height": 2560
+      }
+    ],
+    "fullUrl": "/photos/places/bali-uluwatu-full.webp",
+    "fullWidth": 3840,
+    "fullHeight": 2560
+  },
+  {
+    "placeId": "bali-tirta-empul",
+    "name": "Tirta Empul Temple",
+    "destination": "Bali",
+    "destinations": [
+      "Bali"
+    ],
+    "aliases": [
+      "Tirta Empul",
+      "Pura Tirta Empul"
+    ],
+    "url": "/photos/places/bali-tirta-empul.webp",
+    "source": "https://commons.wikimedia.org/wiki/File:Tirta_Empul_temple_(16871048820).jpg",
+    "author": "Jorge Láscar from Melbourne, Australia",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "title": "Tirta Empul temple (16871048820).jpg",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ea/Tirta_Empul_temple_%2816871048820%29.jpg/3840px-Tirta_Empul_temple_%2816871048820%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "kind": "place",
+    "variants": [
+      {
+        "url": "/photos/places/bali-tirta-empul-640.webp",
+        "width": 640,
+        "height": 425
+      },
+      {
+        "url": "/photos/places/bali-tirta-empul.webp",
+        "width": 1280,
+        "height": 850
+      },
+      {
+        "url": "/photos/places/bali-tirta-empul-full.webp",
+        "width": 3840,
+        "height": 2550
+      }
+    ],
+    "fullUrl": "/photos/places/bali-tirta-empul-full.webp",
+    "fullWidth": 3840,
+    "fullHeight": 2550
+  },
+  {
+    "placeId": "bali-monkey-forest",
+    "name": "Sacred Monkey Forest Sanctuary",
+    "destination": "Bali",
+    "destinations": [
+      "Bali",
+      "Ubud"
+    ],
+    "aliases": [
+      "Ubud Monkey Forest",
+      "Monkey Forest Ubud"
+    ],
+    "url": "/photos/places/bali-monkey-forest.webp",
+    "source": "https://commons.wikimedia.org/wiki/File:Ubud_Monkey_Forest,_Bali,_20220822_1049_0052.jpg",
+    "author": "Jakub Hałun",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "title": "Ubud Monkey Forest, Bali, 20220822 1049 0052.jpg",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/13/Ubud_Monkey_Forest%2C_Bali%2C_20220822_1049_0052.jpg/3840px-Ubud_Monkey_Forest%2C_Bali%2C_20220822_1049_0052.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "kind": "place",
+    "variants": [
+      {
+        "url": "/photos/places/bali-monkey-forest-640.webp",
+        "width": 640,
+        "height": 428
+      },
+      {
+        "url": "/photos/places/bali-monkey-forest.webp",
+        "width": 1280,
+        "height": 855
+      },
+      {
+        "url": "/photos/places/bali-monkey-forest-full.webp",
+        "width": 3840,
+        "height": 2563
+      }
+    ],
+    "fullUrl": "/photos/places/bali-monkey-forest-full.webp",
+    "fullWidth": 3840,
+    "fullHeight": 2563
+  },
+  {
+    "placeId": "bali-alila-ubud",
+    "name": "Alila Ubud",
+    "destination": "Bali",
+    "destinations": [
+      "Bali",
+      "Ubud"
+    ],
+    "aliases": [],
+    "url": "/photos/places/bali-alila-ubud.webp",
+    "source": "https://commons.wikimedia.org/wiki/File:Infinity_Pool_(1471310973).jpg",
+    "author": "Sean McGrath from Saint John, NB, Canada",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "title": "Infinity Pool (1471310973).jpg",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/12/Infinity_Pool_%281471310973%29.jpg/3840px-Infinity_Pool_%281471310973%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "kind": "stay",
+    "variants": [
+      {
+        "url": "/photos/places/bali-alila-ubud-640.webp",
+        "width": 640,
+        "height": 429
+      },
+      {
+        "url": "/photos/places/bali-alila-ubud.webp",
+        "width": 1280,
+        "height": 857
+      },
+      {
+        "url": "/photos/places/bali-alila-ubud-full.webp",
+        "width": 3840,
+        "height": 2571
+      }
+    ],
+    "fullUrl": "/photos/places/bali-alila-ubud-full.webp",
+    "fullWidth": 3840,
+    "fullHeight": 2571
+  },
+  {
+    "placeId": "barcelona-sagrada-familia",
+    "name": "Sagrada Família",
+    "destination": "Barcelona",
+    "destinations": [
+      "Barcelona"
+    ],
+    "aliases": [
+      "Sagrada Familia"
+    ],
+    "url": "/photos/places/barcelona-sagrada-familia.webp",
+    "source": "https://commons.wikimedia.org/wiki/File:Sagrada_Fam%C3%ADlia_2010.JPG",
+    "author": "Jopparn",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "title": "Sagrada Família 2010.JPG",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b6/Sagrada_Fam%C3%ADlia_2010.JPG/3840px-Sagrada_Fam%C3%ADlia_2010.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "kind": "place",
+    "variants": [
+      {
+        "url": "/photos/places/barcelona-sagrada-familia-640.webp",
+        "width": 640,
+        "height": 429
+      },
+      {
+        "url": "/photos/places/barcelona-sagrada-familia.webp",
+        "width": 1280,
+        "height": 857
+      },
+      {
+        "url": "/photos/places/barcelona-sagrada-familia-full.webp",
+        "width": 3840,
+        "height": 2571
+      }
+    ],
+    "fullUrl": "/photos/places/barcelona-sagrada-familia-full.webp",
+    "fullWidth": 3840,
+    "fullHeight": 2571
+  },
+  {
+    "placeId": "barcelona-park-guell",
+    "name": "Park Güell",
+    "destination": "Barcelona",
+    "destinations": [
+      "Barcelona"
+    ],
+    "aliases": [],
+    "url": "/photos/places/barcelona-park-guell.webp",
+    "source": "https://commons.wikimedia.org/wiki/File:Terrace_of_Parc_G%C3%BCell,_Barcelona,_Spain.jpg",
+    "author": "Julian Lupyan",
+    "license": "CC0",
+    "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "title": "Terrace of Parc Güell, Barcelona, Spain.jpg",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/92/Terrace_of_Parc_G%C3%BCell%2C_Barcelona%2C_Spain.jpg/3840px-Terrace_of_Parc_G%C3%BCell%2C_Barcelona%2C_Spain.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "kind": "place",
+    "variants": [
+      {
+        "url": "/photos/places/barcelona-park-guell-640.webp",
+        "width": 640,
+        "height": 427
+      },
+      {
+        "url": "/photos/places/barcelona-park-guell.webp",
+        "width": 1280,
+        "height": 854
+      },
+      {
+        "url": "/photos/places/barcelona-park-guell-full.webp",
+        "width": 3840,
+        "height": 2560
+      }
+    ],
+    "fullUrl": "/photos/places/barcelona-park-guell-full.webp",
+    "fullWidth": 3840,
+    "fullHeight": 2560
+  },
+  {
+    "placeId": "barcelona-casa-batllo",
+    "name": "Casa Batlló",
+    "destination": "Barcelona",
+    "destinations": [
+      "Barcelona"
+    ],
+    "aliases": [],
+    "url": "/photos/places/barcelona-casa-batllo.webp",
+    "source": "https://commons.wikimedia.org/wiki/File:Casa_Batll%C3%B3,_Barcelona,_Spain.jpg",
+    "author": "Julian Lupyan",
+    "license": "CC0",
+    "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "title": "Casa Batlló, Barcelona, Spain.jpg",
+    "originalThumbnail": "https://upload.wikimedia.org/wikipedia/commons/f/f0/Casa_Batll%C3%B3%2C_Barcelona%2C_Spain.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "kind": "place",
+    "variants": [
+      {
+        "url": "/photos/places/barcelona-casa-batllo-640.webp",
+        "width": 640,
+        "height": 815
+      },
+      {
+        "url": "/photos/places/barcelona-casa-batllo.webp",
+        "width": 1280,
+        "height": 1630
+      },
+      {
+        "url": "/photos/places/barcelona-casa-batllo-full.webp",
+        "width": 3526,
+        "height": 4490
+      }
+    ],
+    "fullUrl": "/photos/places/barcelona-casa-batllo-full.webp",
+    "fullWidth": 3526,
+    "fullHeight": 4490
+  },
+  {
+    "placeId": "barcelona-boqueria",
+    "name": "La Boqueria",
+    "destination": "Barcelona",
+    "destinations": [
+      "Barcelona"
+    ],
+    "aliases": [
+      "La Boqueria Market",
+      "Mercat de la Boqueria"
+    ],
+    "url": "/photos/places/barcelona-boqueria.webp",
+    "source": "https://commons.wikimedia.org/wiki/File:Mercat_de_la_Boqueria_20171227.jpg",
+    "author": "Suicasmo",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "title": "Mercat de la Boqueria 20171227.jpg",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/11/Mercat_de_la_Boqueria_20171227.jpg/3840px-Mercat_de_la_Boqueria_20171227.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "kind": "place",
+    "variants": [
+      {
+        "url": "/photos/places/barcelona-boqueria-640.webp",
+        "width": 640,
+        "height": 427
+      },
+      {
+        "url": "/photos/places/barcelona-boqueria.webp",
+        "width": 1280,
+        "height": 854
+      },
+      {
+        "url": "/photos/places/barcelona-boqueria-full.webp",
+        "width": 3840,
+        "height": 2560
+      }
+    ],
+    "fullUrl": "/photos/places/barcelona-boqueria-full.webp",
+    "fullWidth": 3840,
+    "fullHeight": 2560
+  },
+  {
+    "placeId": "barcelona-hotel-1898",
+    "name": "Hotel 1898",
+    "destination": "Barcelona",
+    "destinations": [
+      "Barcelona"
+    ],
+    "aliases": [],
+    "url": "/photos/places/barcelona-hotel-1898.webp",
+    "source": "https://commons.wikimedia.org/wiki/File:Tabacs_de_Filipines.jpg",
+    "author": "Pere López",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "title": "Tabacs de Filipines.jpg",
+    "originalThumbnail": "https://upload.wikimedia.org/wikipedia/commons/5/5b/Tabacs_de_Filipines.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "kind": "stay",
+    "variants": [
+      {
+        "url": "/photos/places/barcelona-hotel-1898-640.webp",
+        "width": 640,
+        "height": 480
+      },
+      {
+        "url": "/photos/places/barcelona-hotel-1898.webp",
+        "width": 1280,
+        "height": 960
+      },
+      {
+        "url": "/photos/places/barcelona-hotel-1898-full.webp",
+        "width": 1536,
+        "height": 1152
+      }
+    ],
+    "fullUrl": "/photos/places/barcelona-hotel-1898-full.webp",
+    "fullWidth": 1536,
+    "fullHeight": 1152
+  },
+  {
+    "placeId": "kerala-santa-cruz",
+    "name": "Santa Cruz Basilica",
+    "destination": "Kerala",
+    "destinations": [
+      "Kerala",
+      "Kochi",
+      "Fort Kochi",
+      "Cochin"
+    ],
+    "aliases": [],
+    "url": "/photos/places/kerala-santa-cruz.webp",
+    "source": "https://commons.wikimedia.org/wiki/File:Santa_Cruz_Basilica_Kochi.jpg",
+    "author": "Ingo Mehling",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "title": "Santa Cruz Basilica Kochi.jpg",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/76/Santa_Cruz_Basilica_Kochi.jpg/3840px-Santa_Cruz_Basilica_Kochi.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "kind": "place",
+    "variants": [
+      {
+        "url": "/photos/places/kerala-santa-cruz-640.webp",
+        "width": 640,
+        "height": 485
+      },
+      {
+        "url": "/photos/places/kerala-santa-cruz.webp",
+        "width": 1280,
+        "height": 970
+      },
+      {
+        "url": "/photos/places/kerala-santa-cruz-full.webp",
+        "width": 3840,
+        "height": 2909
+      }
+    ],
+    "fullUrl": "/photos/places/kerala-santa-cruz-full.webp",
+    "fullWidth": 3840,
+    "fullHeight": 2909
+  },
+  {
+    "placeId": "kerala-st-francis",
+    "name": "St. Francis Church",
+    "destination": "Kerala",
+    "destinations": [
+      "Kerala",
+      "Kochi",
+      "Fort Kochi",
+      "Cochin"
+    ],
+    "aliases": [],
+    "url": "/photos/places/kerala-st-francis.webp",
+    "source": "https://commons.wikimedia.org/wiki/File:Saint_Francis_Church_Kochi,_Kerala,_India.jpg",
+    "author": "N. Vivekananthamoorthy",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "title": "Saint Francis Church Kochi, Kerala, India.jpg",
+    "originalThumbnail": "https://upload.wikimedia.org/wikipedia/commons/c/cd/Saint_Francis_Church_Kochi%2C_Kerala%2C_India.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "kind": "place",
+    "variants": [
+      {
+        "url": "/photos/places/kerala-st-francis-640.webp",
+        "width": 640,
+        "height": 841
+      },
+      {
+        "url": "/photos/places/kerala-st-francis.webp",
+        "width": 1280,
+        "height": 1681
+      },
+      {
+        "url": "/photos/places/kerala-st-francis-full.webp",
+        "width": 1779,
+        "height": 2335
+      }
+    ],
+    "fullUrl": "/photos/places/kerala-st-francis-full.webp",
+    "fullWidth": 1779,
+    "fullHeight": 2335
+  },
+  {
+    "placeId": "kerala-fishing-nets",
+    "name": "Chinese fishing nets",
+    "destination": "Kerala",
+    "destinations": [
+      "Kerala",
+      "Kochi",
+      "Fort Kochi",
+      "Cochin"
+    ],
+    "aliases": [],
+    "url": "/photos/places/kerala-fishing-nets.webp",
+    "source": "https://commons.wikimedia.org/wiki/File:Kochi,_Fishing_nets,_Kerala,_India.jpg",
+    "author": "Vyacheslav Argenberg",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+    "title": "Kochi, Fishing nets, Kerala, India.jpg",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/21/Kochi%2C_Fishing_nets%2C_Kerala%2C_India.jpg/3840px-Kochi%2C_Fishing_nets%2C_Kerala%2C_India.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "kind": "place",
+    "variants": [
+      {
+        "url": "/photos/places/kerala-fishing-nets-640.webp",
+        "width": 640,
+        "height": 427
+      },
+      {
+        "url": "/photos/places/kerala-fishing-nets.webp",
+        "width": 1280,
+        "height": 854
+      },
+      {
+        "url": "/photos/places/kerala-fishing-nets-full.webp",
+        "width": 3840,
+        "height": 2560
+      }
+    ],
+    "fullUrl": "/photos/places/kerala-fishing-nets-full.webp",
+    "fullWidth": 3840,
+    "fullHeight": 2560
+  },
+  {
+    "placeId": "kerala-princess-street",
+    "name": "Princess Street",
+    "destination": "Kerala",
+    "destinations": [
+      "Kerala",
+      "Kochi",
+      "Fort Kochi",
+      "Cochin"
+    ],
+    "aliases": [],
+    "url": "/photos/places/kerala-princess-street.webp",
+    "source": "https://commons.wikimedia.org/wiki/File:Princess_street_in_fort_kochi_Kerela_india.jpg",
+    "author": "Manishontop02",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "title": "Princess street in fort kochi Kerela india.jpg",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a4/Princess_street_in_fort_kochi_Kerela_india.jpg/1920px-Princess_street_in_fort_kochi_Kerela_india.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "kind": "place",
+    "variants": [
+      {
+        "url": "/photos/places/kerala-princess-street-640.webp",
+        "width": 640,
+        "height": 853
+      },
+      {
+        "url": "/photos/places/kerala-princess-street.webp",
+        "width": 1280,
+        "height": 1705
+      },
+      {
+        "url": "/photos/places/kerala-princess-street-full.webp",
+        "width": 1920,
+        "height": 2557
+      }
+    ],
+    "fullUrl": "/photos/places/kerala-princess-street-full.webp",
+    "fullWidth": 1920,
+    "fullHeight": 2557
+  },
+  {
+    "placeId": "kerala-brunton-boatyard",
+    "name": "Brunton Boatyard",
+    "destination": "Kerala",
+    "destinations": [
+      "Kerala",
+      "Kochi",
+      "Fort Kochi",
+      "Cochin"
+    ],
+    "aliases": [],
+    "url": "/photos/places/kerala-brunton-boatyard.webp",
+    "source": "https://commons.wikimedia.org/wiki/File:Brunton_Boatyard_Hotel,_Fort_Kochi.jpg",
+    "author": "Rangan Datta Wiki",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "title": "Brunton Boatyard Hotel, Fort Kochi.jpg",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/89/Brunton_Boatyard_Hotel%2C_Fort_Kochi.jpg/3840px-Brunton_Boatyard_Hotel%2C_Fort_Kochi.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "kind": "stay",
+    "variants": [
+      {
+        "url": "/photos/places/kerala-brunton-boatyard-640.webp",
+        "width": 640,
+        "height": 424
+      },
+      {
+        "url": "/photos/places/kerala-brunton-boatyard.webp",
+        "width": 1280,
+        "height": 848
+      },
+      {
+        "url": "/photos/places/kerala-brunton-boatyard-full.webp",
+        "width": 3840,
+        "height": 2543
+      }
+    ],
+    "fullUrl": "/photos/places/kerala-brunton-boatyard-full.webp",
+    "fullWidth": 3840,
+    "fullHeight": 2543
+  },
+  {
+    "placeId": "santorini-akrotiri",
+    "name": "Akrotiri archaeological site",
+    "destination": "Santorini",
+    "destinations": [
+      "Santorini"
+    ],
+    "aliases": [
+      "Akrotiri",
+      "Prehistoric city of Akrotiri"
+    ],
+    "url": "/photos/places/santorini-akrotiri.webp",
+    "source": "https://commons.wikimedia.org/wiki/File:Akrotiri_archaeological_site,_176465.jpg",
+    "author": "Zde",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "title": "Akrotiri archaeological site, 176465.jpg",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1b/Akrotiri_archaeological_site%2C_176465.jpg/3840px-Akrotiri_archaeological_site%2C_176465.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "kind": "place",
+    "variants": [
+      {
+        "url": "/photos/places/santorini-akrotiri-640.webp",
+        "width": 640,
+        "height": 427
+      },
+      {
+        "url": "/photos/places/santorini-akrotiri.webp",
+        "width": 1280,
+        "height": 854
+      },
+      {
+        "url": "/photos/places/santorini-akrotiri-full.webp",
+        "width": 3840,
+        "height": 2560
+      }
+    ],
+    "fullUrl": "/photos/places/santorini-akrotiri-full.webp",
+    "fullWidth": 3840,
+    "fullHeight": 2560
+  },
+  {
+    "placeId": "santorini-perissa",
+    "name": "Perissa Beach",
+    "destination": "Santorini",
+    "destinations": [
+      "Santorini"
+    ],
+    "aliases": [],
+    "url": "/photos/places/santorini-perissa.webp",
+    "source": "https://commons.wikimedia.org/wiki/File:Dark_Sky_in_Perissa.jpg",
+    "author": "kuhnmi",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "title": "Dark Sky in Perissa.jpg",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ab/Dark_Sky_in_Perissa.jpg/3840px-Dark_Sky_in_Perissa.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "kind": "place",
+    "variants": [
+      {
+        "url": "/photos/places/santorini-perissa-640.webp",
+        "width": 640,
+        "height": 360
+      },
+      {
+        "url": "/photos/places/santorini-perissa.webp",
+        "width": 1280,
+        "height": 720
+      },
+      {
+        "url": "/photos/places/santorini-perissa-full.webp",
+        "width": 3840,
+        "height": 2160
+      }
+    ],
+    "fullUrl": "/photos/places/santorini-perissa-full.webp",
+    "fullWidth": 3840,
+    "fullHeight": 2160
+  },
+  {
+    "placeId": "santorini-kamari",
+    "name": "Kamari Beach",
+    "destination": "Santorini",
+    "destinations": [
+      "Santorini"
+    ],
+    "aliases": [],
+    "url": "/photos/places/santorini-kamari.webp",
+    "source": "https://commons.wikimedia.org/wiki/File:Black_beach_in_Kamari_Santorini.jpg",
+    "author": "Stan Zurek",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+    "title": "Black beach in Kamari Santorini.jpg",
+    "originalThumbnail": "https://upload.wikimedia.org/wikipedia/commons/7/7f/Black_beach_in_Kamari_Santorini.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "kind": "place",
+    "variants": [
+      {
+        "url": "/photos/places/santorini-kamari-640.webp",
+        "width": 640,
+        "height": 480
+      },
+      {
+        "url": "/photos/places/santorini-kamari.webp",
+        "width": 1280,
+        "height": 960
+      }
+    ],
+    "fullUrl": "/photos/places/santorini-kamari.webp",
+    "fullWidth": 1280,
+    "fullHeight": 960
+  },
+  {
+    "placeId": "santorini-ammoudi",
+    "name": "Ammoudi Bay",
+    "destination": "Santorini",
+    "destinations": [
+      "Santorini"
+    ],
+    "aliases": [
+      "Ammoudi"
+    ],
+    "url": "/photos/places/santorini-ammoudi.webp",
+    "source": "https://commons.wikimedia.org/wiki/File:Ammoudi_Bay.jpg",
+    "author": "Anthony Baratier",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "title": "Ammoudi Bay.jpg",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d2/Ammoudi_Bay.jpg/3840px-Ammoudi_Bay.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "kind": "place",
+    "variants": [
+      {
+        "url": "/photos/places/santorini-ammoudi-640.webp",
+        "width": 640,
+        "height": 480
+      },
+      {
+        "url": "/photos/places/santorini-ammoudi.webp",
+        "width": 1280,
+        "height": 960
+      },
+      {
+        "url": "/photos/places/santorini-ammoudi-full.webp",
+        "width": 3840,
+        "height": 2880
+      }
+    ],
+    "fullUrl": "/photos/places/santorini-ammoudi-full.webp",
+    "fullWidth": 3840,
+    "fullHeight": 2880
+  },
+  {
+    "placeId": "interlaken-harder-kulm",
+    "name": "Harder Kulm",
+    "destination": "Interlaken",
+    "destinations": [
+      "Interlaken"
+    ],
+    "aliases": [],
+    "url": "/photos/places/interlaken-harder-kulm.webp",
+    "source": "https://commons.wikimedia.org/wiki/File:Harder_Kulm_von_oben.jpg",
+    "author": "Andreas Reufer (Areufer)",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+    "title": "Harder Kulm von oben.jpg",
+    "originalThumbnail": "https://upload.wikimedia.org/wikipedia/commons/3/3b/Harder_Kulm_von_oben.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "kind": "place",
+    "variants": [
+      {
+        "url": "/photos/places/interlaken-harder-kulm-640.webp",
+        "width": 640,
+        "height": 480
+      },
+      {
+        "url": "/photos/places/interlaken-harder-kulm.webp",
+        "width": 1280,
+        "height": 960
+      },
+      {
+        "url": "/photos/places/interlaken-harder-kulm-full.webp",
+        "width": 1600,
+        "height": 1200
+      }
+    ],
+    "fullUrl": "/photos/places/interlaken-harder-kulm-full.webp",
+    "fullWidth": 1600,
+    "fullHeight": 1200
+  },
+  {
+    "placeId": "interlaken-beatus-caves",
+    "name": "St. Beatus Caves",
+    "destination": "Interlaken",
+    "destinations": [
+      "Interlaken"
+    ],
+    "aliases": [
+      "St Beatus Caves"
+    ],
+    "url": "/photos/places/interlaken-beatus-caves.webp",
+    "source": "https://commons.wikimedia.org/wiki/File:2011-07-22_Berna_Oberlando_(Foto_Dietrich_Michael_Weidmann)_048.JPG",
+    "author": "Dietrich Michael Weidmann",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "title": "2011-07-22 Berna Oberlando (Foto Dietrich Michael Weidmann) 048.JPG",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e0/2011-07-22_Berna_Oberlando_%28Foto_Dietrich_Michael_Weidmann%29_048.JPG/3840px-2011-07-22_Berna_Oberlando_%28Foto_Dietrich_Michael_Weidmann%29_048.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "kind": "place",
+    "variants": [
+      {
+        "url": "/photos/places/interlaken-beatus-caves-640.webp",
+        "width": 640,
+        "height": 429
+      },
+      {
+        "url": "/photos/places/interlaken-beatus-caves.webp",
+        "width": 1280,
+        "height": 857
+      },
+      {
+        "url": "/photos/places/interlaken-beatus-caves-full.webp",
+        "width": 3840,
+        "height": 2571
+      }
+    ],
+    "fullUrl": "/photos/places/interlaken-beatus-caves-full.webp",
+    "fullWidth": 3840,
+    "fullHeight": 2571
+  },
+  {
+    "placeId": "interlaken-lake-brienz",
+    "name": "Lake Brienz",
+    "destination": "Interlaken",
+    "destinations": [
+      "Interlaken"
+    ],
+    "aliases": [],
+    "url": "/photos/places/interlaken-lake-brienz.webp",
+    "source": "https://commons.wikimedia.org/wiki/File:Brienzersee_with_a_coastal_town.jpg",
+    "author": "Nicojonesgodel",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "title": "Brienzersee with a coastal town.jpg",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/cd/Brienzersee_with_a_coastal_town.jpg/3840px-Brienzersee_with_a_coastal_town.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "kind": "place",
+    "variants": [
+      {
+        "url": "/photos/places/interlaken-lake-brienz-640.webp",
+        "width": 640,
+        "height": 427
+      },
+      {
+        "url": "/photos/places/interlaken-lake-brienz.webp",
+        "width": 1280,
+        "height": 854
+      },
+      {
+        "url": "/photos/places/interlaken-lake-brienz-full.webp",
+        "width": 3840,
+        "height": 2560
+      }
+    ],
+    "fullUrl": "/photos/places/interlaken-lake-brienz-full.webp",
+    "fullWidth": 3840,
+    "fullHeight": 2560
+  },
+  {
+    "placeId": "interlaken-victoria-jungfrau",
+    "name": "Victoria-Jungfrau Grand Hotel & Spa",
+    "destination": "Interlaken",
+    "destinations": [
+      "Interlaken"
+    ],
+    "aliases": [
+      "Victoria Jungfrau Grand Hotel and Spa"
+    ],
+    "url": "/photos/places/interlaken-victoria-jungfrau.webp",
+    "source": "https://commons.wikimedia.org/wiki/File:Hotel_Victoria-Jungfrau_-_venue_of_the_2017_Horasis_India_Meeting_(35219073770).jpg",
+    "author": "Richter Frank-Jurgen",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+    "title": "Hotel Victoria-Jungfrau - venue of the 2017 Horasis India Meeting (35219073770).jpg",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a5/Hotel_Victoria-Jungfrau_-_venue_of_the_2017_Horasis_India_Meeting_%2835219073770%29.jpg/3840px-Hotel_Victoria-Jungfrau_-_venue_of_the_2017_Horasis_India_Meeting_%2835219073770%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "kind": "stay",
+    "variants": [
+      {
+        "url": "/photos/places/interlaken-victoria-jungfrau-640.webp",
+        "width": 640,
+        "height": 427
+      },
+      {
+        "url": "/photos/places/interlaken-victoria-jungfrau.webp",
+        "width": 1280,
+        "height": 854
+      },
+      {
+        "url": "/photos/places/interlaken-victoria-jungfrau-full.webp",
+        "width": 3840,
+        "height": 2560
+      }
+    ],
+    "fullUrl": "/photos/places/interlaken-victoria-jungfrau-full.webp",
+    "fullWidth": 3840,
+    "fullHeight": 2560
+  },
+  {
+    "placeId": "interlaken-hohematte",
+    "name": "Höhematte",
+    "destination": "Interlaken",
+    "destinations": [
+      "Interlaken"
+    ],
+    "aliases": [
+      "Hohematte Park",
+      "Höhematte Park"
+    ],
+    "url": "/photos/places/interlaken-hohematte.webp",
+    "source": "https://commons.wikimedia.org/wiki/File:H%C3%B6hematte_Interlaken_2022-10-02_01.jpg",
+    "author": "Leonhard Lenz",
+    "license": "CC0",
+    "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "title": "Höhematte Interlaken 2022-10-02 01.jpg",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/60/H%C3%B6hematte_Interlaken_2022-10-02_01.jpg/3840px-H%C3%B6hematte_Interlaken_2022-10-02_01.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "kind": "place",
+    "variants": [
+      {
+        "url": "/photos/places/interlaken-hohematte-640.webp",
+        "width": 640,
+        "height": 427
+      },
+      {
+        "url": "/photos/places/interlaken-hohematte.webp",
+        "width": 1280,
+        "height": 854
+      },
+      {
+        "url": "/photos/places/interlaken-hohematte-full.webp",
+        "width": 3840,
+        "height": 2562
+      }
+    ],
+    "fullUrl": "/photos/places/interlaken-hohematte-full.webp",
+    "fullWidth": 3840,
+    "fullHeight": 2562
+  },
+  {
+    "placeId": "tokyo-city",
+    "name": "Tokyo",
+    "destination": "Tokyo",
+    "destinations": [
+      "Tokyo",
+      "Kichijoji",
+      "Kichijōji",
+      "Kichjoji",
+      "Kichijouji",
+      "Shimokitazawa",
+      "Koenji",
+      "Nakameguro"
+    ],
+    "aliases": [],
+    "kind": "area",
+    "title": "Tokyo - Sunset Skyline.jpg",
+    "variants": [
+      {
+        "url": "/photos/places/tokyo-city-640.webp",
+        "width": 640,
+        "height": 427
+      },
+      {
+        "url": "/photos/places/tokyo-city.webp",
+        "width": 1280,
+        "height": 854
+      },
+      {
+        "url": "/photos/places/tokyo-city-full.webp",
+        "width": 3840,
+        "height": 2560
+      }
+    ],
+    "url": "/photos/places/tokyo-city.webp",
+    "fullUrl": "/photos/places/tokyo-city-full.webp",
+    "fullWidth": 3840,
+    "fullHeight": 2560,
+    "source": "https://commons.wikimedia.org/wiki/File:Tokyo_-_Sunset_Skyline.jpg",
+    "author": "Fred Cherrygarden",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a6/Tokyo_-_Sunset_Skyline.jpg/3840px-Tokyo_-_Sunset_Skyline.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio."
+  },
+  {
+    "placeId": "tokyo-kichijoji",
+    "name": "Kichijoji",
+    "destination": "Tokyo",
+    "destinations": [
+      "Tokyo",
+      "Kichijoji",
+      "Kichijōji",
+      "Kichjoji",
+      "Kichijouji",
+      "Shimokitazawa",
+      "Koenji",
+      "Nakameguro"
+    ],
+    "aliases": [
+      "Kichijōji",
+      "Kichjoji",
+      "Kichijouji"
+    ],
+    "kind": "area",
+    "title": "Izakaya Restaurant in Harmonica Yococho, Kichijoji (53416684926).jpg",
+    "variants": [
+      {
+        "url": "/photos/places/tokyo-kichijoji-640.webp",
+        "width": 640,
+        "height": 480
+      },
+      {
+        "url": "/photos/places/tokyo-kichijoji.webp",
+        "width": 1280,
+        "height": 960
+      },
+      {
+        "url": "/photos/places/tokyo-kichijoji-full.webp",
+        "width": 3840,
+        "height": 2880
+      }
+    ],
+    "url": "/photos/places/tokyo-kichijoji.webp",
+    "fullUrl": "/photos/places/tokyo-kichijoji-full.webp",
+    "fullWidth": 3840,
+    "fullHeight": 2880,
+    "source": "https://commons.wikimedia.org/wiki/File:Izakaya_Restaurant_in_Harmonica_Yococho,_Kichijoji_(53416684926).jpg",
+    "author": "Stephen Kelly from San Francisco, CA, USA",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d0/Izakaya_Restaurant_in_Harmonica_Yococho%2C_Kichijoji_%2853416684926%29.jpg/960px-Izakaya_Restaurant_in_Harmonica_Yococho%2C_Kichijoji_%2853416684926%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio."
+  },
+  {
+    "placeId": "tokyo-inokashira",
+    "name": "Inokashira Park",
+    "destination": "Tokyo",
+    "destinations": [
+      "Tokyo",
+      "Kichijoji",
+      "Kichijōji",
+      "Kichjoji",
+      "Kichijouji",
+      "Shimokitazawa",
+      "Koenji",
+      "Nakameguro"
+    ],
+    "aliases": [],
+    "kind": "place",
+    "title": "Inokashira park pond 2024.jpg",
+    "variants": [
+      {
+        "url": "/photos/places/tokyo-inokashira-640.webp",
+        "width": 640,
+        "height": 390
+      },
+      {
+        "url": "/photos/places/tokyo-inokashira.webp",
+        "width": 1280,
+        "height": 779
+      },
+      {
+        "url": "/photos/places/tokyo-inokashira-full.webp",
+        "width": 3840,
+        "height": 2337
+      }
+    ],
+    "url": "/photos/places/tokyo-inokashira.webp",
+    "fullUrl": "/photos/places/tokyo-inokashira-full.webp",
+    "fullWidth": 3840,
+    "fullHeight": 2337,
+    "source": "https://commons.wikimedia.org/wiki/File:Inokashira_park_pond_2024.jpg",
+    "author": "ARandomName123",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c6/Inokashira_park_pond_2024.jpg/3840px-Inokashira_park_pond_2024.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio."
+  },
+  {
+    "placeId": "tokyo-harmonica",
+    "name": "Harmonica Yokocho",
+    "destination": "Tokyo",
+    "destinations": [
+      "Tokyo",
+      "Kichijoji",
+      "Kichijōji",
+      "Kichjoji",
+      "Kichijouji",
+      "Shimokitazawa",
+      "Koenji",
+      "Nakameguro"
+    ],
+    "aliases": [
+      "Harmonica Alley"
+    ],
+    "kind": "place",
+    "title": "In Harmonica Yokocho, Kichijoji (53417121000).jpg",
+    "variants": [
+      {
+        "url": "/photos/places/tokyo-harmonica-640.webp",
+        "width": 640,
+        "height": 480
+      },
+      {
+        "url": "/photos/places/tokyo-harmonica.webp",
+        "width": 1280,
+        "height": 960
+      },
+      {
+        "url": "/photos/places/tokyo-harmonica-full.webp",
+        "width": 3840,
+        "height": 2880
+      }
+    ],
+    "url": "/photos/places/tokyo-harmonica.webp",
+    "fullUrl": "/photos/places/tokyo-harmonica-full.webp",
+    "fullWidth": 3840,
+    "fullHeight": 2880,
+    "source": "https://commons.wikimedia.org/wiki/File:In_Harmonica_Yokocho,_Kichijoji_(53417121000).jpg",
+    "author": "Stephen Kelly from San Francisco, CA, USA",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4e/In_Harmonica_Yokocho%2C_Kichijoji_%2853417121000%29.jpg/3840px-In_Harmonica_Yokocho%2C_Kichijoji_%2853417121000%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio."
+  },
+  {
+    "placeId": "tokyo-shimokitazawa",
+    "name": "Shimokitazawa",
+    "destination": "Tokyo",
+    "destinations": [
+      "Tokyo",
+      "Kichijoji",
+      "Kichijōji",
+      "Kichjoji",
+      "Kichijouji",
+      "Shimokitazawa",
+      "Koenji",
+      "Nakameguro"
+    ],
+    "aliases": [],
+    "kind": "area",
+    "title": "Dense Street in Shimokitazawa (11919213554).jpg",
+    "variants": [
+      {
+        "url": "/photos/places/tokyo-shimokitazawa-640.webp",
+        "width": 640,
+        "height": 424
+      },
+      {
+        "url": "/photos/places/tokyo-shimokitazawa.webp",
+        "width": 1280,
+        "height": 848
+      },
+      {
+        "url": "/photos/places/tokyo-shimokitazawa-full.webp",
+        "width": 3840,
+        "height": 2544
+      }
+    ],
+    "url": "/photos/places/tokyo-shimokitazawa.webp",
+    "fullUrl": "/photos/places/tokyo-shimokitazawa-full.webp",
+    "fullWidth": 3840,
+    "fullHeight": 2544,
+    "source": "https://commons.wikimedia.org/wiki/File:Dense_Street_in_Shimokitazawa_(11919213554).jpg",
+    "author": "Stephen Kelly from San Francisco, CA, USA",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4d/Dense_Street_in_Shimokitazawa_%2811919213554%29.jpg/3840px-Dense_Street_in_Shimokitazawa_%2811919213554%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio."
+  },
+  {
+    "placeId": "tokyo-jindaiji",
+    "name": "Jindaiji Temple",
+    "destination": "Tokyo",
+    "destinations": [
+      "Tokyo",
+      "Kichijoji",
+      "Kichijōji",
+      "Kichjoji",
+      "Kichijouji",
+      "Shimokitazawa",
+      "Koenji",
+      "Nakameguro"
+    ],
+    "aliases": [
+      "Jindai-ji",
+      "Jindaiji"
+    ],
+    "kind": "place",
+    "title": "Jindaiji Temple hondo Sakura 2010.jpg",
+    "variants": [
+      {
+        "url": "/photos/places/tokyo-jindaiji-640.webp",
+        "width": 640,
+        "height": 488
+      },
+      {
+        "url": "/photos/places/tokyo-jindaiji.webp",
+        "width": 1280,
+        "height": 975
+      },
+      {
+        "url": "/photos/places/tokyo-jindaiji-full.webp",
+        "width": 2602,
+        "height": 1980
+      }
+    ],
+    "url": "/photos/places/tokyo-jindaiji.webp",
+    "fullUrl": "/photos/places/tokyo-jindaiji-full.webp",
+    "fullWidth": 2602,
+    "fullHeight": 1980,
+    "source": "https://commons.wikimedia.org/wiki/File:Jindaiji_Temple_hondo_Sakura_2010.jpg",
+    "author": "Wiiii",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/75/Jindaiji_Temple_hondo_Sakura_2010.jpg/960px-Jindaiji_Temple_hondo_Sakura_2010.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio."
+  },
+  {
+    "placeId": "tokyo-todoroki",
+    "name": "Todoroki Valley",
+    "destination": "Tokyo",
+    "destinations": [
+      "Tokyo",
+      "Kichijoji",
+      "Kichijōji",
+      "Kichjoji",
+      "Kichijouji",
+      "Shimokitazawa",
+      "Koenji",
+      "Nakameguro"
+    ],
+    "aliases": [],
+    "kind": "place",
+    "title": "Fudo no Taki - Todoroki Valley - Tokyo, Japan - DSC09502.jpg",
+    "variants": [
+      {
+        "url": "/photos/places/tokyo-todoroki-640.webp",
+        "width": 640,
+        "height": 427
+      },
+      {
+        "url": "/photos/places/tokyo-todoroki.webp",
+        "width": 1280,
+        "height": 854
+      },
+      {
+        "url": "/photos/places/tokyo-todoroki-full.webp",
+        "width": 3840,
+        "height": 2560
+      }
+    ],
+    "url": "/photos/places/tokyo-todoroki.webp",
+    "fullUrl": "/photos/places/tokyo-todoroki-full.webp",
+    "fullWidth": 3840,
+    "fullHeight": 2560,
+    "source": "https://commons.wikimedia.org/wiki/File:Fudo_no_Taki_-_Todoroki_Valley_-_Tokyo,_Japan_-_DSC09502.jpg",
+    "author": "Daderot",
+    "license": "CC0",
+    "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/95/Fudo_no_Taki_-_Todoroki_Valley_-_Tokyo%2C_Japan_-_DSC09502.jpg/3840px-Fudo_no_Taki_-_Todoroki_Valley_-_Tokyo%2C_Japan_-_DSC09502.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio."
+  },
+  {
+    "placeId": "tokyo-odaiba",
+    "name": "Odaiba",
+    "destination": "Tokyo",
+    "destinations": [
+      "Tokyo",
+      "Kichijoji",
+      "Kichijōji",
+      "Kichjoji",
+      "Kichijouji",
+      "Shimokitazawa",
+      "Koenji",
+      "Nakameguro"
+    ],
+    "aliases": [],
+    "kind": "area",
+    "title": "Views of Rainbow Bridge and Tokyo Tower from Odaiba at night 2013-09-11.jpg",
+    "variants": [
+      {
+        "url": "/photos/places/tokyo-odaiba-640.webp",
+        "width": 640,
+        "height": 424
+      },
+      {
+        "url": "/photos/places/tokyo-odaiba.webp",
+        "width": 1280,
+        "height": 848
+      },
+      {
+        "url": "/photos/places/tokyo-odaiba-full.webp",
+        "width": 3840,
+        "height": 2543
+      }
+    ],
+    "url": "/photos/places/tokyo-odaiba.webp",
+    "fullUrl": "/photos/places/tokyo-odaiba-full.webp",
+    "fullWidth": 3840,
+    "fullHeight": 2543,
+    "source": "https://commons.wikimedia.org/wiki/File:Views_of_Rainbow_Bridge_and_Tokyo_Tower_from_Odaiba_at_night_2013-09-11.jpg",
+    "author": "Stephen Kelly",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/19/Views_of_Rainbow_Bridge_and_Tokyo_Tower_from_Odaiba_at_night_2013-09-11.jpg/3840px-Views_of_Rainbow_Bridge_and_Tokyo_Tower_from_Odaiba_at_night_2013-09-11.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio."
+  },
+  {
+    "placeId": "tokyo-yanaka",
+    "name": "Yanaka Ginza",
+    "destination": "Tokyo",
+    "destinations": [
+      "Tokyo",
+      "Kichijoji",
+      "Kichijōji",
+      "Kichjoji",
+      "Kichijouji",
+      "Shimokitazawa",
+      "Koenji",
+      "Nakameguro"
+    ],
+    "aliases": [],
+    "kind": "place",
+    "title": "Yanaka Ginza (52493036385).jpg",
+    "variants": [
+      {
+        "url": "/photos/places/tokyo-yanaka-640.webp",
+        "width": 640,
+        "height": 960
+      },
+      {
+        "url": "/photos/places/tokyo-yanaka.webp",
+        "width": 1280,
+        "height": 1920
+      },
+      {
+        "url": "/photos/places/tokyo-yanaka-full.webp",
+        "width": 3840,
+        "height": 5760
+      }
+    ],
+    "url": "/photos/places/tokyo-yanaka.webp",
+    "fullUrl": "/photos/places/tokyo-yanaka-full.webp",
+    "fullWidth": 3840,
+    "fullHeight": 5760,
+    "source": "https://commons.wikimedia.org/wiki/File:Yanaka_Ginza_(52493036385).jpg",
+    "author": "Dick Thomas Johnson from Tokyo, Japan",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fb/Yanaka_Ginza_%2852493036385%29.jpg/3840px-Yanaka_Ginza_%2852493036385%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio."
+  },
+  {
+    "placeId": "tokyo-sumida",
+    "name": "Sumida River",
+    "destination": "Tokyo",
+    "destinations": [
+      "Tokyo",
+      "Kichijoji",
+      "Kichijōji",
+      "Kichjoji",
+      "Kichijouji",
+      "Shimokitazawa",
+      "Koenji",
+      "Nakameguro"
+    ],
+    "aliases": [],
+    "kind": "place",
+    "title": "Sumida River (14062782073).jpg",
+    "variants": [
+      {
+        "url": "/photos/places/tokyo-sumida-640.webp",
+        "width": 640,
+        "height": 480
+      },
+      {
+        "url": "/photos/places/tokyo-sumida.webp",
+        "width": 1280,
+        "height": 960
+      },
+      {
+        "url": "/photos/places/tokyo-sumida-full.webp",
+        "width": 3840,
+        "height": 2880
+      }
+    ],
+    "url": "/photos/places/tokyo-sumida.webp",
+    "fullUrl": "/photos/places/tokyo-sumida-full.webp",
+    "fullWidth": 3840,
+    "fullHeight": 2880,
+    "source": "https://commons.wikimedia.org/wiki/File:Sumida_River_(14062782073).jpg",
+    "author": "Guilhem Vellut from Annecy, France",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bb/Sumida_River_%2814062782073%29.jpg/3840px-Sumida_River_%2814062782073%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio."
+  },
+  {
+    "placeId": "tokyo-narita",
+    "name": "Narita Airport",
+    "destination": "Tokyo",
+    "destinations": [
+      "Tokyo",
+      "Kichijoji",
+      "Kichijōji",
+      "Kichjoji",
+      "Kichijouji",
+      "Shimokitazawa",
+      "Koenji",
+      "Nakameguro"
+    ],
+    "aliases": [
+      "Narita International Airport"
+    ],
+    "kind": "place",
+    "title": "Narita International Airport Terminal 3, April 2023.jpg",
+    "variants": [
+      {
+        "url": "/photos/places/tokyo-narita-640.webp",
+        "width": 640,
+        "height": 480
+      },
+      {
+        "url": "/photos/places/tokyo-narita.webp",
+        "width": 1280,
+        "height": 960
+      },
+      {
+        "url": "/photos/places/tokyo-narita-full.webp",
+        "width": 3840,
+        "height": 2880
+      }
+    ],
+    "url": "/photos/places/tokyo-narita.webp",
+    "fullUrl": "/photos/places/tokyo-narita-full.webp",
+    "fullWidth": 3840,
+    "fullHeight": 2880,
+    "source": "https://commons.wikimedia.org/wiki/File:Narita_International_Airport_Terminal_3,_April_2023.jpg",
+    "author": "Calistemon",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/55/Narita_International_Airport_Terminal_3%2C_April_2023.jpg/3840px-Narita_International_Airport_Terminal_3%2C_April_2023.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio."
+  },
+  {
+    "placeId": "tokyo-ghibli",
+    "name": "Ghibli Museum",
+    "destination": "Tokyo",
+    "destinations": [
+      "Tokyo",
+      "Kichijoji",
+      "Kichijōji",
+      "Kichjoji",
+      "Kichijouji",
+      "Shimokitazawa",
+      "Koenji",
+      "Nakameguro"
+    ],
+    "aliases": [],
+    "kind": "place",
+    "title": "三鷹之森吉卜力美術館 (16177524186).jpg",
+    "variants": [
+      {
+        "url": "/photos/places/tokyo-ghibli-640.webp",
+        "width": 640,
+        "height": 427
+      },
+      {
+        "url": "/photos/places/tokyo-ghibli.webp",
+        "width": 1280,
+        "height": 854
+      },
+      {
+        "url": "/photos/places/tokyo-ghibli-full.webp",
+        "width": 3840,
+        "height": 2560
+      }
+    ],
+    "url": "/photos/places/tokyo-ghibli.webp",
+    "fullUrl": "/photos/places/tokyo-ghibli-full.webp",
+    "fullWidth": 3840,
+    "fullHeight": 2560,
+    "source": "https://commons.wikimedia.org/wiki/File:%E4%B8%89%E9%B7%B9%E4%B9%8B%E6%A3%AE%E5%90%89%E5%8D%9C%E5%8A%9B%E7%BE%8E%E8%A1%93%E9%A4%A8_(16177524186).jpg",
+    "author": "Wei-Te Wong from Taipei City, Taiwan, Republic of China",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5e/%E4%B8%89%E9%B7%B9%E4%B9%8B%E6%A3%AE%E5%90%89%E5%8D%9C%E5%8A%9B%E7%BE%8E%E8%A1%93%E9%A4%A8_%2816177524186%29.jpg/3840px-%E4%B8%89%E9%B7%B9%E4%B9%8B%E6%A3%AE%E5%90%89%E5%8D%9C%E5%8A%9B%E7%BE%8E%E8%A1%93%E9%A4%A8_%2816177524186%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio."
+  },
+  {
+    "placeId": "tokyo-setagaya",
+    "name": "Setagaya Park",
+    "destination": "Tokyo",
+    "destinations": [
+      "Tokyo",
+      "Kichijoji",
+      "Kichijōji",
+      "Kichjoji",
+      "Kichijouji",
+      "Shimokitazawa",
+      "Koenji",
+      "Nakameguro"
+    ],
+    "aliases": [],
+    "kind": "place",
+    "title": "Level crossing, Setagaya Park, Tokyo - Jan 17, 2009 (1).jpg",
+    "variants": [
+      {
+        "url": "/photos/places/tokyo-setagaya-640.webp",
+        "width": 640,
+        "height": 480
+      },
+      {
+        "url": "/photos/places/tokyo-setagaya.webp",
+        "width": 1280,
+        "height": 960
+      },
+      {
+        "url": "/photos/places/tokyo-setagaya-full.webp",
+        "width": 3840,
+        "height": 2880
+      }
+    ],
+    "url": "/photos/places/tokyo-setagaya.webp",
+    "fullUrl": "/photos/places/tokyo-setagaya-full.webp",
+    "fullWidth": 3840,
+    "fullHeight": 2880,
+    "source": "https://commons.wikimedia.org/wiki/File:Level_crossing,_Setagaya_Park,_Tokyo_-_Jan_17,_2009_(1).jpg",
+    "author": "Atsushi Tadokoro",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/43/Level_crossing%2C_Setagaya_Park%2C_Tokyo_-_Jan_17%2C_2009_%281%29.jpg/3840px-Level_crossing%2C_Setagaya_Park%2C_Tokyo_-_Jan_17%2C_2009_%281%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio."
+  },
+  {
+    "placeId": "tokyo-nezu",
+    "name": "Nezu Shrine",
+    "destination": "Tokyo",
+    "destinations": [
+      "Tokyo",
+      "Kichijoji",
+      "Kichijōji",
+      "Kichjoji",
+      "Kichijouji",
+      "Shimokitazawa",
+      "Koenji",
+      "Nakameguro"
+    ],
+    "aliases": [
+      "Nezu Jinja"
+    ],
+    "kind": "place",
+    "title": "Nezu Shrine 2010.jpg",
+    "variants": [
+      {
+        "url": "/photos/places/tokyo-nezu-640.webp",
+        "width": 640,
+        "height": 462
+      },
+      {
+        "url": "/photos/places/tokyo-nezu.webp",
+        "width": 1280,
+        "height": 923
+      },
+      {
+        "url": "/photos/places/tokyo-nezu-full.webp",
+        "width": 3543,
+        "height": 2554
+      }
+    ],
+    "url": "/photos/places/tokyo-nezu.webp",
+    "fullUrl": "/photos/places/tokyo-nezu-full.webp",
+    "fullWidth": 3543,
+    "fullHeight": 2554,
+    "source": "https://commons.wikimedia.org/wiki/File:Nezu_Shrine_2010.jpg",
+    "author": "Wiiii",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "originalThumbnail": "https://upload.wikimedia.org/wikipedia/commons/d/da/Nezu_Shrine_2010.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio."
+  },
+  {
+    "placeId": "tokyo-koenji",
+    "name": "Koenji",
+    "destination": "Tokyo",
+    "destinations": [
+      "Tokyo",
+      "Kichijoji",
+      "Kichijōji",
+      "Kichjoji",
+      "Kichijouji",
+      "Shimokitazawa",
+      "Koenji",
+      "Nakameguro"
+    ],
+    "aliases": [
+      "Kōenji"
+    ],
+    "kind": "area",
+    "title": "Koenji Awa Odori street.jpg",
+    "variants": [
+      {
+        "url": "/photos/places/tokyo-koenji-640.webp",
+        "width": 640,
+        "height": 427
+      },
+      {
+        "url": "/photos/places/tokyo-koenji.webp",
+        "width": 1280,
+        "height": 854
+      },
+      {
+        "url": "/photos/places/tokyo-koenji-full.webp",
+        "width": 2736,
+        "height": 1824
+      }
+    ],
+    "url": "/photos/places/tokyo-koenji.webp",
+    "fullUrl": "/photos/places/tokyo-koenji-full.webp",
+    "fullWidth": 2736,
+    "fullHeight": 1824,
+    "source": "https://commons.wikimedia.org/wiki/File:Koenji_Awa_Odori_street.jpg",
+    "author": "KQuhen",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f7/Koenji_Awa_Odori_street.jpg/960px-Koenji_Awa_Odori_street.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio."
+  },
+  {
+    "placeId": "tokyo-kanda",
+    "name": "Kanda",
+    "destination": "Tokyo",
+    "destinations": [
+      "Tokyo",
+      "Kichijoji",
+      "Kichijōji",
+      "Kichjoji",
+      "Kichijouji",
+      "Shimokitazawa",
+      "Koenji",
+      "Nakameguro"
+    ],
+    "aliases": [],
+    "kind": "area",
+    "title": "Suzuran Street Jimbocho.jpg",
+    "variants": [
+      {
+        "url": "/photos/places/tokyo-kanda-640.webp",
+        "width": 640,
+        "height": 427
+      },
+      {
+        "url": "/photos/places/tokyo-kanda.webp",
+        "width": 1280,
+        "height": 854
+      },
+      {
+        "url": "/photos/places/tokyo-kanda-full.webp",
+        "width": 3840,
+        "height": 2560
+      }
+    ],
+    "url": "/photos/places/tokyo-kanda.webp",
+    "fullUrl": "/photos/places/tokyo-kanda-full.webp",
+    "fullWidth": 3840,
+    "fullHeight": 2560,
+    "source": "https://commons.wikimedia.org/wiki/File:Suzuran_Street_Jimbocho.jpg",
+    "author": "Fred Cherrygarden",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f2/Suzuran_Street_Jimbocho.jpg/3840px-Suzuran_Street_Jimbocho.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio."
+  },
+  {
+    "placeId": "tokyo-tsukishima",
+    "name": "Tsukishima",
+    "destination": "Tokyo",
+    "destinations": [
+      "Tokyo",
+      "Kichijoji",
+      "Kichijōji",
+      "Kichjoji",
+      "Kichijouji",
+      "Shimokitazawa",
+      "Koenji",
+      "Nakameguro"
+    ],
+    "aliases": [],
+    "kind": "area",
+    "title": "Tsukishima Monja Street (Nakadori Street), Tokyo; January 2017 (01).jpg",
+    "variants": [
+      {
+        "url": "/photos/places/tokyo-tsukishima-640.webp",
+        "width": 640,
+        "height": 480
+      },
+      {
+        "url": "/photos/places/tokyo-tsukishima.webp",
+        "width": 1280,
+        "height": 960
+      },
+      {
+        "url": "/photos/places/tokyo-tsukishima-full.webp",
+        "width": 3840,
+        "height": 2880
+      }
+    ],
+    "url": "/photos/places/tokyo-tsukishima.webp",
+    "fullUrl": "/photos/places/tokyo-tsukishima-full.webp",
+    "fullWidth": 3840,
+    "fullHeight": 2880,
+    "source": "https://commons.wikimedia.org/wiki/File:Tsukishima_Monja_Street_(Nakadori_Street),_Tokyo;_January_2017_(01).jpg",
+    "author": "nakashi",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e3/Tsukishima_Monja_Street_%28Nakadori_Street%29%2C_Tokyo%3B_January_2017_%2801%29.jpg/3840px-Tsukishima_Monja_Street_%28Nakadori_Street%29%2C_Tokyo%3B_January_2017_%2801%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio."
+  },
+  {
+    "placeId": "tokyo-kagurazaka",
+    "name": "Kagurazaka",
+    "destination": "Tokyo",
+    "destinations": [
+      "Tokyo",
+      "Kichijoji",
+      "Kichijōji",
+      "Kichjoji",
+      "Kichijouji",
+      "Shimokitazawa",
+      "Koenji",
+      "Nakameguro"
+    ],
+    "aliases": [],
+    "kind": "area",
+    "title": "Kagurazaka-Ue Intersection, Waseda Ave., Tokyo.jpg",
+    "variants": [
+      {
+        "url": "/photos/places/tokyo-kagurazaka-640.webp",
+        "width": 640,
+        "height": 427
+      },
+      {
+        "url": "/photos/places/tokyo-kagurazaka.webp",
+        "width": 1280,
+        "height": 854
+      },
+      {
+        "url": "/photos/places/tokyo-kagurazaka-full.webp",
+        "width": 3840,
+        "height": 2562
+      }
+    ],
+    "url": "/photos/places/tokyo-kagurazaka.webp",
+    "fullUrl": "/photos/places/tokyo-kagurazaka-full.webp",
+    "fullWidth": 3840,
+    "fullHeight": 2562,
+    "source": "https://commons.wikimedia.org/wiki/File:Kagurazaka-Ue_Intersection,_Waseda_Ave.,_Tokyo.jpg",
+    "author": "Tatawidepine",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1a/Kagurazaka-Ue_Intersection%2C_Waseda_Ave.%2C_Tokyo.jpg/3840px-Kagurazaka-Ue_Intersection%2C_Waseda_Ave.%2C_Tokyo.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio."
+  },
+  {
+    "placeId": "tokyo-okutama",
+    "name": "Okutama",
+    "destination": "Tokyo",
+    "destinations": [
+      "Tokyo",
+      "Kichijoji",
+      "Kichijōji",
+      "Kichjoji",
+      "Kichijouji",
+      "Shimokitazawa",
+      "Koenji",
+      "Nakameguro"
+    ],
+    "aliases": [],
+    "kind": "area",
+    "title": "Obatagawa River @ Okutama (11168002616).jpg",
+    "variants": [
+      {
+        "url": "/photos/places/tokyo-okutama-640.webp",
+        "width": 640,
+        "height": 854
+      },
+      {
+        "url": "/photos/places/tokyo-okutama.webp",
+        "width": 1280,
+        "height": 1707
+      },
+      {
+        "url": "/photos/places/tokyo-okutama-full.webp",
+        "width": 2736,
+        "height": 3648
+      }
+    ],
+    "url": "/photos/places/tokyo-okutama.webp",
+    "fullUrl": "/photos/places/tokyo-okutama-full.webp",
+    "fullWidth": 2736,
+    "fullHeight": 3648,
+    "source": "https://commons.wikimedia.org/wiki/File:Obatagawa_River_@_Okutama_(11168002616).jpg",
+    "author": "Guilhem Vellut from Annecy, France",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3e/Obatagawa_River_%40_Okutama_%2811168002616%29.jpg/960px-Obatagawa_River_%40_Okutama_%2811168002616%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio."
+  },
+  {
+    "placeId": "tokyo-nakameguro",
+    "name": "Nakameguro",
+    "destination": "Tokyo",
+    "destinations": [
+      "Tokyo",
+      "Kichijoji",
+      "Kichijōji",
+      "Kichjoji",
+      "Kichijouji",
+      "Shimokitazawa",
+      "Koenji",
+      "Nakameguro"
+    ],
+    "aliases": [
+      "Meguro River"
+    ],
+    "kind": "area",
+    "title": "Meguro river in Tokyo.jpg",
+    "variants": [
+      {
+        "url": "/photos/places/tokyo-nakameguro-640.webp",
+        "width": 640,
+        "height": 427
+      },
+      {
+        "url": "/photos/places/tokyo-nakameguro.webp",
+        "width": 1280,
+        "height": 854
+      },
+      {
+        "url": "/photos/places/tokyo-nakameguro-full.webp",
+        "width": 3840,
+        "height": 2560
+      }
+    ],
+    "url": "/photos/places/tokyo-nakameguro.webp",
+    "fullUrl": "/photos/places/tokyo-nakameguro-full.webp",
+    "fullWidth": 3840,
+    "fullHeight": 2560,
+    "source": "https://commons.wikimedia.org/wiki/File:Meguro_river_in_Tokyo.jpg",
+    "author": "H.Hmoderato",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/03/Meguro_river_in_Tokyo.jpg/3840px-Meguro_river_in_Tokyo.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio."
+  },
+  {
+    "placeId": "scene-marrakech",
+    "name": "Marrakech",
+    "destination": "Marrakech",
+    "destinations": [
+      "Marrakech",
+      "Marrakesh"
+    ],
+    "aliases": [
+      "Marrakesh"
+    ],
+    "kind": "area",
+    "title": "Jemaa el-Fnaa at night.jpg",
+    "variants": [
+      {
+        "url": "/photos/places/scene-marrakech-640.webp",
+        "width": 640,
+        "height": 429
+      },
+      {
+        "url": "/photos/places/scene-marrakech.webp",
+        "width": 1280,
+        "height": 857
+      },
+      {
+        "url": "/photos/places/scene-marrakech-full.webp",
+        "width": 3840,
+        "height": 2571
+      }
+    ],
+    "url": "/photos/places/scene-marrakech.webp",
+    "fullUrl": "/photos/places/scene-marrakech-full.webp",
+    "fullWidth": 3840,
+    "fullHeight": 2571,
+    "source": "https://commons.wikimedia.org/wiki/File:Jemaa_el-Fnaa_at_night.jpg",
+    "author": "procsilas",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d2/Jemaa_el-Fnaa_at_night.jpg/3840px-Jemaa_el-Fnaa_at_night.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio."
+  },
+  {
+    "placeId": "scene-cappadocia",
+    "name": "Cappadocia",
+    "destination": "Cappadocia",
+    "destinations": [
+      "Cappadocia"
+    ],
+    "aliases": [],
+    "kind": "area",
+    "url": "/photos/places/scene-cappadocia.webp",
+    "title": "Cappadocia Air Balloon.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Cappadocia_Air_Balloon.jpg",
+    "author": "Hasan Abbasguliyev",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b7/Cappadocia_Air_Balloon.jpg/3840px-Cappadocia_Air_Balloon.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "variants": [
+      {
+        "url": "/photos/places/scene-cappadocia-640.webp",
+        "width": 640,
+        "height": 427
+      },
+      {
+        "url": "/photos/places/scene-cappadocia.webp",
+        "width": 1280,
+        "height": 854
+      },
+      {
+        "url": "/photos/places/scene-cappadocia-full.webp",
+        "width": 3840,
+        "height": 2561
+      }
+    ],
+    "fullUrl": "/photos/places/scene-cappadocia-full.webp",
+    "fullWidth": 3840,
+    "fullHeight": 2561
+  },
+  {
+    "placeId": "scene-iceland",
+    "name": "Iceland",
+    "destination": "Iceland",
+    "destinations": [
+      "Iceland"
+    ],
+    "aliases": [],
+    "kind": "area",
+    "url": "/photos/places/scene-iceland.webp",
+    "title": "Skógafoss, Iceland (Unsplash nNPONh2aXeQ).jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Sk%C3%B3gafoss,_Iceland_(Unsplash_nNPONh2aXeQ).jpg",
+    "author": "Rio Hodges riohodges",
+    "license": "CC0",
+    "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/91/Sk%C3%B3gafoss%2C_Iceland_%28Unsplash_nNPONh2aXeQ%29.jpg/3840px-Sk%C3%B3gafoss%2C_Iceland_%28Unsplash_nNPONh2aXeQ%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "variants": [
+      {
+        "url": "/photos/places/scene-iceland-640.webp",
+        "width": 640,
+        "height": 427
+      },
+      {
+        "url": "/photos/places/scene-iceland.webp",
+        "width": 1280,
+        "height": 854
+      },
+      {
+        "url": "/photos/places/scene-iceland-full.webp",
+        "width": 3840,
+        "height": 2560
+      }
+    ],
+    "fullUrl": "/photos/places/scene-iceland-full.webp",
+    "fullWidth": 3840,
+    "fullHeight": 2560
+  },
+  {
+    "placeId": "scene-amalfi",
+    "name": "Amalfi Coast",
+    "destination": "Amalfi Coast",
+    "destinations": [
+      "Amalfi Coast"
+    ],
+    "aliases": [
+      "Amalfi"
+    ],
+    "kind": "area",
+    "url": "/photos/places/scene-amalfi.webp",
+    "title": "Terrace Villa Cimbrone.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Terrace_Villa_Cimbrone.jpg",
+    "author": "Nessy",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a8/Terrace_Villa_Cimbrone.jpg/3840px-Terrace_Villa_Cimbrone.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "variants": [
+      {
+        "url": "/photos/places/scene-amalfi-640.webp",
+        "width": 640,
+        "height": 427
+      },
+      {
+        "url": "/photos/places/scene-amalfi.webp",
+        "width": 1280,
+        "height": 854
+      },
+      {
+        "url": "/photos/places/scene-amalfi-full.webp",
+        "width": 3840,
+        "height": 2560
+      }
+    ],
+    "fullUrl": "/photos/places/scene-amalfi-full.webp",
+    "fullWidth": 3840,
+    "fullHeight": 2560
+  },
+  {
+    "placeId": "scene-banff",
+    "name": "Banff",
+    "destination": "Banff",
+    "destinations": [
+      "Banff"
+    ],
+    "aliases": [],
+    "kind": "area",
+    "url": "/photos/places/scene-banff.webp",
+    "title": "Mount Cascade and the town of Banff (J).jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Mount_Cascade_and_the_town_of_Banff_(J).jpg",
+    "author": "ParsonsPhotographyNL",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/61/Mount_Cascade_and_the_town_of_Banff_%28J%29.jpg/1280px-Mount_Cascade_and_the_town_of_Banff_%28J%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "variants": [
+      {
+        "url": "/photos/places/scene-banff-640.webp",
+        "width": 640,
+        "height": 404
+      },
+      {
+        "url": "/photos/places/scene-banff.webp",
+        "width": 1280,
+        "height": 808
+      },
+      {
+        "url": "/photos/places/scene-banff-full.webp",
+        "width": 3840,
+        "height": 2422
+      }
+    ],
+    "fullUrl": "/photos/places/scene-banff-full.webp",
+    "fullWidth": 3840,
+    "fullHeight": 2422
+  },
+  {
+    "placeId": "scene-cape-town",
+    "name": "Cape Town",
+    "destination": "Cape Town",
+    "destinations": [
+      "Cape Town"
+    ],
+    "aliases": [],
+    "kind": "area",
+    "url": "/photos/places/scene-cape-town.webp",
+    "title": "Panoramic view from Table Mountain down on Cape Town - South Africa.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Panoramic_view_from_Table_Mountain_down_on_Cape_Town_-_South_Africa.jpg",
+    "author": "zoutedrop",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/05/Panoramic_view_from_Table_Mountain_down_on_Cape_Town_-_South_Africa.jpg/1280px-Panoramic_view_from_Table_Mountain_down_on_Cape_Town_-_South_Africa.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "variants": [
+      {
+        "url": "/photos/places/scene-cape-town-640.webp",
+        "width": 640,
+        "height": 259
+      },
+      {
+        "url": "/photos/places/scene-cape-town.webp",
+        "width": 1280,
+        "height": 518
+      },
+      {
+        "url": "/photos/places/scene-cape-town-full.webp",
+        "width": 3840,
+        "height": 1554
+      }
+    ],
+    "fullUrl": "/photos/places/scene-cape-town-full.webp",
+    "fullWidth": 3840,
+    "fullHeight": 1554
+  },
+  {
+    "placeId": "scene-edinburgh",
+    "name": "Edinburgh",
+    "destination": "Edinburgh",
+    "destinations": [
+      "Edinburgh"
+    ],
+    "aliases": [],
+    "kind": "area",
+    "url": "/photos/places/scene-edinburgh.webp",
+    "title": "Edinburgh Old Town skyline with Bank of Scotland and The Hub.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Edinburgh_Old_Town_skyline_with_Bank_of_Scotland_and_The_Hub.jpg",
+    "author": "",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/19/Edinburgh_Old_Town_skyline_with_Bank_of_Scotland_and_The_Hub.jpg/1280px-Edinburgh_Old_Town_skyline_with_Bank_of_Scotland_and_The_Hub.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "variants": [
+      {
+        "url": "/photos/places/scene-edinburgh-640.webp",
+        "width": 640,
+        "height": 427
+      },
+      {
+        "url": "/photos/places/scene-edinburgh.webp",
+        "width": 1280,
+        "height": 854
+      },
+      {
+        "url": "/photos/places/scene-edinburgh-full.webp",
+        "width": 3840,
+        "height": 2560
+      }
+    ],
+    "fullUrl": "/photos/places/scene-edinburgh-full.webp",
+    "fullWidth": 3840,
+    "fullHeight": 2560
+  },
+  {
+    "placeId": "scene-hoi-an",
+    "name": "Hoi An",
+    "destination": "Hoi An",
+    "destinations": [
+      "Hoi An"
+    ],
+    "aliases": [],
+    "kind": "area",
+    "url": "/photos/places/scene-hoi-an.webp",
+    "title": "Thu Bồn River at night - Hội An 2022.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Thu_B%E1%BB%93n_River_at_night_-_H%E1%BB%99i_An_2022.jpg",
+    "author": "Nguyen QuocTrung",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/86/Thu_B%E1%BB%93n_River_at_night_-_H%E1%BB%99i_An_2022.jpg/1280px-Thu_B%E1%BB%93n_River_at_night_-_H%E1%BB%99i_An_2022.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "variants": [
+      {
+        "url": "/photos/places/scene-hoi-an-640.webp",
+        "width": 640,
+        "height": 288
+      },
+      {
+        "url": "/photos/places/scene-hoi-an.webp",
+        "width": 1280,
+        "height": 576
+      },
+      {
+        "url": "/photos/places/scene-hoi-an-full.webp",
+        "width": 3840,
+        "height": 1728
+      }
+    ],
+    "fullUrl": "/photos/places/scene-hoi-an-full.webp",
+    "fullWidth": 3840,
+    "fullHeight": 1728
+  },
+  {
+    "placeId": "scene-luang-prabang",
+    "name": "Luang Prabang",
+    "destination": "Luang Prabang",
+    "destinations": [
+      "Luang Prabang"
+    ],
+    "aliases": [],
+    "kind": "area",
+    "url": "/photos/places/scene-luang-prabang.webp",
+    "title": "20171111 Wat Xieng Thong Luang Prabang 1212 DxO.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:20171111_Wat_Xieng_Thong_Luang_Prabang_1212_DxO.jpg",
+    "author": "Jakub Hałun",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c3/20171111_Wat_Xieng_Thong_Luang_Prabang_1212_DxO.jpg/1280px-20171111_Wat_Xieng_Thong_Luang_Prabang_1212_DxO.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "variants": [
+      {
+        "url": "/photos/places/scene-luang-prabang-640.webp",
+        "width": 640,
+        "height": 323
+      },
+      {
+        "url": "/photos/places/scene-luang-prabang.webp",
+        "width": 1280,
+        "height": 645
+      },
+      {
+        "url": "/photos/places/scene-luang-prabang-full.webp",
+        "width": 3840,
+        "height": 1933
+      }
+    ],
+    "fullUrl": "/photos/places/scene-luang-prabang-full.webp",
+    "fullWidth": 3840,
+    "fullHeight": 1933
+  },
+  {
+    "placeId": "scene-madeira",
+    "name": "Madeira",
+    "destination": "Madeira",
+    "destinations": [
+      "Madeira"
+    ],
+    "aliases": [],
+    "kind": "area",
+    "url": "/photos/places/scene-madeira.webp",
+    "title": "2016 Paisaxe dede o Pico do Areeiro Madeira. Portugal.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:2016_Paisaxe_dede_o_Pico_do_Areeiro_Madeira._Portugal.jpg",
+    "author": "Luis Miguel Bugallo Sánchez (Lmbuga)",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/df/2016_Paisaxe_dede_o_Pico_do_Areeiro_Madeira._Portugal.jpg/1280px-2016_Paisaxe_dede_o_Pico_do_Areeiro_Madeira._Portugal.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "variants": [
+      {
+        "url": "/photos/places/scene-madeira-640.webp",
+        "width": 640,
+        "height": 427
+      },
+      {
+        "url": "/photos/places/scene-madeira.webp",
+        "width": 1280,
+        "height": 854
+      },
+      {
+        "url": "/photos/places/scene-madeira-full.webp",
+        "width": 3840,
+        "height": 2560
+      }
+    ],
+    "fullUrl": "/photos/places/scene-madeira-full.webp",
+    "fullWidth": 3840,
+    "fullHeight": 2560
+  },
+  {
+    "placeId": "scene-oaxaca",
+    "name": "Oaxaca",
+    "destination": "Oaxaca",
+    "destinations": [
+      "Oaxaca"
+    ],
+    "aliases": [],
+    "kind": "area",
+    "url": "/photos/places/scene-oaxaca.webp",
+    "title": "Oaxaca Cathedral in Late Afternoon with Balloons - Oaxaca City - Oaxaca - Mexico (6505741221).jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Oaxaca_Cathedral_in_Late_Afternoon_with_Balloons_-_Oaxaca_City_-_Oaxaca_-_Mexico_(6505741221).jpg",
+    "author": "Adam Jones from Kelowna, BC, Canada",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b2/Oaxaca_Cathedral_in_Late_Afternoon_with_Balloons_-_Oaxaca_City_-_Oaxaca_-_Mexico_%286505741221%29.jpg/1280px-Oaxaca_Cathedral_in_Late_Afternoon_with_Balloons_-_Oaxaca_City_-_Oaxaca_-_Mexico_%286505741221%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "variants": [
+      {
+        "url": "/photos/places/scene-oaxaca-640.webp",
+        "width": 640,
+        "height": 480
+      },
+      {
+        "url": "/photos/places/scene-oaxaca.webp",
+        "width": 1280,
+        "height": 960
+      },
+      {
+        "url": "/photos/places/scene-oaxaca-full.webp",
+        "width": 3648,
+        "height": 2736
+      }
+    ],
+    "fullUrl": "/photos/places/scene-oaxaca-full.webp",
+    "fullWidth": 3648,
+    "fullHeight": 2736
+  },
+  {
+    "placeId": "scene-palawan",
+    "name": "Palawan",
+    "destination": "Palawan",
+    "destinations": [
+      "Palawan"
+    ],
+    "aliases": [],
+    "kind": "area",
+    "url": "/photos/places/scene-palawan.webp",
+    "title": "Island lagoon in Bacuit Bay, El Nido, Palawan, Philippines.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Island_lagoon_in_Bacuit_Bay,_El_Nido,_Palawan,_Philippines.jpg",
+    "author": "Vyacheslav Argenberg",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4f/Island_lagoon_in_Bacuit_Bay%2C_El_Nido%2C_Palawan%2C_Philippines.jpg/1280px-Island_lagoon_in_Bacuit_Bay%2C_El_Nido%2C_Palawan%2C_Philippines.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "variants": [
+      {
+        "url": "/photos/places/scene-palawan-640.webp",
+        "width": 640,
+        "height": 427
+      },
+      {
+        "url": "/photos/places/scene-palawan.webp",
+        "width": 1280,
+        "height": 854
+      },
+      {
+        "url": "/photos/places/scene-palawan-full.webp",
+        "width": 3840,
+        "height": 2560
+      }
+    ],
+    "fullUrl": "/photos/places/scene-palawan-full.webp",
+    "fullWidth": 3840,
+    "fullHeight": 2560
+  },
+  {
+    "placeId": "scene-patagonia",
+    "name": "Patagonia",
+    "destination": "Patagonia",
+    "destinations": [
+      "Patagonia"
+    ],
+    "aliases": [],
+    "kind": "area",
+    "url": "/photos/places/scene-patagonia.webp",
+    "title": "Torres del Paine, guanacos 06.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Torres_del_Paine,_guanacos_06.jpg",
+    "author": "LBM1948",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/35/Torres_del_Paine%2C_guanacos_06.jpg/1280px-Torres_del_Paine%2C_guanacos_06.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "variants": [
+      {
+        "url": "/photos/places/scene-patagonia-640.webp",
+        "width": 640,
+        "height": 425
+      },
+      {
+        "url": "/photos/places/scene-patagonia.webp",
+        "width": 1280,
+        "height": 850
+      },
+      {
+        "url": "/photos/places/scene-patagonia-full.webp",
+        "width": 3840,
+        "height": 2550
+      }
+    ],
+    "fullUrl": "/photos/places/scene-patagonia-full.webp",
+    "fullWidth": 3840,
+    "fullHeight": 2550
+  },
+  {
+    "placeId": "scene-queenstown",
+    "name": "Queenstown",
+    "destination": "Queenstown",
+    "destinations": [
+      "Queenstown"
+    ],
+    "aliases": [],
+    "kind": "area",
+    "url": "/photos/places/scene-queenstown.webp",
+    "title": "Queenstown Panorama, 11 April 2026.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Queenstown_Panorama,_11_April_2026.jpg",
+    "author": "Danny William Wilson",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4c/Queenstown_Panorama%2C_11_April_2026.jpg/1280px-Queenstown_Panorama%2C_11_April_2026.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "variants": [
+      {
+        "url": "/photos/places/scene-queenstown-640.webp",
+        "width": 640,
+        "height": 480
+      },
+      {
+        "url": "/photos/places/scene-queenstown.webp",
+        "width": 1280,
+        "height": 960
+      },
+      {
+        "url": "/photos/places/scene-queenstown-full.webp",
+        "width": 3840,
+        "height": 2880
+      }
+    ],
+    "fullUrl": "/photos/places/scene-queenstown-full.webp",
+    "fullWidth": 3840,
+    "fullHeight": 2880
+  },
+  {
+    "placeId": "scene-tulum",
+    "name": "Tulum",
+    "destination": "Tulum",
+    "destinations": [
+      "Tulum"
+    ],
+    "aliases": [],
+    "kind": "area",
+    "url": "/photos/places/scene-tulum.webp",
+    "title": "El Castillo, Tulum Ruinas, 2023.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:El_Castillo,_Tulum_Ruinas,_2023.jpg",
+    "author": "Erik Cleves Kristensen",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/63/El_Castillo%2C_Tulum_Ruinas%2C_2023.jpg/1280px-El_Castillo%2C_Tulum_Ruinas%2C_2023.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "variants": [
+      {
+        "url": "/photos/places/scene-tulum-640.webp",
+        "width": 640,
+        "height": 427
+      },
+      {
+        "url": "/photos/places/scene-tulum.webp",
+        "width": 1280,
+        "height": 854
+      },
+      {
+        "url": "/photos/places/scene-tulum-full.webp",
+        "width": 3840,
+        "height": 2560
+      }
+    ],
+    "fullUrl": "/photos/places/scene-tulum-full.webp",
+    "fullWidth": 3840,
+    "fullHeight": 2560
+  },
+  {
+    "placeId": "scene-valletta",
+    "name": "Valletta",
+    "destination": "Valletta",
+    "destinations": [
+      "Valletta"
+    ],
+    "aliases": [],
+    "kind": "area",
+    "url": "/photos/places/scene-valletta.webp",
+    "title": "Valletta widok z Gornych Ogrodow Barrakka 6.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Valletta_widok_z_Gornych_Ogrodow_Barrakka_6.jpg",
+    "author": "Andrzej Otrębski",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/78/Valletta_widok_z_Gornych_Ogrodow_Barrakka_6.jpg/1280px-Valletta_widok_z_Gornych_Ogrodow_Barrakka_6.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "variants": [
+      {
+        "url": "/photos/places/scene-valletta-640.webp",
+        "width": 640,
+        "height": 427
+      },
+      {
+        "url": "/photos/places/scene-valletta.webp",
+        "width": 1280,
+        "height": 854
+      },
+      {
+        "url": "/photos/places/scene-valletta-full.webp",
+        "width": 3840,
+        "height": 2560
+      }
+    ],
+    "fullUrl": "/photos/places/scene-valletta-full.webp",
+    "fullWidth": 3840,
+    "fullHeight": 2560
+  },
+  {
+    "placeId": "scene-zanzibar",
+    "name": "Zanzibar",
+    "destination": "Zanzibar",
+    "destinations": [
+      "Zanzibar"
+    ],
+    "aliases": [],
+    "kind": "area",
+    "url": "/photos/places/scene-zanzibar.webp",
+    "title": "Stone Town Waterfront, Zanzibar (10163203685).jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Stone_Town_Waterfront,_Zanzibar_(10163203685).jpg",
+    "author": "Rod Waddington from Kergunyah, Australia",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f0/Stone_Town_Waterfront%2C_Zanzibar_%2810163203685%29.jpg/1280px-Stone_Town_Waterfront%2C_Zanzibar_%2810163203685%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "variants": [
+      {
+        "url": "/photos/places/scene-zanzibar-640.webp",
+        "width": 640,
+        "height": 425
+      },
+      {
+        "url": "/photos/places/scene-zanzibar.webp",
+        "width": 1280,
+        "height": 850
+      },
+      {
+        "url": "/photos/places/scene-zanzibar-full.webp",
+        "width": 3840,
+        "height": 2550
+      }
+    ],
+    "fullUrl": "/photos/places/scene-zanzibar-full.webp",
+    "fullWidth": 3840,
+    "fullHeight": 2550
+  },
+  {
+    "placeId": "scene-reykjavik",
+    "name": "Reykjavík",
+    "destination": "Reykjavík",
+    "destinations": [
+      "Reykjavík"
+    ],
+    "aliases": [],
+    "kind": "area",
+    "url": "/photos/places/scene-reykjavik.webp",
+    "title": "Reykjavik City Iceland Downtown Cityscape.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Reykjavik_City_Iceland_Downtown_Cityscape.jpg",
+    "author": "robingileo",
+    "license": "CC0",
+    "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/94/Reykjavik_City_Iceland_Downtown_Cityscape.jpg/1280px-Reykjavik_City_Iceland_Downtown_Cityscape.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "variants": [
+      {
+        "url": "/photos/places/scene-reykjavik-640.webp",
+        "width": 640,
+        "height": 458
+      },
+      {
+        "url": "/photos/places/scene-reykjavik.webp",
+        "width": 1280,
+        "height": 915
+      },
+      {
+        "url": "/photos/places/scene-reykjavik-full.webp",
+        "width": 2027,
+        "height": 1448
+      }
+    ],
+    "fullUrl": "/photos/places/scene-reykjavik-full.webp",
+    "fullWidth": 2027,
+    "fullHeight": 1448
+  }
+]

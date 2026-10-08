@@ -5,6 +5,7 @@ import type { AnswerValue } from '../data/Questions'
 import { readStored } from '../services/journeyStorage'
 import { getTravelProfile } from '../services/travelMemoryApi'
 import { DESTINATIONS } from '../data/destinations'
+import { changeScene } from '../services/sceneTransition'
 import { Icon, LoadingState } from './Ui'
 
 export type PreferenceAnswers = Record<string, AnswerValue>
@@ -13,6 +14,11 @@ const paces = ['Slow & relaxed', 'A balanced mix', 'Busy & activity-filled']
 const stayOptions = ['Hotel', 'Resort', 'Apartment / home rental', 'Villa', 'Hostel / dormitory', 'Open to options']
 const priorityOptions = ['Food', 'Culture', 'Adventure', 'Nature', 'Relaxation', 'Nightlife', 'Budget', 'Accommodation comfort']
 const defaults: PreferenceAnswers = { tripLength: '4 days', flexibleDates: 'yes', budget: 'Flexible', tripFeeling: [], pace: '', companions: 'friends' }
+const mergeAnswers = (current: PreferenceAnswers, patch?: Partial<PreferenceAnswers>): PreferenceAnswers => {
+  const next = { ...current }
+  for (const [key, value] of Object.entries(patch ?? {})) if (value !== undefined) next[key] = value
+  return next
+}
 
 export function MemberPreferences({ roomId, name, solo = false, onSaved, onClose }: { solo?: boolean; roomId: string; name: string; onSaved: () => void; onClose: () => void }) {
   const { user } = useAuth()
@@ -45,23 +51,24 @@ export function MemberPreferences({ roomId, name, solo = false, onSaved, onClose
 }
 
 export function PreferenceCards({ initial = defaults, storageKey, memory, onSave, onCancel, guest = false, externalAnswers, onAnswersChange }: { initial?: PreferenceAnswers; storageKey: string; memory?: string; guest?: boolean; onSave: (answers: PreferenceAnswers) => Promise<void>; onCancel?: () => void; externalAnswers?: Partial<PreferenceAnswers>; onAnswersChange?: (answers: PreferenceAnswers) => void }) {
-  const [answers, setAnswers] = useState<PreferenceAnswers>(() => readStored(storageKey, { ...defaults, ...initial }))
+  const [answers, setAnswers] = useState<PreferenceAnswers>(() => mergeAnswers(readStored(storageKey, { ...defaults, ...initial }), externalAnswers))
+  const [appliedPatch, setAppliedPatch] = useState(externalAnswers)
   const [step, setStep] = useState(0)
   const [busy, setBusy] = useState(false)
+  const goToStep = (next: number) => changeScene(() => setStep(next), 'preferences', next < step ? 'back' : 'forward')
   const [error, setError] = useState('')
   const [draftSaved, setDraftSaved] = useState(false)
+  // Apply each guide response once, so later manual edits remain authoritative.
+  if (externalAnswers !== appliedPatch) {
+    setAppliedPatch(externalAnswers)
+    setAnswers(current => mergeAnswers(current, externalAnswers))
+  }
   useEffect(() => {
-    if (!externalAnswers || !Object.keys(externalAnswers).length) return
-    setAnswers(current => {
-      const next: PreferenceAnswers = { ...current }
-      for (const [key, value] of Object.entries(externalAnswers)) if (value !== undefined) next[key] = value
-      const changed = Object.keys(externalAnswers).some(key => JSON.stringify(current[key]) !== JSON.stringify(next[key]))
-      if (changed) onAnswersChange?.(next)
-      return changed ? next : current
-    })
-  }, [externalAnswers, onAnswersChange])
+    onAnswersChange?.(answers)
+    try { localStorage.setItem(storageKey, JSON.stringify(answers)) } catch { /* Draft recovery is optional. */ }
+  }, [answers, onAnswersChange, storageKey])
   const change = (key: string, value: AnswerValue) => {
-    const next = { ...answers, [key]: value }; setAnswers(next); setError(''); onAnswersChange?.(next)
+    const next = { ...answers, [key]: value }; setAnswers(next); setError('')
     try { localStorage.setItem(storageKey, JSON.stringify(next)); setDraftSaved(true) } catch { setDraftSaved(false) }
   }
   const text = (key: string) => String(answers[key] ?? '')
@@ -71,13 +78,13 @@ export function PreferenceCards({ initial = defaults, storageKey, memory, onSave
   const advance = async () => {
     if (step === 0 && answers.flexibleDates !== 'yes' && (!answers.startDate || !answers.endDate || answers.startDate > answers.endDate)) { setError('Choose a valid date window or mark your dates as flexible.'); return }
     if (step === 1 && (!selectedMoods.length || !answers.pace)) { setError('Choose at least one interest and a travel pace.'); return }
-    if (step < 2) { setStep(step + 1); return }
+    if (step < 2) { goToStep(step + 1); return }
     setBusy(true); setError('')
     try { await onSave(answers); try { localStorage.removeItem(storageKey) } catch { /* Server save is durable. */ } }
     catch (reason) { setError(reason instanceof Error ? reason.message : 'Your preferences could not save. Please try again.') }
     finally { setBusy(false) }
   }
-  return <section className="member-preferences" aria-label="Your trip preferences"><header><p className="eyebrow">YOUR VOICE IN THIS TRIP</p><h2>{['A little room to escape.', 'Your kind of good day.', 'The things that matter.'][step]}</h2><p>{['A date window and a budget that feel comfortable.', 'A few choices. A little more you.', 'Anything essential—or something you would rather skip?'][step]}</p>{memory && <p className="member-memory"><Icon name="leaf" size={16} />{memory}</p>}</header><div className="member-step-tabs" role="group" aria-label="Preference steps">{['Dates & comfort', 'Your rhythm', 'Essentials'].map((label, index) => <button key={label} disabled={index > step || busy} aria-pressed={step === index} onClick={() => setStep(index)}>{index + 1}<span>{label}</span></button>)}</div>
+  return <section className="member-preferences" aria-label="Your trip preferences"><header><p className="eyebrow">YOUR VOICE IN THIS TRIP</p><h2>{['A little room to escape.', 'Your kind of good day.', 'The things that matter.'][step]}</h2><p>{['A date window and a budget that feel comfortable.', 'A few choices. A little more you.', 'Anything essential—or something you would rather skip?'][step]}</p>{memory && <p className="member-memory"><Icon name="leaf" size={16} />{memory}</p>}</header><div className="member-step-tabs" role="group" aria-label="Preference steps">{['Dates & comfort', 'Your rhythm', 'Essentials'].map((label, index) => <button key={label} disabled={index > step || busy} aria-pressed={step === index} onClick={() => goToStep(index)}>{index + 1}<span>{label}</span></button>)}</div>
     <fieldset disabled={busy}>
     {step === 0 && <>
       {guest && <label>Your name<input value={text('displayName')} maxLength={80} onChange={event => change('displayName', event.target.value)} placeholder="What should your crew call you?" /></label>}
@@ -95,6 +102,6 @@ export function PreferenceCards({ initial = defaults, storageKey, memory, onSave
     </>}
     {step === 1 && <><p className="member-label">What lights you up? <span>Choose up to three</span></p><div className="member-choice-grid">{moodOptions.map((mood, index) => <button type="button" key={mood} aria-pressed={selectedMoods.includes(mood)} disabled={!selectedMoods.includes(mood) && selectedMoods.length >= 3} onClick={() => change('tripFeeling', selectedMoods.includes(mood) ? selectedMoods.filter(item => item !== mood) : [...selectedMoods, mood])}><Icon name={['sun', 'leaf', 'moon', 'compass', 'camera', 'heart', 'spark', 'people', 'home'][index]} size={21} />{mood}</button>)}</div><p className="member-label">And your ideal pace?</p><div className="member-pace">{paces.map((pace, index) => <button type="button" aria-pressed={answers.pace === pace} key={pace} onClick={() => change('pace', pace)}><Icon name={['leaf', 'sun', 'compass'][index]} size={19} /><span>{pace}<small>{['Slow mornings. Room to wander.', 'A few highlights and breathing room.', 'An adventure around every corner.'][index]}</small></span></button>)}</div><section className="member-visible-section" aria-label="Fine-tune what matters most"><p className="member-section-title">Fine-tune what matters most <span>Optional</span></p><p className="member-label">How do you like to discover a place?</p><div className="member-inline-options">{['Famous highlights', 'Local hidden gems', 'A mix of both'].map(value => <button type="button" key={value} aria-pressed={text('discovery') === value} onClick={() => change('discovery', value)}>{value}</button>)}</div><p className="member-label">Your top priorities <span>Choose up to five</span></p><div className="member-inline-options">{priorityOptions.map(value => <button type="button" key={value} aria-pressed={selectedPriorities.includes(value)} disabled={!selectedPriorities.includes(value) && selectedPriorities.length >= 5} onClick={() => change('priorities', selectedPriorities.includes(value) ? selectedPriorities.filter(item => item !== value) : [...selectedPriorities, value])}>{value}</button>)}</div></section></>}
     {step === 2 && <><label>Must-have<textarea rows={2} value={text('mustHave')} maxLength={1000} onChange={event => change('mustHave', event.target.value)} placeholder="A food market, a sunrise, a long lunch…" /></label><label>Nice-to-have <span>Optional</span><textarea rows={2} value={text('niceToHave')} maxLength={1000} onChange={event => change('niceToHave', event.target.value)} placeholder="A cooking class, a beach afternoon, a museum…" /></label><label>No-go<textarea rows={2} value={text('noGo')} maxLength={1000} onChange={event => change('noGo', event.target.value)} placeholder="Long drives, very early starts, crowded places…" /></label><div className="member-recap"><Icon name="check" size={22} /><div><strong>Your little travel portrait</strong><p>{text('tripLength')} · {text('budget')} · {text('pace')}</p><p>{selectedMoods.join(' · ')}</p></div></div>{!guest && <label className="member-check"><input type="checkbox" checked={answers.personalizationEnabled !== 'no'} onChange={event => change('personalizationEnabled', event.target.checked ? 'yes' : 'no')} />Use my remembered style where I leave something open</label>}<p className="member-hint">Your answers shape this trip. Your detailed preferences stay private.</p></>}
-    </fieldset>{error && <p className="form-error" role="alert">{error}</p>}<footer>{step > 0 ? <button type="button" disabled={busy} onClick={() => setStep(step - 1)}>← Back</button> : <button type="button" disabled={busy} onClick={onCancel}>Back to the room</button>}<small>{draftSaved ? 'Draft saved in this browser' : `${step + 1} of 3`}</small><button className="primary-button" disabled={busy} onClick={() => void advance()}>{busy ? 'Saving your voice…' : step === 2 ? 'My preferences are ready' : 'Continue'}<Icon /></button></footer>
+    </fieldset>{error && <p className="form-error" role="alert">{error}</p>}<footer>{step > 0 ? <button type="button" disabled={busy} onClick={() => goToStep(step - 1)}>← Back</button> : <button type="button" disabled={busy} onClick={onCancel}>Back to the room</button>}<small>{draftSaved ? 'Draft saved in this browser' : `${step + 1} of 3`}</small><button className="primary-button" disabled={busy} onClick={() => void advance()}>{busy ? 'Saving your voice…' : step === 2 ? 'My preferences are ready' : 'Continue'}<Icon /></button></footer>
   </section>
 }

@@ -77,12 +77,12 @@ export async function recommendForQuest(roomId: string) {
   const preferenceVersion = contextKey([group.totalMembers, group.participants.map(person => [person.id, person.status]), effectivePreferences, acceptedNotes])
   const generated = group.ready && !availability.conflict
     ? await aiQuestItineraries(roomId, group.participants.find(person => person.role === 'owner')?.id, effectivePreferences, preferenceVersion)
-    : { results: [], pending: false }
+    : { results: [], pending: false, status: 'waiting' as const }
   // Generated options pass the same hard filters and scoring as the catalogue.
   const ranked = rankRecommendations(group.ready ? effectivePreferences : [], [...catalogue, ...generated.results])
   const blockers = !group.ready ? [`${group.completedMembers} of ${group.totalMembers} travellers are ready. Everyone must confirm their preferences before group matches appear.`]
     : availability.conflict ? ['Your travel dates do not overlap. Discuss another date window and update your preferences.'] : ranked.blockers
-  return { ...ranked, generationPending: generated.pending, blockers, totalMembers: group.totalMembers, memberCount: group.completedMembers, ready: group.ready,
+  return { ...ranked, generationPending: generated.pending, generationStatus: generated.status, blockers, totalMembers: group.totalMembers, memberCount: group.completedMembers, ready: group.ready,
     participants: group.participants.map(({ preference: _private, ...person }) => person), availability,
     questReadiness: { totalMembers: group.totalMembers, completedMembers: group.completedMembers,
       readinessState: !group.ready ? 'gathering' as const : !ranked.results.length ? 'deciding' as const : 'unlocked' as const,

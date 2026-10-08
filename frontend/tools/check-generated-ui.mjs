@@ -17,39 +17,73 @@ try {
   await context.addInitScript(({ token, user }) => {
     localStorage.setItem('gotogether.session-token', token)
     localStorage.setItem('gotogether.current-user-id', user.id)
-    sessionStorage.setItem('gotogether.activity-photos.v3', 'null')
+    if (!sessionStorage.getItem('gotogether.activity-photos.v6')) sessionStorage.setItem('gotogether.activity-photos.v6', 'null')
   }, session)
   await context.route(`**/api/working-plans/${fixture.roomId}`, async route => {
     const response = await route.fetch()
     const value = await response.json()
     assert.ok(value.data)
-    value.data.bookings = { destination: value.data.destination, duration_days: 4, budget: 'Moderate', location_type: 'City', estimated_cost_usd: 850, currency: 'USD', travel_dates: { start: '2027-04-01', end: '2027-04-04' }, flights: [{ from: 'Mumbai', fromCode: 'BOM', to: 'Osaka', toCode: 'KIX', airline: 'UNVERIFIED AIRLINE', flightNumber: 'UNVERIFIED123', departDate: '2027-04-01', returnDate: '2027-04-04', departTime: '09:30', arriveTime: '17:00', stops: 0, duration: '7h 30m', pricePerPerson: 350 }], stays: [{ name: 'Synthetic waterfront stay', area: 'Harbour district', type: 'Guesthouse', stars: 5, reviewScore: 9.9, reviewLabel: 'UNVERIFIED REVIEW', highlights: ['UNVERIFIED CANCELLATION'], pricePerNight: 100, nights: 3, totalPrice: 300, imageQuery: 'Synthetic waterfront stay' }] }
+    value.data.bookings = { destination: 'Genoa', duration_days: 4, budget: 'Moderate', location_type: 'City', estimated_cost_usd: 850, currency: 'USD', travel_dates: { start: '2027-04-01', end: '2027-04-04' }, flights: [{ from: 'Mumbai', fromCode: 'BOM', to: 'Osaka', toCode: 'KIX', airline: 'UNVERIFIED AIRLINE', flightNumber: 'UNVERIFIED123', departDate: '2027-04-01', returnDate: '2027-04-04', departTime: '09:30', arriveTime: '17:00', stops: 0, duration: '7h 30m', pricePerPerson: 350 }], stays: [{ name: 'Synthetic waterfront stay', area: 'Harbour district', type: 'Guesthouse', stars: 5, reviewScore: 9.9, reviewLabel: 'UNVERIFIED REVIEW', highlights: ['UNVERIFIED CANCELLATION'], pricePerNight: 100, nights: 3, totalPrice: 300, imageQuery: 'Synthetic waterfront stay' }] }
     await route.fulfill({ response, json: value })
   })
   const source = 'https://commons.wikimedia.org/wiki/File:GoTogether_test.jpg'
-  const image = 'https://upload.wikimedia.org/wikipedia/commons/test/GoTogether_test.jpg'
-  await context.route('https://commons.wikimedia.org/**', route => route.fulfill({ status: 200, json: { query: { pages: { 1: { index: 1, imageinfo: [{ thumburl: image, descriptionurl: source, extmetadata: { Artist: { value: '<b>Synthetic photographer</b>' }, LicenseShortName: { value: 'CC BY-SA 4.0' } } }] } } } } }))
-  await context.route('https://upload.wikimedia.org/**', route => route.fulfill({ path: 'src/assets/landing/mountains.jpg', contentType: 'image/jpeg' }))
+  const image = 'https://thumb.wikimedia.org/wikipedia/commons/test/GoTogether_test.jpg'
+  const rejected = []
+  await context.route('https://commons.wikimedia.org/**', route => {
+    const query = new URL(route.request().url()).searchParams.get('gsrsearch').split(' filetype:')[0]
+    const result = (index, suffix, description) => ({ index, title: `File:${query} ${description}.jpg`, imageinfo: [{ thumburl: image.replace('GoTogether_test', suffix), descriptionurl: source, mime: 'image/jpeg', mediatype: 'BITMAP', width: 1200, height: 800, extmetadata: { ImageDescription: { value: `${query} ${description}` }, Artist: { value: '<b>Synthetic photographer</b>' }, LicenseShortName: { value: 'CC BY-SA 4.0' } } }] })
+    return route.fulfill({ status: 200, json: { query: { pages: { 1: result(1, 'newspaper', 'newspaper scan'), 2: result(2, 'broken', 'photograph'), 3: result(3, 'GoTogether_test', 'photograph') } } } })
+  })
+  await context.route('https://thumb.wikimedia.org/**', route => {
+    if (route.request().url().includes('newspaper')) rejected.push(route.request().url())
+    return route.request().url().includes('broken') ? route.fulfill({ status: 404, body: 'Missing image' }) : route.fulfill({ path: 'src/assets/landing/kyoto.jpg', contentType: 'image/jpeg' })
+  })
   const page = await context.newPage()
   const errors = []
   page.on('pageerror', error => errors.push(error.message))
   await page.goto(`${base}/quests/${fixture.roomId}?tab=itinerary`)
+  await page.getByRole('navigation', { name: 'Plan your trip' }).getByRole('button', { name: 'Flights & stays', exact: true }).click()
   const bookingCards = page.getByRole('region', { name: 'Flights and stays' })
   await bookingCards.waitFor()
   for (const width of [1440, 390, 320]) {
     await page.setViewportSize({ width, height: 1000 })
     await bookingCards.scrollIntoViewIfNeeded()
-    await page.getByRole('link', { name: /Photo: Synthetic photographer/ }).first().waitFor()
+    await page.waitForFunction(() => document.querySelector('.trip-stay > img')?.src.includes('thumb.wikimedia.org'))
     assert.equal(await bookingCards.getByText(/UNVERIFIED/).count(), 0)
     assert.match(await bookingCards.innerText(), /AI planning estimates, not live quotes/)
     assert.match(await bookingCards.innerText(), /per room per night/)
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth + 1), false, `Generated cards fit ${width}px`)
     const small = await bookingCards.evaluate(root => [...root.querySelectorAll('*')].filter(element => element.checkVisibility() && element.textContent.trim() && !element.closest('svg')).filter(element => parseFloat(getComputedStyle(element).fontSize) < 12).map(element => element.className))
     assert.deepEqual(small, [], `Generated cards have readable text at ${width}px`)
-    assert.equal(await page.getByRole('link', { name: /Photo: Synthetic photographer/ }).first().getAttribute('href'), source)
+    assert.equal(await bookingCards.getByRole('link', { name: /Photo:|License|View 4K/ }).count(), 0)
     await page.screenshot({ path: `${out}/bookings-${width}.png` })
-    console.log(`PASS Generated flight/stay cards, photo attribution and readable layout at ${width}px`)
+    console.log(`PASS Generated flight/stay cards, photos and readable layout at ${width}px`)
   }
+  assert.deepEqual(rejected, [], 'Newspaper results must never load')
+  await page.locator('.trip-stay > img').evaluate(image => image.dispatchEvent(new Event('error')))
+  await page.waitForFunction(() => !document.querySelector('.trip-stay .travel-photo-credit'))
+  assert.equal(await page.locator('.trip-stay > img').evaluate(image => image.complete && image.naturalWidth > 0), true)
+  await page.getByRole('navigation', { name: 'Room sections' }).getByRole('button', { name: 'Compare options', exact: true }).click()
+  await page.getByRole('button', { name: /^AI planned/ }).click()
+  await page.getByText('No AI plans currently match this trip. Open Recommended to continue with the catalogue.', { exact: true }).waitFor()
+  await page.getByRole('button', { name: 'Recommended', exact: true }).click()
+  await page.getByRole('navigation', { name: 'Preview planning tools' }).getByRole('button', { name: 'Flights & stays' }).click()
+  const catalogueBookings = page.getByRole('region', { name: 'Flights and stays' })
+  assert.equal(await catalogueBookings.getByRole('link', { name: 'Check flights' }).getAttribute('href'), 'https://www.booking.com/flights/index.html')
+  assert.match(await catalogueBookings.getByRole('link', { name: 'Find places to stay' }).getAttribute('href'), /^https:\/\/www.booking.com\/searchresults.html/)
+  await page.route(`**/api/trip-rooms/${fixture.roomId}/journey`, async route => {
+    const response = await route.fetch()
+    const value = await response.json()
+    Object.assign(value.data, { allResults: [], results: [], generationStatus: 'unconfigured', generationPending: false })
+    await route.fulfill({ response, json: value })
+  })
+  await page.waitForURL('**?tab=options')
+  await page.reload()
+  await page.getByText('AI itinerary planning is currently unavailable', { exact: true }).waitFor()
+  console.log('PASS AI availability, empty results, catalogue booking links, and image failure recovery')
+  await page.getByRole('link', { name: 'Photo credits', exact: true }).click()
+  await page.getByRole('heading', { name: 'Photo credits', exact: true }).waitFor()
+  assert.equal(await page.locator(`a[href="${source}"]`).count(), 1, 'Remote photo attribution is available on the credits page')
   assert.deepEqual(errors, [])
-  await writeFile(`${out}/result.json`, JSON.stringify({ checks: 3, errors }, null, 2))
+  await writeFile(`${out}/result.json`, JSON.stringify({ checks: 4, errors }, null, 2))
 } finally { await browser.close() }
