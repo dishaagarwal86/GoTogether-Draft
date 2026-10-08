@@ -22,6 +22,79 @@
 .use-inspiration:hover, .no-results button:hover { background: #e84a28; }
 @media (prefers-reduced-motion: reduce) { .explore-hero > img, .explore-orb, .itinerary-drawer, .explore-toast { animation: none; }.explore-card, .explore-card-image img { transition: none; } }
 
+/* Route-level theme layer. Explore is lazy-loaded after the global stylesheet, so
+   its legacy olive rules must be reset here rather than leaking into Saved Places. */
+.journey-shell .explore-page { color: #10263b; background: #fff; }
+.journey-shell .journey-heading h1,
+.journey-shell .explore-results-heading h2 { color: #10263b; }
+.journey-shell .journey-heading h1 em { color: #ff5a36; }
+.journey-shell .journey-heading > div > p:not(.eyebrow),
+.journey-shell .saved-collection-note,
+.journey-shell .explore-results-heading > p { color: #5f6e76; font-size: 15px; line-height: 1.55; }
+.journey-shell .explore-results-heading .eyebrow,
+.journey-shell .journey-heading .eyebrow { color: #8a6431; }
+
+.journey-shell .explore-filter-wrap { margin: 24px 0 34px; }
+.journey-shell .explore-filters {
+  border: 1px solid #d9cfed;
+  border-radius: 10px;
+  background: #f7f3ff;
+  box-shadow: none;
+  padding: 13px 16px;
+}
+.journey-shell .filter-title { color: #3e2f61; font-size: 14px; }
+.journey-shell .filter-title b { color: #ff5a36; font-size: 12px; }
+.journey-shell .filter-trigger {
+  min-height: 42px;
+  border-color: #d9cfed;
+  border-radius: 7px;
+  background: #fff;
+  color: #10263b;
+  font-size: 14px;
+}
+.journey-shell .filter-trigger span { color: #65508f; font-size: 12px; }
+.journey-shell .filter-trigger:hover,
+.journey-shell .filter-trigger.is-open { border-color: #12ace5; background: #f3fcfd; }
+.journey-shell .filter-options { border-color: #d9cfed; border-radius: 8px; background: #fff; box-shadow: 0 12px 28px rgba(62, 47, 97, .14); }
+.journey-shell .filter-options button { color: #10263b; font-size: 14px; }
+.journey-shell .filter-options button:hover,
+.journey-shell .filter-options button.is-active { background: #fff8d9; color: #5d4814; }
+.journey-shell .reset-filters { color: #65508f; font-size: 14px; font-weight: 700; }
+.journey-shell .reset-filters:not(:disabled):hover { color: #ff5a36; }
+
+.journey-shell .explore-grid { gap: 24px; }
+.journey-shell .explore-card { border-color: #d9cfed; border-radius: 10px; background: #fff; color: #10263b; box-shadow: 0 8px 22px rgba(62, 47, 97, .07); }
+.journey-shell .explore-card:hover { box-shadow: 0 14px 30px rgba(62, 47, 97, .14); }
+.journey-shell .explore-card-label { background: #f7f3ff; color: #3e2f61; }
+.journey-shell .explore-meta { color: #5f6e76; font-size: 13px; }
+.journey-shell .explore-meta span + span:before { color: #ff5a36; }
+.journey-shell .explore-card-copy h2 { color: #10263b; }
+.journey-shell .explore-card-copy > p { color: #5f6e76; font-size: 15px; line-height: 1.55; }
+.journey-shell .explore-tags span { border-color: #f0df9c; background: #fff8d9; color: #66521e; font-size: 12px; }
+.journey-shell .explore-save { background: rgba(255,255,255,.95); color: #3e2f61; }
+.journey-shell .explore-save.is-saved { color: #ff5a36; }
+.journey-shell .view-itinerary { border-top: 1px solid #e5dcf2; color: #ff5a36; font-size: 14px; font-weight: 700; padding-top: 14px; }
+.journey-shell .view-itinerary:hover { color: #d94528; }
+.journey-shell .why-fit { background: #f3fcfd; color: #315b68; }
+.journey-shell .why-fit b { color: #10263b; }
+
+.journey-shell .itinerary-drawer,
+.journey-shell .journey-dialog { background: #fff; color: #10263b; border-color: #d9cfed; }
+.journey-shell .drawer-content h2 { color: #10263b; }
+.journey-shell .drawer-kicker,
+.journey-shell .drawer-section-label,
+.journey-shell .day-plan span { color: #65508f; }
+.journey-shell .drawer-why { background: #f3fcfd; color: #315b68; }
+.journey-shell .drawer-why p { color: #65508f; }
+.journey-shell .drawer-close { color: #3e2f61; }
+.journey-shell .day-plan { border-left-color: #12ace5; }
+.journey-shell .day-plan p { color: #5f6e76; }
+.journey-shell .use-inspiration,
+.journey-shell .no-results button { background: #ff5a36; color: #fff; }
+.journey-shell .explore-toast { border-color: #d9cfed; background: #3e2f61; color: #fff; }
+.journey-shell .no-results { border-color: #d9cfed; background: #f7f3ff; color: #10263b; }
+.journey-shell .no-results p { color: #5f6e76; }
+
 /* Internal-route canvas is intentionally light, so content outside the dark hero uses ink. */
 .explore-page { color: var(--ink); }
 .explore-results-heading h2 { color: #fff8ef; }
