@@ -1,5 +1,4 @@
 import { randomUUID } from 'node:crypto'
-import OpenAI from 'openai'
 import { insertRow, selectRows, updateRows, upsertRow } from '../storage.js'
 import { createQuestMessage } from './chatService.js'
 
@@ -10,24 +9,14 @@ const noteColumns = ['id', 'type', 'suggestion', 'proposed_action', 'confidence'
 const canonicalSignals: Array<{ type: QuestNoteType; pattern: RegExp; suggestion: string; proposedAction: string }> = [
   { type: 'activity', pattern: /\b(cooking class|cookery class)\b/i, suggestion: 'Make room for a cooking class.', proposedAction: 'Add cooking class as a shared nice-to-have' },
   { type: 'activity', pattern: /\b(food markets?|market breakfast)\b/i, suggestion: 'Include food markets in the plan.', proposedAction: 'Add food markets as a shared nice-to-have' },
+  { type: 'activity', pattern: /\b(sunset walks?|walking tours?|guided walks?)\b/i, suggestion: 'Make room for a sunset walk.', proposedAction: 'Add a sunset walk as a shared nice-to-have' },
+  { type: 'activity', pattern: /\b(food tours?|street food tours?)\b/i, suggestion: 'Include a food tour in the plan.', proposedAction: 'Add a food tour as a shared nice-to-have' },
+  { type: 'activity', pattern: /\b(hiking|hikes?|trekking|treks?)\b/i, suggestion: 'Make room for a hike or trek.', proposedAction: 'Add hiking as a shared nice-to-have' },
   { type: 'mood', pattern: /\b(peaceful|quiet|relaxing|slow days?)\b/i, suggestion: 'Keep the pace peaceful and unhurried.', proposedAction: 'Add slow travel as a shared mood' },
   { type: 'budget', pattern: /\b(under|below|less than)\s*(₹|rs\.?|inr)?\s*\d[\d,]*/i, suggestion: 'Keep the plan within the budget mentioned in chat.', proposedAction: 'Use this as a shared budget guide' },
   { type: 'accommodation', pattern: /\b(apartment|home rental|airbnb)\b/i, suggestion: 'Consider an apartment stay.', proposedAction: 'Add apartment stay as a shared preference' },
-  { type: 'no_go', pattern: /\b(early mornings?|nightlife every night|long drives?|crowded places?)\b/i, suggestion: 'Protect this boundary in the plan.', proposedAction: 'Add this as a shared no-go' },
+  { type: 'no_go', pattern: /\b(?:avoid|skip|cannot|can'?t|do not want|don'?t want|no)\s+(?:very\s+)?(?:early mornings?|nightlife every night|long drives?|crowded places?)\b/i, suggestion: 'Protect this boundary in the plan.', proposedAction: 'Add this as a shared no-go' },
 ]
-async function aiConfirmedTypes(messages: Message[]): Promise<Set<QuestNoteType> | undefined> {
-  const provider = process.env.AI_PROVIDER === 'ollama' || process.env.OLLAMA_API_KEY ? 'ollama' : process.env.OPENAI_API_KEY ? 'openai' : undefined
-  const apiKey = provider === 'ollama' ? process.env.OLLAMA_API_KEY : process.env.OPENAI_API_KEY
-  if (!provider || !apiKey) return undefined
-  const client = new OpenAI({ apiKey, ...(provider === 'ollama' ? { baseURL: process.env.OLLAMA_BASE_URL ?? 'https://ollama.com/v1' } : {}) })
-  const prompt = `You extract only explicit, actionable group-travel signals from recent opt-in chat messages. Never infer health, identity, relationships, or private form answers. Return JSON only: {"signals":[{"type":"activity|mood|budget|accommodation|no_go","messageIds":["..."]}]}. A signal must be clearly written in the listed messages. Do not add a type if no message supports it.\nMessages: ${JSON.stringify(messages.map((message) => ({ id: message.id, senderId: message.sender_id, body: message.body })))} `
-  try {
-    const result = await client.responses.create({ model: provider === 'ollama' ? (process.env.OLLAMA_MODEL ?? 'gpt-oss:20b') : (process.env.OPENAI_MODEL ?? 'gpt-5-mini'), input: prompt })
-    const parsed = JSON.parse(result.output_text.replace(/^```json\s*|```$/g, '').trim()) as { signals?: Array<{ type?: string; messageIds?: string[] }> }
-    const ids = new Set(messages.map((message) => message.id))
-    return new Set((parsed.signals ?? []).filter((signal): signal is { type: QuestNoteType; messageIds: string[] } => Boolean(signal.type && ['activity', 'mood', 'budget', 'accommodation', 'no_go'].includes(signal.type) && signal.messageIds?.every((id) => ids.has(id)))).map((signal) => signal.type))
-  } catch { return undefined }
-}
 
 async function assertMember(roomId: string, userId: string) {
   const [membership] = await selectRows('trip_room_people', ['id'], [{ column: 'trip_room_id', operator: 'eq', value: roomId }, { column: 'user_id', operator: 'eq', value: userId }, { column: 'invite_status', operator: 'eq', value: 'accepted' }])
@@ -55,23 +44,22 @@ export async function analyseQuestNotes(roomId: string, userId: string) {
   const candidates = canonicalSignals.map((signal) => {
     const matches = messages.filter((message) => signal.pattern.test(message.body))
     const memberIds = [...new Set(matches.map((message) => message.sender_id))]
-    return { signal, matches, memberIds }
+    // An explicit affirmation from another member counts as support for the
+    // immediately discussed idea. It never creates a suggestion by itself.
+    const affirmativeIds = [...new Set(messages.filter((message) => !memberIds.includes(message.sender_id) && /\b(yes|yeah|yep|agree|sounds good|let'?s do it|count me in|works for me)\b/i.test(message.body)).map((message) => message.sender_id))]
+    return { signal, matches, memberIds, supporterIds: [...new Set([...memberIds, ...affirmativeIds])] }
   }).filter((candidate) => candidate.matches.length)
-  const confirmedTypes = await aiConfirmedTypes(messages)
-  // A bare “yes” is not enough: it must name the same signal, and come from
-  // someone other than the original speaker.
+  // A Quest Note needs either two people naming the same explicit signal, or
+  // one clear signal plus an affirmative reply from a different member.
   const publicCandidate = candidates.find((candidate) => {
-    if (confirmedTypes && !confirmedTypes.has(candidate.signal.type)) return false
-    if (candidate.memberIds.length >= 2) return true
-    const original = candidate.memberIds[0]
-    return messages.some((message) => message.sender_id !== original && /\b(yes|agree|sounds good|let's do it)\b/i.test(message.body) && candidate.signal.pattern.test(message.body))
+    return candidate.supporterIds.length >= 2
   })
   if (publicCandidate) {
-    const { signal, matches, memberIds } = publicCandidate
+    const { signal, matches, supporterIds } = publicCandidate
     const existing = await selectRows<Record<string, unknown>>('quest_notes', noteColumns, [{ column: 'trip_room_id', operator: 'eq', value: roomId }, { column: 'status', operator: 'eq', value: 'suggested' }], { orderBy: 'created_at', ascending: false, limit: 10 })
     const duplicate = existing.map(mapNote).find((note) => note.type === signal.type && note.suggestion === signal.suggestion)
     if (duplicate) return { note: duplicate, privateSuggestion: null }
-    const note = await insertRow<Record<string, unknown>>('quest_notes', { id: `quest_note_${randomUUID()}`, trip_room_id: roomId, created_by: userId, type: signal.type, suggestion: signal.suggestion, proposed_action: signal.proposedAction, confidence: Math.min(.95, .6 + memberIds.length * .12), mentioned_by: memberIds, message_ids: matches.map((message) => message.id), group_support_count: memberIds.length, requires_group_confirmation: true }, noteColumns)
+    const note = await insertRow<Record<string, unknown>>('quest_notes', { id: `quest_note_${randomUUID()}`, trip_room_id: roomId, created_by: userId, type: signal.type, suggestion: signal.suggestion, proposed_action: signal.proposedAction, confidence: Math.min(.95, .6 + supporterIds.length * .12), mentioned_by: supporterIds, message_ids: matches.map((message) => message.id), group_support_count: supporterIds.length, requires_group_confirmation: true }, noteColumns)
     return { note: mapNote(note), privateSuggestion: null }
   }
   const privateCandidate = candidates.find((candidate) => candidate.memberIds.length === 1 && candidate.memberIds[0] === userId)

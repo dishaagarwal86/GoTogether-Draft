@@ -1,9 +1,10 @@
 import { useEffect, useId, useState } from 'react'
 import { applyCompanionSuggestion, askCompanion, companionHistory, sourceLabel, type CompanionReply } from '../services/companionApi'
+import { Icon } from './Ui'
 
 const fieldNames: Record<string, string> = { moods: 'Travel interests', budget: 'Budget', pace: 'Pace', mustHave: 'Must-do', noGo: 'Things to skip', daysCount: 'Trip length (days)' }
 
-export function CompanionPanel({ roomId, mode = 'extract', context }: { roomId: string; mode?: 'extract' | 'chat'; context?: { label: string; detail: string } | null }) {
+export function CompanionPanel({ roomId, mode = 'extract', context, onAddToItinerary }: { roomId: string; mode?: 'extract' | 'chat'; context?: { label: string; detail: string } | null; onAddToItinerary?: (suggestion: string) => Promise<boolean> }) {
   const inputId = useId()
   const [message, setMessage] = useState('')
   const [history, setHistory] = useState<CompanionReply[]>([])
@@ -14,6 +15,8 @@ export function CompanionPanel({ roomId, mode = 'extract', context }: { roomId: 
   const [error, setError] = useState('')
   const [revision, setRevision] = useState(0)
   const [historyLoading, setHistoryLoading] = useState(true)
+  const [addingId, setAddingId] = useState('')
+  const [addedIds, setAddedIds] = useState<string[]>([])
   useEffect(() => {
     let active = true
     companionHistory(mode, roomId).then(items => { if (active) { setHistory(items.reverse()); setError('') } }).catch(() => { if (active) setError('Saved Companion notes could not be loaded. Try loading them again.') }).finally(() => { if (active) setHistoryLoading(false) })
@@ -37,11 +40,20 @@ export function CompanionPanel({ roomId, mode = 'extract', context }: { roomId: 
       setHistory(items => items.map(item => item.id === latest.id ? { ...item, applied: true, appliedFields: selected } : item))
     } catch (error) { setError(error instanceof Error ? error.message : 'Please try again.') } finally { setApplying(false) }
   }
+  const addToItinerary = async (reply: CompanionReply) => {
+    if (!onAddToItinerary || addingId) return
+    setAddingId(reply.id); setError('')
+    try {
+      const saved = await onAddToItinerary(reply.summary)
+      if (saved) setAddedIds(items => [...items, reply.id])
+    } catch (reason) { setError(reason instanceof Error ? reason.message : 'That suggestion could not be added. Please try again.') }
+    finally { setAddingId('') }
+  }
   return <aside className="companion-panel" aria-label={mode === 'chat' ? 'Private Companion' : 'Preference Companion'}>
     <span className="companion-orb" aria-hidden="true">✦</span><p className="section-kicker">GoTogether Companion · Just for you</p>
     <h2>{mode === 'chat' ? 'A little help finding your way.' : 'Turn your notes into a starting point.'}</h2>
     <p>{mode === 'chat' ? 'Explore ideas with your private planning companion. Your saved preferences and itinerary options guide the conversation.' : 'Paste your travel notes, then review the suggestions. Apply only the fields you want to change in your own preferences.'}</p>
-    {history.length > 0 && <div className="companion-history" role="log" aria-label="Saved Companion conversation">{history.slice(mode === 'chat' ? -10 : -1).map(item => <article key={item.id}>{item.message && <p className="companion-user-note"><strong>You</strong><br />{item.message}</p>}<small>{sourceLabel(item.source)}</small><p className="companion-reply">{item.summary}</p>{item.notice && <p className="companion-notice">{item.notice}</p>}</article>)}</div>}
+    {history.length > 0 && <div className="companion-history" role="log" aria-label="Saved Companion conversation">{history.slice(mode === 'chat' ? -10 : -1).map(item => <article key={item.id}>{item.message && <p className="companion-user-note"><strong>You</strong><br />{item.message}</p>}<small>{sourceLabel(item.source)}</small><p className="companion-reply">{item.summary}</p>{mode === 'chat' && onAddToItinerary && <button type="button" className="companion-add-to-plan" disabled={Boolean(addingId) || addedIds.includes(item.id)} onClick={() => void addToItinerary(item)}>{addedIds.includes(item.id) ? 'Added to itinerary' : addingId === item.id ? 'Adding…' : 'Add to itinerary'} {!addedIds.includes(item.id) && <Icon name="plus" size={15} />}</button>}{item.notice && <p className="companion-notice">{item.notice}</p>}</article>)}</div>}
     {mode === 'extract' && latest?.extracted && Object.keys(latest.extracted).length > 0 && <fieldset className="companion-suggestions"><legend>Review changes to your preferences</legend>{Object.entries(latest.extracted).map(([field, value]) => <label key={field}><input type="checkbox" checked={(latest.applied ? latest.appliedFields ?? [] : selected).includes(field)} disabled={applying || latest.applied} onChange={event => setSelected(values => event.target.checked ? [...values, field] : values.filter(value => value !== field))} /><span><strong>{fieldNames[field]}</strong>{Array.isArray(value) ? value.join(' · ') : String(value)}</span></label>)}<button className="secondary-button" type="button" disabled={applying || latest.applied || !selected.length} onClick={apply}>{latest.applied ? 'Preferences applied' : applying ? 'Applying…' : 'Apply selected preferences'}</button>{latest.applied && <p role="status">Your preferences are saved. Your quest’s travel ideas have been refreshed.</p>}</fieldset>}
     {context && <p className="canvas-context"><strong>{context.label}</strong><br />{context.detail}</p>}
     <label htmlFor={inputId}>{mode === 'chat' ? 'Ask your Companion' : 'Your travel notes'}</label>

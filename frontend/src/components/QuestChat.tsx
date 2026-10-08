@@ -48,6 +48,13 @@ export function QuestChat({ draft, onDraftChange, roomId, open, onClose, focusRe
   useEffect(() => { onUnreadChange(unread) }, [unread, onUnreadChange])
   useEffect(() => { let active = true; getQuestNotes(roomId).then((state) => { if (active) { setNotesEnabled(state.enabled); setNotes(state.notes) } }).catch(() => { if (active) setNotesError('Quest Notes are unavailable until the latest database migration is applied.') }); return () => { active = false } }, [roomId])
   useEffect(() => {
+    if (!notesEnabled) return
+    let active = true
+    const refreshNotes = () => { getQuestNotes(roomId).then((state) => { if (active) setNotes(state.notes) }).catch(() => { /* Keep the current suggestions visible. */ }) }
+    const timer = window.setInterval(refreshNotes, 5000)
+    return () => { active = false; window.clearInterval(timer) }
+  }, [roomId, notesEnabled])
+  useEffect(() => {
     if (embedded || !compact || !open) { dialog.current?.close(); return }
     const previous = document.activeElement as HTMLElement | null
     const overflow = document.body.style.overflow
@@ -127,17 +134,22 @@ export function QuestChat({ draft, onDraftChange, roomId, open, onClose, focusRe
     } catch { setSendError('That message didn’t send. Your draft is safe here; try sending it again.') }
     finally { setSending(false); composer.current?.focus({ preventScroll: true }) }
   }
+  const analyseNotes = async () => {
+    const result = await analyseQuestNotes(roomId)
+    if (result.note) setNotes((current) => current.some((note) => note.id === result.note!.id) ? current : [result.note!, ...current])
+    if (result.privateSuggestion) setPrivateNote(result.privateSuggestion)
+  }
   const toggleNotes = async () => {
     if (notesBusy) return
     setNotesBusy(true); setNotesError('')
-    try { const result = await setQuestNotesEnabled(roomId, !notesEnabled); setNotesEnabled(result.enabled); if (result.enabled) await findNotes() }
+    try { const result = await setQuestNotesEnabled(roomId, !notesEnabled); setNotesEnabled(result.enabled); if (result.enabled) await analyseNotes() }
     catch (error) { setNotesError(error instanceof Error ? error.message : 'Quest Notes could not be updated.') }
     finally { setNotesBusy(false) }
   }
   const findNotes = async () => {
     if (notesBusy) return
     setNotesBusy(true); setNotesError('')
-    try { const result = await analyseQuestNotes(roomId); if (result.note) setNotes((current) => current.some((note) => note.id === result.note!.id) ? current : [result.note!, ...current]); if (result.privateSuggestion) setPrivateNote(result.privateSuggestion) }
+    try { await analyseNotes() }
     catch (error) { setNotesError(error instanceof Error ? error.message : 'Quest Notes could not find a clear shared signal yet.') }
     finally { setNotesBusy(false) }
   }
