@@ -4,9 +4,10 @@ import { assertQuestMember, HttpError } from './access.js'
 import { agreedStartingPoint } from './questJourney.js'
 import { applyStartPreference, learningPrompt, questPersonalContext, questPlanningConstraints, signalFromEdit, travelRpc } from './travelMemory.js'
 
-export type PlanItem = { id: string; title: string; kind: 'experience' | 'food' | 'stay' | 'transport' | 'free'; time: string; duration: number; note: string; locked: boolean; imageQuery?: string }
+export type PlanItem = { id: string; title: string; kind: 'experience' | 'food' | 'stay' | 'transport' | 'free'; time: string; duration: number; note: string; locked: boolean; booked?: boolean; imageQuery?: string }
 export type PlanDay = { id: string; title: string; items: PlanItem[] }
-export type PlanDocument = { title: string; destination: string; country: string; catalogueId: string; preferenceVersion?: string; days: PlanDay[]; bookings?: ReturnType<typeof bookingsFor> }
+type BookedItems = { flights: string[]; stays: string[] }
+export type PlanDocument = { title: string; destination: string; country: string; catalogueId: string; preferenceVersion?: string; days: PlanDay[]; bookings?: ReturnType<typeof bookingsFor>; booked?: BookedItems }
 type Snapshot = { eventId?: string; label: string; document: PlanDocument }
 type RecordData = { document: PlanDocument; history: Snapshot[]; requests: string[] }
 type PlanRow = { id: string; revision: number; data: RecordData; updated_at: string }
@@ -72,6 +73,27 @@ export function applyPlanCommand(document: PlanDocument, command: Record<string,
     next.title = title
     return { document: next, label: 'Renamed the trip' }
   }
+  if (command.type === 'booking') {
+    const bookingType = String(command.bookingType)
+    const bookingId = text(command.bookingId, 200)
+    if (!bookingId || !['flight', 'stay', 'activity'].includes(bookingType) || typeof command.booked !== 'boolean') throw new HttpError(400, 'Choose a valid booking to update.')
+    if (bookingType === 'activity') {
+      const activity = next.days.flatMap(day => day.items).find(value => value.id === bookingId)
+      if (!activity) throw new HttpError(404, 'This activity is no longer in the itinerary.')
+      activity.booked = command.booked
+      return { document: next, label: `${command.booked ? 'Booked' : 'Marked unbooked'} ${activity.title}` }
+    }
+    const key = bookingType === 'flight' ? 'flights' : 'stays'
+    const available = bookingType === 'flight'
+      ? (next.bookings?.flights ?? []).some(value => flightKey(value) === bookingId)
+      : (next.bookings?.stays ?? []).some(value => stayKey(value) === bookingId)
+    if (!available) throw new HttpError(404, 'This booking option is no longer in the itinerary.')
+    const booked = next.booked ?? { flights: [], stays: [] }
+    const values = new Set(booked[key])
+    if (command.booked) values.add(bookingId); else values.delete(bookingId)
+    next.booked = { ...booked, [key]: [...values] }
+    return { document: next, label: command.booked ? `Added ${bookingType} to your booked itinerary` : `Removed ${bookingType} from your booked itinerary` }
+  }
   const targetDay = next.days.find(day => day.id === command.dayId)
   const sourceDay = next.days.find(day => day.items.some(item => item.id === command.itemId))
   const item = sourceDay?.items.find(item => item.id === command.itemId)
@@ -105,6 +127,15 @@ export function applyPlanCommand(document: PlanDocument, command: Record<string,
     return { document: next, label: `Updated ${item.title}` }
   }
   throw new HttpError(400, 'This change is not supported.')
+}
+
+function flightKey(value: unknown) {
+  const flight = value as { flightNumber?: unknown; airline?: unknown; fromCode?: unknown; toCode?: unknown; departDate?: unknown }
+  return [text(flight.flightNumber, 30), text(flight.airline, 80), text(flight.fromCode, 10), text(flight.toCode, 10), text(flight.departDate, 20)].join('|')
+}
+function stayKey(value: unknown) {
+  const stay = value as { name?: unknown; area?: unknown }
+  return [text(stay.name, 120), text(stay.area, 120)].join('|')
 }
 
 function validateItem(input: Record<string, unknown>): Omit<PlanItem, 'id' | 'locked'> {

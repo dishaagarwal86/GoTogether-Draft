@@ -26,6 +26,7 @@ const LandingConcept = lazy(() => import('../pages/LandingConcept').then(module 
 const DashboardPage = lazy(() => import('../pages/DashboardPage').then(module => ({ default: module.DashboardPage })))
 const WorkspacePreviewPage = lazy(() => import('../pages/WorkspacePreviewPage').then(module => ({ default: module.WorkspacePreviewPage })))
 const CrewPage = lazy(() => import('../pages/CrewPage').then(module => ({ default: module.CrewPage })))
+const MyItinerariesPage = lazy(() => import('../pages/MyItinerariesPage').then(module => ({ default: module.MyItinerariesPage })))
 
 export function AppShell() { return <AuthProvider><AppLayout /></AuthProvider> }
 function RequireAuth() {
@@ -46,7 +47,7 @@ function AppLayout() {
   const isAuth = ['/login', '/signup'].includes(location.pathname)
   useEffect(() => {
     if (!location.hash) window.scrollTo({ top: 0, behavior: 'instant' })
-    const titles: Record<string, string> = { '/dashboard': 'Your next chapter', '/login': 'Welcome back', '/signup': 'Join the journey', '/trips': 'My quests', '/explore': 'Find your somewhere', '/saved': 'Saved places', '/profile': 'Your profile', '/travel-style': 'Your travel story', '/travel-dna/new': 'Start a quest', '/travel-dna/preferences': 'Your travel style', '/travel-dna/group-dna': 'Travel DNA', '/travel-dna/plan-paths': 'Your possible paths' }
+    const titles: Record<string, string> = { '/dashboard': 'Your next chapter', '/login': 'Welcome back', '/signup': 'Join the journey', '/trips': 'My quests', '/itineraries': 'My itineraries', '/explore': 'Find your somewhere', '/saved': 'Saved places', '/profile': 'Your profile', '/travel-style': 'Your travel story', '/travel-dna/new': 'Start a quest', '/travel-dna/preferences': 'Your travel style', '/travel-dna/group-dna': 'Travel DNA', '/travel-dna/plan-paths': 'Your possible paths' }
     document.title = `${titles[location.pathname] ?? 'Good places. Better company.'} — Go.Together`
   }, [location.pathname, location.hash])
   return <div className={isLanding ? 'app-shell landing-shell gt-preview-shell' : `app-shell journey-shell${isAuth ? ' journey-auth-shell' : ''}`}>
@@ -61,7 +62,7 @@ function AppLayout() {
       <Route path="/workspace-preview" element={<WorkspacePreviewPage />} />
       <Route element={<RequireAuth />}>
         <Route path="/travel-style" element={<TravelStylePage />} /><Route path="/dashboard" element={<DashboardPage />} /><Route path="/profile" element={<ProfilePage />} /><Route path="/crew" element={<CrewPage />} />
-        <Route path="/trips" element={<PlanTripPage />} /><Route path="/plan" element={<Navigate to="/trips" replace />} />
+        <Route path="/trips" element={<PlanTripPage />} /><Route path="/itineraries" element={<MyItinerariesPage />} /><Route path="/plan" element={<Navigate to="/trips" replace />} />
         <Route path="/saved" element={<ExplorePage key={location.pathname + location.search} savedOnly />} /><Route path="/quests/:roomId" element={<QuestDetailPage key={location.pathname} />} />
         <Route path="/travel-dna/new" element={<CreateRoomPage key={location.search} />} /><Route path="/travel-dna/preferences" element={<LegacyPreferencesRedirect />} />
         <Route path="/travel-dna/overview" element={<RoomOverviewPage />} /><Route path="/travel-dna/group-dna" element={<GroupDnaPage />} />

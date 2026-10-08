@@ -25,17 +25,20 @@ function money(amount: number, currency = 'USD') {
 }
 const shortDate = (value: string) => value ? new Date(`${value}T00:00:00`).toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' }) : ''
 
-function FlightCard({ flight, currency, travellers }: { flight: TripFlight; currency: string; travellers: number }) {
+export const flightBookingKey = (flight: TripFlight) => [flight.flightNumber, flight.airline, flight.fromCode, flight.toCode, flight.departDate].join('|')
+export const stayBookingKey = (stay: TripStay) => [stay.name, stay.area].join('|')
+
+function FlightCard({ flight, currency, travellers, booked, disabled, onBook }: { flight: TripFlight; currency: string; travellers: number; booked: boolean; disabled: boolean; onBook?: (booked: boolean) => void }) {
   const search = new URLSearchParams({ q: `Flights from ${flight.from} to ${flight.to} ${flight.departDate} return ${flight.returnDate} ${travellers} travellers` })
   return <article className="trip-flight">
     <header><span className="trip-flight-airline"><Icon name="plane" size={18} />Route to explore</span></header>
     <div className="trip-flight-leg"><div><strong>{flight.fromCode || flight.from}</strong><small>{flight.from}</small></div><div className="trip-flight-line"><small>Compare routes</small><i /></div><div><strong>{flight.toCode || flight.to}</strong><small>{flight.to}</small></div></div>
     {flight.departDate && <dl className="trip-flight-dates"><div><dt>Depart</dt><dd>{shortDate(flight.departDate)}</dd></div><div><dt>Return</dt><dd>{shortDate(flight.returnDate)}</dd></div></dl>}
-    <footer><div><strong>{money(flight.pricePerPerson, currency)}</strong><small>Estimated budget per person, round trip</small></div><a className="text-button" href={`https://www.google.com/travel/flights?${search}`} target="_blank" rel="noreferrer">Check flights <Icon size={15} /></a></footer>
+    <footer><div><strong>{money(flight.pricePerPerson, currency)}</strong><small>Estimated budget per person, round trip</small></div><div className="trip-booking-actions"><a className="text-button" href={`https://www.google.com/travel/flights?${search}`} target="_blank" rel="noreferrer">Check flights <Icon size={15} /></a>{onBook && <button type="button" className={booked ? 'booking-confirmed' : 'booking-mark'} disabled={disabled} onClick={() => onBook(!booked)}>{booked ? 'Booked ✓' : 'I booked this'}</button>}</div></footer>
   </article>
 }
 
-function StayCard({ stay, trip, currency, travellers }: { stay: TripStay; trip: BookingTrip; currency: string; travellers: number }) {
+function StayCard({ stay, trip, currency, travellers, booked, disabled, onBook }: { stay: TripStay; trip: BookingTrip; currency: string; travellers: number; booked: boolean; disabled: boolean; onBook?: (booked: boolean) => void }) {
   const { src, ref, credit } = useActivityPhoto([stay.imageQuery, `${stay.name} ${trip.destination}`, stay.area && `${stay.area} ${trip.destination}`, `${trip.destination} hotel`], recommendationPhoto(trip))
   const search = new URLSearchParams({ ss: `${stay.name}, ${trip.destination}`, group_adults: String(travellers), ...(trip.travel_dates?.start ? { checkin: trip.travel_dates.start, checkout: trip.travel_dates.end } : {}) })
   return <article className="trip-stay">
@@ -47,19 +50,19 @@ function StayCard({ stay, trip, currency, travellers }: { stay: TripStay; trip: 
     </div>
     <div className="trip-stay-side">
       <div className="trip-stay-price"><small>{stay.nights} night{stay.nights === 1 ? '' : 's'} · estimated room cost</small><strong>{money(stay.totalPrice, currency)}</strong><small>{money(stay.pricePerNight, currency)} per room per night</small></div>
-      <a className="secondary-button" href={`https://www.booking.com/searchresults.html?${search}`} target="_blank" rel="noreferrer">See availability</a>
+      <a className="secondary-button" href={`https://www.booking.com/searchresults.html?${search}`} target="_blank" rel="noreferrer">See availability</a>{onBook && <button type="button" className={booked ? 'booking-confirmed' : 'booking-mark'} disabled={disabled} onClick={() => onBook(!booked)}>{booked ? 'Booked ✓' : 'I booked this'}</button>}
     </div>
   </article>
 }
 
-export function TravelPlanningOptions({ trip, travelDna }: { trip: BookingTrip; travelDna?: QuestDna | null }) {
+export function TravelPlanningOptions({ trip, travelDna, booked = { flights: [], stays: [] }, disabled = false, onBookingChange }: { trip: BookingTrip; travelDna?: QuestDna | null; booked?: { flights: string[]; stays: string[] }; disabled?: boolean; onBookingChange?: (type: 'flight' | 'stay', id: string, booked: boolean) => void }) {
   const departureCities = travelDna?.departureCities ?? []
   const travellers = Math.max(1, travelDna?.groupSize ?? 1)
   const currency = trip.currency ?? 'USD'
   if (trip.flights?.length || trip.stays?.length) return <section className="travel-planning-options trip-bookings" aria-label="Flights and stays">
     <div><p className="eyebrow">BUILD YOUR TRIP</p><h3>Flights & stays</h3><small>AI planning estimates, not live quotes. Check routes, property details, room capacity and availability before booking.</small></div>
-    {!!trip.flights?.length && <><h5 className="trip-bookings-heading">Flights</h5><div className="trip-flights">{trip.flights.map(flight => <FlightCard key={`${flight.fromCode}-${flight.airline}`} flight={flight} currency={currency} travellers={travellers} />)}</div></>}
-    {!!trip.stays?.length && <><h5 className="trip-bookings-heading">Places to stay</h5><div className="trip-stays">{trip.stays.map(stay => <StayCard key={stay.name} stay={stay} trip={trip} currency={currency} travellers={travellers} />)}</div></>}
+    {!!trip.flights?.length && <><h5 className="trip-bookings-heading">Flights</h5><div className="trip-flights">{trip.flights.map(flight => { const id = flightBookingKey(flight); return <FlightCard key={id} flight={flight} currency={currency} travellers={travellers} booked={booked.flights.includes(id)} disabled={disabled} onBook={onBookingChange ? next => onBookingChange('flight', id, next) : undefined} /> })}</div></>}
+    {!!trip.stays?.length && <><h5 className="trip-bookings-heading">Places to stay</h5><div className="trip-stays">{trip.stays.map(stay => { const id = stayBookingKey(stay); return <StayCard key={id} stay={stay} trip={trip} currency={currency} travellers={travellers} booked={booked.stays.includes(id)} disabled={disabled} onBook={onBookingChange ? next => onBookingChange('stay', id, next) : undefined} /> })}</div></>}
     {trip.estimated_cost_usd > 0 && <p className="trip-bookings-total">Estimated total: <strong>{money(trip.estimated_cost_usd, 'USD')}</strong> per person for the whole trip</p>}
   </section>
   return <section className="travel-planning-options" aria-label="Flights and stays">

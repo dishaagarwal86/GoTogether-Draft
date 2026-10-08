@@ -8,7 +8,12 @@ import type { PlanCommand, WorkingPlan } from '../services/workingPlanApi'
 type Context = { label: string; detail: string; dayId?: string }
 export function PlanningCompanion({ roomId, plan, dayId, context, readOnly, onChange }: { roomId: string; plan: WorkingPlan; dayId: string; context: Context | null; readOnly: boolean; onChange: (command: PlanCommand) => Promise<boolean> }) {
   const [tab, setTab] = useState<'chat' | 'edit'>('chat')
-  return <><div className="memory-companion-tabs"><button aria-pressed={tab === 'chat'} onClick={() => setTab('chat')}>Talk it through</button><button aria-pressed={tab === 'edit'} onClick={() => setTab('edit')}>Edit the plan <Icon name="spark" size={13} /></button></div><div hidden={tab !== 'chat'}><CompanionPanel roomId={roomId} mode="chat" context={context} /></div><div hidden={tab !== 'edit'}>{readOnly ? <p>Your host applies shared changes. Share your idea in Crew.</p> : <PlanSuggestions roomId={roomId} plan={plan} dayId={context?.dayId ?? dayId} onChange={onChange} />}</div></>
+  const addSuggestion = async (summary: string) => {
+    const firstSentence = summary.replace(/\s+/g, ' ').trim().split(/(?<=[.!?])\s/)[0] || 'Companion suggestion'
+    const title = firstSentence.replace(/^(?:consider|try|add)\s+/i, '').slice(0, 140)
+    return onChange({ type: 'add', dayId: context?.dayId ?? dayId, title, kind: 'experience', time: '15:00', duration: 90, note: `Suggested by Companion: ${summary.slice(0, 700)}` })
+  }
+  return <><div className="memory-companion-tabs"><button aria-pressed={tab === 'chat'} onClick={() => setTab('chat')}>Talk it through</button><button aria-pressed={tab === 'edit'} onClick={() => setTab('edit')}>Edit the plan <Icon name="spark" size={13} /></button></div><div hidden={tab !== 'chat'}><CompanionPanel roomId={roomId} mode="chat" context={context} onAddToItinerary={readOnly ? undefined : addSuggestion} /></div><div hidden={tab !== 'edit'}>{readOnly ? <p>Your host applies shared changes. Share your idea in Crew.</p> : <PlanSuggestions roomId={roomId} plan={plan} dayId={context?.dayId ?? dayId} onChange={onChange} />}</div></>
 }
 function PlanSuggestions({ roomId, plan, dayId, onChange }: { roomId: string; plan: WorkingPlan; dayId: string; onChange: (command: PlanCommand) => Promise<boolean> }) {
   const [instruction, setInstruction] = useState('')
