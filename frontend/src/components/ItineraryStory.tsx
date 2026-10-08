@@ -2,13 +2,15 @@ import { useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { createQuestPick, type QuestDna, type QuestRecommendation } from '../apis/quests'
 import { ItineraryInsights } from './ItineraryInsights'
-import { photoFallback, recommendationPhoto } from '../services/itineraryPresentation'
-import { PhotoCredit, useActivityPhoto } from '../services/activityPhotos'
+import { usePlacePhoto, useDestinationPhoto } from '../services/placePhotos'
+import { PlacePhotoCaption } from './PlacePhotoCaption'
 import { Icon } from './Ui'
 import { TravelPlanningOptions } from './TravelPlanningOptions'
+import { PlaceSourceNote } from './PlaceSourceNote'
+import type { PlaceSource } from '../services/placeSources'
 
 export type ChatContext = { label: string; detail: string }
-type Moment = { activity: string; detail: string; imageQuery: string }
+type Moment = { activity: string; detail: string; imageQuery: string; placeSource?: PlaceSource }
 type Slot = 'morning' | 'afternoon' | 'evening'
 type Day = { day?: string | number; title?: string; morning?: string; afternoon?: string; evening?: string; description?: string; moments?: Partial<Record<Slot, Moment>> }
 
@@ -30,17 +32,18 @@ function formatRange(start: string, end: string) {
   return end ? `${format(start)} – ${format(end)}` : format(start)
 }
 
-function MomentCard({ slot, label, icon, day, fallbackPhoto, destination }: { slot: Slot; label: string; icon: 'sun' | 'sunset' | 'moon'; day: Day; fallbackPhoto: string; destination: string }) {
+function MomentCard({ slot, label, icon, day, destination }: { slot: Slot; label: string; icon: 'sun' | 'sunset' | 'moon'; day: Day; destination: string }) {
   const moment = day.moments?.[slot]
-  const { src, ref, credit } = useActivityPhoto([moment?.imageQuery, moment?.activity && `${moment.activity} ${destination}`], fallbackPhoto)
+  const { src, srcSet, ref, onError, description, alt } = usePlacePhoto({ placeId: moment?.placeSource?.placeId, title: moment?.activity ?? '', destination, imageQuery: moment?.imageQuery })
   if (!moment?.activity) return day[slot] ? <div className={`itinerary-moment itinerary-moment-${slot}`}><span><Icon name={icon} size={20} /></span><div><h4>{label}</h4><p>{day[slot]}</p></div></div> : null
   return <div className={`itinerary-moment itinerary-moment-${slot} has-photo`}>
-    <img className="itinerary-moment-photo" src={src} ref={ref} alt="" loading="lazy" onError={photoFallback} />
-    <div className="itinerary-moment-body"><PhotoCredit credit={credit} /><h4><Icon name={icon} size={14} />{label}</h4><strong>{moment.activity}</strong>{moment.detail && <p>{moment.detail}</p>}</div>
+    <img className="itinerary-moment-photo" src={src} srcSet={srcSet} sizes="(max-width: 700px) 90vw, 640px" ref={ref} alt={alt} loading="lazy" decoding="async" onError={onError} />
+    <div className="itinerary-moment-body"><PlacePhotoCaption description={description} /><h4><Icon name={icon} size={14} />{label}</h4><strong>{moment.activity}</strong>{moment.detail && <p>{moment.detail}</p>}<PlaceSourceNote source={moment.placeSource} /></div>
   </div>
 }
 
 export function ItineraryStory({ trip, roomId, travelDna, onDiscuss }: { trip: QuestRecommendation; roomId: string; travelDna?: QuestDna | null; onDiscuss?: (context: ChatContext) => void }) {
+  const { src: cover, srcSet: coverSrcSet, ref: coverRef, onError: coverError } = useDestinationPhoto(trip.destination)
   const days = readDays(trip.daily_plan)
   const [picked, setPicked] = useState(false)
   const [pickError, setStoryError] = useState('')
@@ -57,7 +60,7 @@ export function ItineraryStory({ trip, roomId, travelDna, onDiscuss }: { trip: Q
   }
   return <section className="itinerary-story" aria-label={`${trip.destination} itinerary`}>
     <header className="itinerary-cover">
-      <img src={recommendationPhoto(trip)} alt={`${trip.destination} travel inspiration`} onError={photoFallback} />
+      <img src={cover} srcSet={coverSrcSet} sizes="100vw" ref={coverRef} alt={trip.destination} onError={coverError} />
       <div className="itinerary-cover-shade" />
       <span className="itinerary-postmark" aria-hidden="true"><Icon name="compass" size={27} /><span>GO · TOGETHER<br />A POSSIBLE CHAPTER</span></span>
       <div className="itinerary-cover-copy"><p className="eyebrow">{trip.country} / A SUGGESTED ITINERARY</p><h2>{trip.destination}<em>, together.</em></h2><p>{trip.title}</p></div>
@@ -69,7 +72,7 @@ export function ItineraryStory({ trip, roomId, travelDna, onDiscuss }: { trip: Q
       <div className="itinerary-timeline">{days.map((day, index) => <article className="itinerary-day" key={index} tabIndex={-1} ref={(node) => { dayRefs.current[index] = node }} aria-label={dayLabel(day, index)}>
         <div className="itinerary-day-heading"><div><span className="itinerary-day-number">{String(index + 1).padStart(2, '0')}</span><div><p className="eyebrow">{dayLabel(day, index)} · {trip.destination}</p><h3>{dayTitle(day, trip.destination)}</h3></div></div>{discussionAction({ label: `${dayLabel(day, index)} · ${trip.destination}`, detail: [day.title, day.morning, day.afternoon, day.evening, day.description].filter(Boolean).join(' · ') }, 'Discuss this day')}</div>
         {day.description && <p className="itinerary-day-description">{day.description}</p>}
-        <div className="itinerary-moments">{([{ key: 'morning', label: 'Morning', icon: 'sun' }, { key: 'afternoon', label: 'Afternoon', icon: 'sunset' }, { key: 'evening', label: 'Evening', icon: 'moon' }] as const).map(({ key, label, icon }) => <MomentCard key={key} slot={key} label={label} icon={icon} day={day} fallbackPhoto={recommendationPhoto(trip)} destination={trip.destination} />)}</div>
+        <div className="itinerary-moments">{([{ key: 'morning', label: 'Morning', icon: 'sun' }, { key: 'afternoon', label: 'Afternoon', icon: 'sunset' }, { key: 'evening', label: 'Evening', icon: 'moon' }] as const).map(({ key, label, icon }) => <MomentCard key={key} slot={key} label={label} icon={icon} day={day} destination={trip.destination} />)}</div>
       </article>)}</div>
     </> : <p className="itinerary-open-days">The day-by-day details are still open. Use this idea as the starting point for your conversation.</p>}
     <TravelPlanningOptions trip={trip} travelDna={travelDna} />

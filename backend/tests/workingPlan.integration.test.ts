@@ -27,7 +27,8 @@ test(`working itinerary contract (${process.env.DATABASE_PROVIDER})`, async t =>
     room = (await createRoom({ name: 'Working plan fixture', tripName: 'Kyoto', ownerId: owner.user.id, members: 1 })).id
     await create('preferences', 'pref_plan', { userId: owner.user.id, tripRoomId: room, budget: 'Flexible', daysCount: 4, moodPreferences: ['Food & Culture'], dates: { flexible: true }, pace: 'A balanced mix', submitted: true })
     const recommendations = await recommendForQuest(room)
-    const trip = recommendations.results[0]
+    const trip = recommendations.allResults.find(trip => trip.destination === 'Kyoto')!
+    assert.ok(trip)
     await respondToJourney(room, owner.user.id, { kind: 'option', optionId: trip.id, version: recommendations.preferenceVersion, reaction: 'works' })
     let plan: any
     const path = `/working-plans/${room}`
@@ -59,10 +60,26 @@ test(`working itinerary contract (${process.env.DATABASE_PROVIDER})`, async t =>
       assert.equal(plan.revision, 1); assert.equal(plan.destination, trip.destination)
       assert.deepEqual((await request(path, owner.token, { catalogueId: trip.id })).body.data, plan)
     })
+    await t.test('official places work without AI and retain their source after saving', async () => {
+      const publicPlaces = await request('/itineraries/places?destination=Kyoto&country=Japan')
+      assert.equal(publicPlaces.status, 200); assert.equal(publicPlaces.body.data.places.length, 5)
+      assert.equal((await request('/itineraries/places?destination=Kyoto&country=Brazil')).body.data.places.length, 0)
+      const ideas = await request(path + '/area-ideas?destination=Kyoto', owner.token)
+      assert.equal(ideas.status, 200); assert.equal(ideas.body.data.source, 'official_sources')
+      assert.equal(ideas.body.data.ideas.length, 5)
+      assert.equal((await request(path + '/area-ideas?destination=Barcelona', owner.token)).status, 400)
+      const idea = ideas.body.data.ideas.find((idea: any) => idea.title === 'Nishiki Market')
+      const added = await change({ type: 'add', dayId: plan.days[0].id, title: idea.title, kind: idea.kind, time: '12:00', duration: 60, note: idea.note, placeId: idea.placeSource.placeId, placeSource: { url: 'https://evil.invalid' } })
+      assert.equal(added.status, 200); plan = added.body.data
+      const saved = await request(path, owner.token)
+      assert.equal(saved.body.data.days[0].items.at(-1).placeSource.url, 'https://www.kyoto-nishiki.or.jp/en/')
+      // Restore the initial fixture before the concurrency tests below.
+      const restored = await change({ type: 'undo' }); assert.equal(restored.status, 200); plan = restored.body.data
+    })
     await t.test('members can read but only the host can edit', async () => {
       await upsertRow('trip_room_people', { trip_room_id: room, user_id: member.user.id, invite_status: 'accepted', role: 'member' }, ['trip_room_id', 'user_id'])
       assert.equal((await request(path, member.token)).status, 200)
-      assert.equal((await request(path + '/changes', member.token, { type: 'rename', title: 'Hijacked', expectedRevision: 1, requestId: randomUUID() })).status, 403)
+      assert.equal((await request(path + '/changes', member.token, { type: 'rename', title: 'Hijacked', expectedRevision: plan.revision, requestId: randomUUID() })).status, 403)
     })
     await t.test('activity confirmations survive concurrent cards but expire after an edit', async () => {
       const initial = await request(path + '/confirmations', member.token)

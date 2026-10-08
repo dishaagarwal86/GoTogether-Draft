@@ -50,7 +50,7 @@ export async function checkInvitations(page, { base, roomId, password, out, chec
     await guestPage.getByRole('region', { name: 'Your trip preferences' }).waitFor()
     await guestPage.getByRole('navigation', { name: 'Room sections' }).getByRole('button', { name: 'Crew chat', exact: true }).click()
     await guestPage.getByText('Let’s leave room for one long lunch.', { exact: true }).waitFor()
-    await guestPage.getByLabel('Message your crew').fill('Glad to join this shared adventure!')
+    await guestPage.getByRole('textbox', { name: 'Message your crew', exact: true }).fill('Glad to join this shared adventure!')
     await guestPage.getByRole('button', { name: 'Send', exact: true }).click()
     await guestPage.getByText('Glad to join this shared adventure!', { exact: true }).waitFor()
     await guestPage.reload()

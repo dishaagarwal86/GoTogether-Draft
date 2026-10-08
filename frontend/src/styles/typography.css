@@ -9,6 +9,7 @@
   line-height: 1.5;
 }
 .journey-shell :is(.eyebrow, .section-kicker, .canvas-kicker) {
+  font-size: var(--text-caption);
   letter-spacing: .1em;
 }
 .journey-shell :is(.crew-message p, .canvas-activity-note, .group-preview-day article p) {

@@ -25,8 +25,10 @@ test(`generated itinerary integration (${process.env.DATABASE_PROVIDER})`, async
     assert.ok(this._client.timeout <= 45_000)
     assert.ok(options.signal instanceof AbortSignal)
     assert.equal(request.input[1].role, 'user')
+    assert.match(request.input[1].content, /REFERENCE PLACES:/)
+    assert.match(request.input[1].content, /kyoto-kiyomizu-dera/)
     await barrier
-    return { output_text: JSON.stringify({ destination: 'Osaka', country: 'Japan', currency: 'USD', title: 'Markets and museums', location_type: 'City', budget: 'Moderate', estimated_total_per_person: 800, moods: ['Food & Culture'], seasons: ['Autumn'], travel_dates: { start: '2026-11-05', end: '2026-11-08' }, days: Array.from({ length: 4 }, () => ({ morning: { activity: 'Market breakfast' }, afternoon: { activity: 'History museum' }, evening: { activity: 'A neighbourhood dinner' } })), stays: [{ name: 'Namba guesthouse idea', price_per_night: 100 }] }) }
+    return { output_text: JSON.stringify({ destination: 'Kyoto', country: 'Japan', currency: 'USD', title: 'Markets and museums', location_type: 'City', budget: 'Moderate', estimated_total_per_person: 800, moods: ['Food & Culture'], seasons: ['Autumn'], travel_dates: { start: '2026-11-05', end: '2026-11-08' }, days: Array.from({ length: 4 }, () => ({ morning: { activity: 'Market breakfast' }, afternoon: { activity: 'Kiyomizu-dera Temple', place_id: 'kyoto-kiyomizu-dera' }, evening: { activity: 'A neighbourhood dinner' } })), stays: [{ name: 'Hyatt Regency Kyoto', place_id: 'kyoto-hyatt-regency', price_per_night: 100 }] }) }
   })
   try {
     process.env.AI_PROVIDER = 'openai'; process.env.OPENAI_API_KEY = 'synthetic-key'
@@ -38,12 +40,14 @@ test(`generated itinerary integration (${process.env.DATABASE_PROVIDER})`, async
     await t.test('incomplete groups do not trigger AI or expose single-person recommendations', async () => {
       const result = await recommendForQuest(room)
       assert.equal(result.ready, false); assert.equal(calls, 0); assert.deepEqual(result.allResults, [])
+      assert.equal(result.generationStatus, 'waiting')
     })
     await upsertRow('trip_room_people', { trip_room_id: room, user_id: member.user.id, role: 'member', invite_status: 'accepted' }, ['trip_room_id', 'user_id'])
     await create('preferences', 'ai_pref', { ...preferences, userId: member.user.id, tripRoomId: room })
     await t.test('room reads return while generation is pending and deduplicate requests', async () => {
       const result = await Promise.race([recommendForQuest(room), new Promise<never>((_, reject) => { const timer = setTimeout(() => reject(new Error('Room request blocked on AI')), 3000); timer.unref() })])
       assert.equal(result.ready, true); assert.equal(result.generationPending, true); assert.ok(result.allResults.length)
+      assert.equal(result.generationStatus, 'generating')
       await recommendForQuest(room)
       assert.equal(calls, 3)
     })
@@ -52,6 +56,7 @@ test(`generated itinerary integration (${process.env.DATABASE_PROVIDER})`, async
     for (let attempt = 0; result.generationPending && attempt < 40; attempt++) { await new Promise(resolve => setTimeout(resolve, 50)); result = await recommendForQuest(room) }
     await t.test('cached generated options retain shared filters, scoring and privacy', async () => {
       assert.equal(result.generationPending, false)
+      assert.equal(result.generationStatus, 'ready')
       const generated = result.allResults.filter(trip => trip.source === 'ai')
       assert.equal(generated.length, 3)
       assert.equal(calls, 3)
@@ -67,6 +72,8 @@ test(`generated itinerary integration (${process.env.DATABASE_PROVIDER})`, async
       let plan = (await startWorkingPlan(room, owner.user.id, trip.id))!
       assert.equal(plan.bookings?.currency, 'USD'); assert.equal(plan.days.length, 4)
       assert.equal(plan.days[0].items[0].title, 'Market breakfast')
+      assert.equal(plan.days[0].items[1].placeSource?.placeId, 'kyoto-kiyomizu-dera')
+      assert.equal((plan.bookings?.stays?.[0] as any).placeSource?.placeId, 'kyoto-hyatt-regency')
       const alternative = result.allResults.find(value => value.id !== trip.id)!
       await assert.rejects(changeWorkingPlan(room, owner.user.id, { type: 'switch', catalogueId: alternative.id, expectedRevision: plan.revision, requestId: randomUUID() }), /Everyone needs to respond/)
       plan = await changeWorkingPlan(room, owner.user.id, { type: 'lock', itemId: plan.days[0].items[0].id, expectedRevision: plan.revision, requestId: randomUUID() })
@@ -79,6 +86,7 @@ test(`generated itinerary integration (${process.env.DATABASE_PROVIDER})`, async
       assert.notEqual(updated.preferenceVersion, result.preferenceVersion)
       assert.equal(updated.allResults.some(value => value.id === trip.id), false)
       assert.equal(updated.generationPending, false)
+      assert.equal(updated.generationStatus, 'unconfigured')
     })
   } finally {
     release()

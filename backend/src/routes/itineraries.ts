@@ -7,9 +7,17 @@ import { assertQuestMember, requireUser } from '../services/access.js'
 import { reserveAiRequest } from '../services/aiHistory.js'
 import { questParticipants, sharedAvailability } from '../services/questParticipants.js'
 import { record, text } from '../services/travelPreferences.js'
+import { searchRealPlaces } from '../services/realPlaceService.js'
 
 export const itinerariesRouter = Router()
 export const userItinerariesRouter = Router({ mergeParams: true })
+
+// Public editorial content only; this endpoint never reads traveller data or AI.
+itinerariesRouter.get('/places', (request, response) => {
+  const destination = typeof request.query.destination === 'string' ? request.query.destination.trim().slice(0, 100) : ''
+  const country = typeof request.query.country === 'string' ? request.query.country.trim().slice(0, 60) : ''
+  response.set('Cache-Control', 'public, max-age=3600').json({ data: { places: searchRealPlaces(destination, country) } })
+})
 
 itinerariesRouter.get('/catalogue', async (_request, response, next) => {
   try {

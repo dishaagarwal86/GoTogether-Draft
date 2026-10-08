@@ -1,0 +1,7 @@
+.photo-credits-page { max-width:840px; margin:auto; }
+.photo-credits-page>p { max-width:680px; line-height:1.8; }
+.photo-credits-page ul { list-style:none; padding:0; }
+.photo-credits-page li { padding:22px 0; border-bottom:1px solid var(--line); overflow-wrap:anywhere; }
+.journey-shell .photo-credits-page h2 { font-family:inherit; font-weight:600; font-size:var(--text-card); line-height:1.4; margin:0 0 8px; }
+.photo-credits-page li p,.photo-credits-page li a { font-size:var(--text-small); line-height:1.7; }
+.photo-credits-page a { text-decoration:underline; text-underline-offset:3px; }

@@ -3,10 +3,12 @@ import { assertQuestMember, HttpError } from './access.js'
 import { contextKey } from './aiHistory.js'
 import { getWorkingPlan, type PlanDay } from './workingPlan.js'
 import { generateAi } from './aiProvider.js'
+import { searchRealPlaces } from './realPlaceService.js'
+import type { PlaceSource } from '../data/realPlaces.js'
 
 type Row = { id: string; user_id: string; data: Record<string, unknown> }
 const kinds = ['experience', 'food', 'stay', 'transport', 'free'] as const
-export type AreaIdea = { title: string; kind: typeof kinds[number]; note: string; area: string; imageQuery: string; category?: string }
+export type AreaIdea = { title: string; kind: typeof kinds[number]; note: string; area: string; imageQuery: string; category?: string; placeSource?: PlaceSource }
 
 async function acceptedMembers(roomId: string) {
   const people = await selectRows<{ user_id: string; role: string }>('trip_room_people', ['user_id', 'role'], [{ column: 'trip_room_id', operator: 'eq', value: roomId }, { column: 'invite_status', operator: 'eq', value: 'accepted' }])
@@ -57,6 +59,7 @@ export const ideaCategories = [
   { id: 'culture', label: 'Culture & museums', hint: 'museums, galleries, temples and historic sites' },
   { id: 'evening', label: 'Evenings out', hint: 'dinner spots, food alleys, bars and night views' },
   { id: 'daytrip', label: 'Day trips', hint: 'easy day trips from the destination' },
+  { id: 'stays', label: 'Places to stay', hint: 'properties with official source links; rates to check' },
 ] as const
 type CategoryId = typeof ideaCategories[number]['id']
 const categoryIds = ideaCategories.map(category => category.id) as string[]
@@ -96,6 +99,10 @@ export async function areaIdeas(roomId: string, userId: string, destination: unk
   const search = typeof query === 'string' ? query.trim().slice(0, 80) : ''
   const plan = await getWorkingPlan(roomId, userId)
   if (!place || place !== plan?.destination) throw new HttpError(400, 'Choose the destination in your current plan.')
+  const sourced = searchRealPlaces(place, plan.country, search)
+  // Serve reviewed identities immediately, including when AI is unavailable.
+  // Unmatched searches can still ask AI; those results carry no source badge.
+  if (sourced.length) return { ideas: sourced, categories: ideaCategories, source: 'official_sources' }
   const id = `ideas3-${contextKey([roomId, place.toLowerCase(), search.toLowerCase()])}`
   const cached = ideaCache.get(id)
   if (cached && cached.until > Date.now()) return cached.result
@@ -106,7 +113,8 @@ export async function areaIdeas(roomId: string, userId: string, destination: unk
     try {
       const [saved] = await selectRows<Row>('suggested_itineraries', ['id', 'user_id', 'data'], [{ column: 'id', operator: 'eq', value: id }])
       if (saved?.data.roomId === roomId && Array.isArray(saved.data.ideas) && saved.data.ideas.length) return { ideas: saved.data.ideas as AreaIdea[], categories: ideaCategories, source: 'cache' }
-      const batches = search ? [ideaCategories.slice()] : [ideaCategories.slice(0, 4), ideaCategories.slice(4)]
+      const activityCategories = ideaCategories.filter(category => category.id !== 'stays')
+      const batches = search ? [activityCategories] : [activityCategories.slice(0, 4), activityCategories.slice(4)]
       const results = await Promise.all(batches.map(batch => generateIdeas(place, search, batch)))
       const seen = new Set<string>()
       const ideas = results.flatMap(result => result.value.ideas).filter(idea => {

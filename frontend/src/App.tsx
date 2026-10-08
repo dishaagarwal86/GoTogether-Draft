@@ -9,6 +9,7 @@ import './styles/travel-memory.css'
 import './styles/group-room.css'
 import './styles/typography.css'
 import './styles/theme.css'
+import './styles/motion.css'
 
 function App() {
   return <BrowserRouter><AppShell /></BrowserRouter>

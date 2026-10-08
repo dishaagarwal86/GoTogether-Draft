@@ -57,9 +57,9 @@ try {
   check('Room exists before the itinerary; recommendations wait for the entire crew')
 
   await section(page, 'Crew chat').click()
-  await page.getByLabel('Message your crew').fill('Let’s leave one afternoon open for everyone.')
+  await page.getByRole('textbox', { name: 'Message your crew', exact: true }).fill('Let’s leave one afternoon open for everyone.')
   await page.getByRole('button', { name: 'Send', exact: true }).click()
-  await page.getByText('Let’s leave one afternoon open for everyone.', { exact: true }).waitFor()
+  await page.getByRole('log', { name: 'Messages', exact: true }).getByText('Let’s leave one afternoon open for everyone.', { exact: true }).waitFor()
   await section(page, 'Your crew').click()
   await page.getByRole('button', { name: 'Share my travel style', exact: true }).click()
   await screenshot(page, '02-inline-preferences')
@@ -96,8 +96,10 @@ try {
   for (let index = 0; index < state.results.length; index++) {
     await page.locator('.group-option-card').nth(index).click()
     await page.getByRole('article', { name: `${state.results[index].destination} full itinerary`, exact: true }).waitFor()
+    await page.getByRole('button', { name: 'Back to options', exact: true }).click()
   }
   await page.getByRole('button', { name: /^All matching itineraries/ }).click()
+  await page.waitForFunction(count => document.querySelectorAll('.group-option-card').length === count, state.allResults.length)
   assert.equal(await page.locator('.group-option-card').count(), state.allResults.length)
   const chosen = state.allResults[3]
   const select = async page => {
@@ -107,8 +109,10 @@ try {
   }
   await select(page)
   await page.getByRole('button', { name: 'Day 2', exact: true }).click()
+  await page.waitForFunction(() => document.querySelectorAll('.group-preview-day').length === 1)
   assert.equal(await page.locator('.group-preview-day').count(), 1)
   await page.getByRole('button', { name: 'Full itinerary', exact: true }).click()
+  await page.waitForFunction(count => document.querySelectorAll('.group-preview-day').length === count, chosen.daily_plan.length)
   assert.equal(await page.locator('.group-preview-day').count(), chosen.daily_plan.length)
   await screenshot(page, '06-all-itineraries-and-full-preview')
   assert.equal(await page.getByRole('button', { name: 'Make this our plan', exact: true }).isDisabled(), true)
@@ -144,10 +148,11 @@ try {
   await section(page, 'Your crew').click(); await screenshot(page, '08-mobile-crew')
   await section(page, 'Compare options').click(); await screenshot(page, '09-mobile-options')
   await section(page, 'Crew chat').click(); await screenshot(page, '10-mobile-crew-chat')
-  await page.getByText('Let’s leave one afternoon open for everyone.', { exact: true }).waitFor()
+  await page.getByRole('log', { name: 'Messages', exact: true }).getByText('Let’s leave one afternoon open for everyone.', { exact: true }).waitFor()
   check('Crew, comparisons and persistent conversation work on mobile without horizontal overflow')
 
   await section(page, 'Saved ideas').click()
+  await page.waitForURL('**?tab=ideas')
   await page.route('**/shortlist', route => route.fulfill({ status: 503, contentType: 'application/json', body: JSON.stringify({ error: 'Synthetic failure' }) }))
   await page.reload()
   await page.getByText('Your saved ideas could not load. Please try again.', { exact: true }).waitFor()
