@@ -13,8 +13,13 @@ import { recommendationsRouter } from './recommendations.js'
 import { workingPlansRouter } from './workingPlans.js'
 import { travelMemoryRouter } from './travelMemory.js'
 
+import { sharedInvitation, joinSharedRoom } from '../services/questJourney.js'
+import { requireUser } from '../services/access.js'
+
 export const apiRouter = Router()
 apiRouter.get('/health', (_request, response) => response.json({ status: 'ok' }))
+apiRouter.get('/join-room/:token', async (request, response) => response.json({ data: await sharedInvitation(String(request.params.token)) }))
+apiRouter.post('/join-room/:token', requireUser, async (request, response) => response.json({ data: await joinSharedRoom(String(request.params.token), response.locals.userId) }))
 apiRouter.use('/auth', authRouter)
 apiRouter.use('/companion', companionRouter)
 apiRouter.use('/personalise-itinerary', personaliseItineraryRouter)

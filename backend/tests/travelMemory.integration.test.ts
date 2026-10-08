@@ -6,6 +6,7 @@ import { app } from '../src/app.js'
 import { registerUser } from '../src/services/authService.js'
 import { createRoom } from '../src/services/roomService.js'
 import { create } from '../src/services/apiStore.js'
+import { respondToJourney } from '../src/services/questJourney.js'
 import { recommendForQuest } from '../src/services/recommendationService.js'
 import { closeDatabase, deleteRows, selectRows, updateRows, upsertRow } from '../src/storage.js'
 import { getTravelProfile, travelAction, type TravelProfile } from '../src/services/travelMemory.js'
@@ -39,8 +40,10 @@ test(`travel memory, imports and credits (${process.env.DATABASE_PROVIDER})`, as
     const guest = await registerUser({ firstName: 'Private', lastName: 'Traveller', email: `private-${randomUUID()}@example.invalid`, password: 'Synthetic travel 2026!' }); users.push(guest.user.id)
     const createQuest = async () => {
       const room = (await createRoom({ name: 'Learning fixture', tripName: 'Kyoto', ownerId: owner.user.id, members: 1 })).id; rooms.push(room)
-      await create('preferences', 'memory_pref', { userId: owner.user.id, tripRoomId: room, budget: 'Flexible', daysCount: 6, locationPreferences: { destination: 'Kyoto', fixed: true }, companions: 'leisure' })
-      const idea = (await recommendForQuest(room)).results[0]
+      await create('preferences', 'memory_pref', { userId: owner.user.id, tripRoomId: room, budget: 'Flexible', daysCount: 6, locationPreferences: { destination: 'Kyoto', fixed: true }, companions: 'leisure', moodPreferences: ['Food & Culture'], dates: { flexible: true }, pace: 'A balanced mix', submitted: true })
+      const recommendations = await recommendForQuest(room)
+      const idea = recommendations.results[0]
+      await respondToJourney(room, owner.user.id, { kind: 'option', optionId: idea.id, version: recommendations.preferenceVersion, reaction: 'works' })
       const plan = (await request(`/working-plans/${room}`, owner.token, { catalogueId: idea.id })).body.data
       return { room, plan }
     }

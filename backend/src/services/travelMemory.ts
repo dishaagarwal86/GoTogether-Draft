@@ -24,7 +24,7 @@ export function contextFor(value: unknown) { const context = normalize(typeof va
 export function memoryContext(value: unknown) { if (value !== 'any' && !tripContexts.includes(String(value))) throw new HttpError(400, 'Choose a trip context.'); return String(value) }
 
 // Both providers execute the same PostgreSQL transaction functions.
-export async function travelRpc<T>(name: 'travel_action' | 'commit_travel_plan', args: Record<string, unknown>): Promise<T> {
+export async function travelRpc<T>(name: 'travel_action' | 'commit_travel_plan' | 'change_quest_mode' | 'join_quest_by_link', args: Record<string, unknown>): Promise<T> {
   try {
     if (getDatabaseConfig().provider === 'supabase') {
       const { data, error } = await getSupabase().rpc(name, args)

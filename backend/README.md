@@ -64,7 +64,7 @@ Use `--no-deps` to avoid starting the local database for Supabase mode. When sel
 
 ## Companion and recommendation behavior
 
-The saved editor and travel-memory workflow also require migrations `007_quest_working_plans.sql` and `008_travel_memory_and_perks.sql`. Apply both before starting this backend version. See [personalization v1](../docs/personalization-v1.md) for the private APIs, database-role requirements, credit reservation policy, review workflow, and remaining limitations.
+The saved editor and travel-memory workflow also require migrations `007_quest_working_plans.sql`, `008_travel_memory_and_perks.sql`, `009_group_journey.sql`, and `010_solo_travel.sql`. Apply all four before starting this backend version. See [personalization v1](../docs/personalization-v1.md) for the private APIs, database-role requirements, credit reservation policy, review workflow, and remaining limitations.
 
 Apply [004_ai_records.sql](../database/migrations/004_ai_records.sql) before deploying this API version. It adds private AI history and shared rate-limit slots, with RLS enabled and no browser policies. Use the backend database role (or Supabase service role). Startup checks that both tables are accessible. Existing Docker volumes also need this migration applied explicitly.
 

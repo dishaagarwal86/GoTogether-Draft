@@ -47,7 +47,7 @@ export async function checkQuestWorkspace(page, { base, apiBase = base, roomId, 
   check('Invitations open without displacing the plan and restore keyboard focus')
 
   await page.setViewportSize({ width: 390, height: 844 })
-  await page.goto(url)
+  await page.goto(url, { waitUntil: 'domcontentloaded' })
   await page.locator('.itinerary-day').nth(1).scrollIntoViewIfNeeded()
   const position = await page.evaluate(() => scrollY)
   await page.locator('.quest-dock-chat').click()
@@ -71,7 +71,7 @@ export async function checkQuestWorkspace(page, { base, apiBase = base, roomId, 
     await route.fulfill({ response, json: { ...body, data: [...body.data, ...simulated] } })
   }
   await page.route(endpoint, receive)
-  await page.goto(url)
+  await page.goto(url, { waitUntil: 'domcontentloaded' })
   await page.waitForFunction(() => document.querySelectorAll('.crew-message').length >= 48)
   simulated.push({ id: 'ui-incoming-hidden', senderId: 'local-ui-test-crew', senderName: 'Rowan', body: 'A new thought while chat was closed.', createdAt: new Date().toISOString() })
   await page.locator('.quest-dock-chat .quest-unread-count').getByText('1', { exact: true }).waitFor()
@@ -91,13 +91,13 @@ export async function checkQuestWorkspace(page, { base, apiBase = base, roomId, 
 
   for (const width of [320, 768, 1024]) {
     await page.setViewportSize({ width, height: 900 })
-    await page.goto(url)
+    await page.goto(url, { waitUntil: 'domcontentloaded' })
     await page.locator('.itinerary-cover').waitFor()
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth + 1), false, `Workspace fits ${width}px`)
     await screenshot(`workspace-${width}`)
   }
   check('Quest workspace fits phone, tablet, and compact desktop widths')
   await page.setViewportSize({ width: 1440, height: 1000 })
-  await page.goto(url)
+  await page.goto(url, { waitUntil: 'domcontentloaded' })
   await page.locator('.itinerary-cover').waitFor()
 }

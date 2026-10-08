@@ -5,6 +5,7 @@ import { notFound, payload, routeParam } from './helpers.js'
 import { selectRows } from '../storage.js'
 import { assertQuestMember, requireUser } from '../services/access.js'
 import { reserveAiRequest } from '../services/aiHistory.js'
+import { questParticipants, sharedAvailability } from '../services/questParticipants.js'
 import { record, text } from '../services/travelPreferences.js'
 
 export const itinerariesRouter = Router()
@@ -17,7 +18,7 @@ itinerariesRouter.get('/catalogue', async (_request, response, next) => {
   } catch (error) { next(error) }
 })
 
-type RoomPref = { budget: string | null; days_count: number | null; location_preferences: { scope?: string; destination?: string; departureCity?: string } | null; mood_preferences: string[] | null; activities_must_have: string | null; data: Record<string, string | undefined> | null }
+type RoomPref = { budget: string | null; days_count: number | null; location_preferences: { scope?: string; destination?: string; departureCity?: string } | null; mood_preferences: string[] | null; activities_must_have: string | null; data: { noGo?: string } | null }
 function mergeRoomPreferences(members: RoomPref[]): Record<string, unknown> {
   const budgetOrder = ['Budget-friendly', 'Moderate', 'Premium', 'Flexible']
   const budgets = members.map((m) => m.budget).filter(Boolean) as string[]
@@ -39,14 +40,11 @@ itinerariesRouter.post('/ai-generate', requireUser, async (request, response, ne
     if (roomId) {
       const id = text(roomId, 150)
       await assertQuestMember(id, response.locals.userId)
-      const [preferences, acceptedMembers] = await Promise.all([
-        selectRows<RoomPref & { user_id: string }>('preferences', ['user_id', 'budget', 'days_count', 'location_preferences', 'mood_preferences', 'activities_must_have', 'data'], [{ column: 'trip_room_id', operator: 'eq', value: id }], { orderBy: 'updated_at' }),
-        selectRows<{ user_id: string }>('trip_room_people', ['user_id'], [{ column: 'trip_room_id', operator: 'eq', value: id }, { column: 'invite_status', operator: 'eq', value: 'accepted' }]),
-      ])
-      const accepted = new Set(acceptedMembers.map(member => member.user_id))
-      const latest = new Map<string, RoomPref>()
-      for (const preference of preferences) if (accepted.has(preference.user_id) && !latest.has(preference.user_id)) latest.set(preference.user_id, preference)
-      if (latest.size) mergedPreferences = mergeRoomPreferences([...latest.values()])
+      const group = await questParticipants(id)
+      if (!group.ready) return response.status(409).json({ error: 'Everyone must confirm their preferences before generating group itineraries.' })
+      if (sharedAvailability(group.preferences).conflict) return response.status(409).json({ error: 'Your travel dates do not overlap. Agree on a shared window first.' })
+      mergedPreferences = mergeRoomPreferences(group.preferences)
+
     }
     if (!mergedPreferences) return response.status(400).json({ error: 'Preferences are required.' })
     const isOllama = process.env.AI_PROVIDER === 'ollama'
@@ -59,7 +57,7 @@ itinerariesRouter.post('/ai-generate', requireUser, async (request, response, ne
     const prefs = mergedPreferences as Record<string, unknown>
     const memberCount = Number(prefs.memberCount ?? 1)
     const destLine = prefs.destination ? `\n- DESTINATION (non-negotiable): All 3 itineraries must be in or near "${prefs.destination}".` : ''
-    const groupLine = memberCount > 1 ? `\n\nThis is a GROUP trip for ${memberCount} travellers. Their preferences have been combined. The 3 itineraries should be:\n  1. Best shared match — the strongest fit for everyone\n  2. Fair compromise — satisfies the most critical needs of each traveller\n  3. Split plan — an unexpected option that covers what the first two could not\nThe whyItFits field should explain how the itinerary satisfies the group's combined preferences.` : ''
+    const groupLine = memberCount > 1 ? `\n\nThis is a GROUP trip for ${memberCount} travellers. Their preferences have been combined. The 3 itineraries should be:\n  1. Best shared match — the strongest fit for everyone\n  2. Fair compromise — satisfies the most critical needs of each traveller\n  3. Alternative experience — another direction within the same shared requirements\nThe whyItFits field should explain how the itinerary satisfies the group's combined preferences.` : ''
     const prompt = `You are GoTogether's AI travel planner. Generate exactly 3 unique travel itinerary suggestions.${groupLine}\n\nYour goal is to satisfy as many of the preferences as possible in each itinerary. Priority order:\n  1. Destination — always respect this if given, it cannot be dropped\n  2. Trip moods/feelings — try to satisfy all of them; gracefully reduce if needed\n  3. Budget — honour it where possible\n\nNever ignore a preference without a real reason. The whyItFits field must honestly explain which preferences are covered.\n\nRules:\n- Return a JSON array of exactly 3 objects. No markdown, no explanation — JSON only.\n- Each object must follow this schema exactly: ${schema}\n- budget must be one of: "Budget-friendly", "Moderate", "Premium"\n- locationType must be one of: "Beach", "Mountains", "City", "Countryside", "Islands", "Hidden gems"\n- moods must only use: "Adventure", "Food & Culture", "Relaxation", "Nature", "Nightlife", "Wellness"\n- seasons must only use: "Spring", "Summer", "Autumn", "Winter"\n- dailyPlan must have one entry per day matching the duration\n- Make each itinerary specific and distinct — different cities or experiences\n- flights: one entry per departure city in the preferences; use that city's local currency for estimatedCost\n- accommodation: match the budget level; use destination local currency for pricePerNight${destLine}\n\nPreferences: ${JSON.stringify(prefs)}`
     const result = await client.responses.create({ model: isOllama ? (process.env.OLLAMA_MODEL ?? 'gpt-oss:20b') : (process.env.OPENAI_MODEL ?? 'gpt-5-mini'), input: prompt, max_output_tokens: 6000 }, { signal: AbortSignal.timeout(18000) })
     const cleaned = result.output_text.replace(/```json\n?|\n?```/g, '').trim()

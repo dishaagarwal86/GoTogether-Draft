@@ -1,17 +1,23 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { createQuestPick, type QuestDna, type QuestRecommendation } from '../apis/quests'
-import { askCompanion, companionHistory, personaliseItinerary, savedPersonalStory, sourceLabel, type CompanionReply } from '../services/companionApi'
+import { ItineraryInsights } from './ItineraryInsights'
 import { photoFallback, recommendationPhoto } from '../services/itineraryPresentation'
+import { PhotoCredit, useActivityPhoto } from '../services/activityPhotos'
 import { Icon } from './Ui'
 import { TravelPlanningOptions } from './TravelPlanningOptions'
 
 export type ChatContext = { label: string; detail: string }
-type Day = { day?: string | number; title?: string; morning?: string; afternoon?: string; evening?: string; description?: string }
+type Moment = { activity: string; detail: string; imageQuery: string }
+type Slot = 'morning' | 'afternoon' | 'evening'
+type Day = { day?: string | number; title?: string; morning?: string; afternoon?: string; evening?: string; description?: string; moments?: Partial<Record<Slot, Moment>> }
 
 function readDays(value: unknown): Day[] {
   if (!Array.isArray(value)) return []
-  return value.filter((item) => item && typeof item === 'object').map((item: Record<string, unknown>) => Object.fromEntries(Object.entries(item).filter(([key, val]) => ['day', 'title', 'morning', 'afternoon', 'evening', 'description'].includes(key) && (typeof val === 'string' || key === 'day' && typeof val === 'number'))))
+  return value.filter((item) => item && typeof item === 'object').map((item: Record<string, unknown>) => ({
+    ...Object.fromEntries(Object.entries(item).filter(([key, val]) => ['day', 'title', 'morning', 'afternoon', 'evening', 'description'].includes(key) && (typeof val === 'string' || key === 'day' && typeof val === 'number'))),
+    ...(item.moments && typeof item.moments === 'object' ? { moments: item.moments as Day['moments'] } : {}),
+  }))
 }
 const dayLabel = (day: Day, index: number) => String(day.day ?? '').toLowerCase().startsWith('day') ? String(day.day) : `Day ${day.day ?? index + 1}`
 const dayTitle = (day: Day, destination: string) => {
@@ -19,42 +25,30 @@ const dayTitle = (day: Day, destination: string) => {
   return title.charAt(0).toUpperCase() + title.slice(1)
 }
 
+function formatRange(start: string, end: string) {
+  const format = (value: string) => new Date(`${value}T00:00:00`).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })
+  return end ? `${format(start)} – ${format(end)}` : format(start)
+}
+
+function MomentCard({ slot, label, icon, day, fallbackPhoto, destination }: { slot: Slot; label: string; icon: 'sun' | 'sunset' | 'moon'; day: Day; fallbackPhoto: string; destination: string }) {
+  const moment = day.moments?.[slot]
+  const { src, ref, credit } = useActivityPhoto([moment?.imageQuery, moment?.activity && `${moment.activity} ${destination}`], fallbackPhoto)
+  if (!moment?.activity) return day[slot] ? <div className={`itinerary-moment itinerary-moment-${slot}`}><span><Icon name={icon} size={20} /></span><div><h4>{label}</h4><p>{day[slot]}</p></div></div> : null
+  return <div className={`itinerary-moment itinerary-moment-${slot} has-photo`}>
+    <img className="itinerary-moment-photo" src={src} ref={ref} alt="" loading="lazy" onError={photoFallback} />
+    <div className="itinerary-moment-body"><PhotoCredit credit={credit} /><h4><Icon name={icon} size={14} />{label}</h4><strong>{moment.activity}</strong>{moment.detail && <p>{moment.detail}</p>}</div>
+  </div>
+}
+
 export function ItineraryStory({ trip, roomId, travelDna, onDiscuss }: { trip: QuestRecommendation; roomId: string; travelDna?: QuestDna | null; onDiscuss?: (context: ChatContext) => void }) {
   const days = readDays(trip.daily_plan)
-  const [personalStory, setPersonalStory] = useState<Awaited<ReturnType<typeof personaliseItinerary>>['data'] | null>(null)
-  const [personalising, setPersonalising] = useState(false)
-  const [explanation, setExplanation] = useState<CompanionReply | null>(null)
-  const [explaining, setExplaining] = useState(false)
-  const [storyError, setStoryError] = useState('')
   const [picked, setPicked] = useState(false)
-  const requestId = useRef(0)
+  const [pickError, setStoryError] = useState('')
   const dayRefs = useRef<Array<HTMLElement | null>>([])
-  useEffect(() => {
-    let active = true
-    savedPersonalStory(roomId, trip.id).then(result => { if (active) setPersonalStory(result.data) }).catch(() => { if (active) setStoryError('Saved itinerary notes could not be loaded. You can try personalising again.') })
-    companionHistory('explain', roomId).then(items => { if (active) setExplanation(items.find(item => item.itineraryId === trip.id) ?? null) }).catch(() => { /* The explain action remains available if history cannot load. */ })
-    return () => { active = false }
-  }, [roomId, trip.id, travelDna])
-  const explain = async () => {
-    setExplaining(true); setStoryError('')
-    try { setExplanation(await askCompanion({ task: 'explain', roomId, itineraryId: trip.id })) }
-    catch (error) { setStoryError(error instanceof Error ? error.message : 'Please try again.') }
-    finally { setExplaining(false) }
-  }
   const context = { label: `${trip.destination} · ${trip.duration_days} days`, detail: trip.title }
   const discussionAction = (value: ChatContext, label: string, className = 'text-button') => onDiscuss
     ? <button type="button" className={className} onClick={() => onDiscuss(value)}><Icon name="chat" size={17} />{label}</button>
     : <Link className={className} to={`/quests/${roomId}#crew-chat`} state={{ chatContext: value }}><Icon name="chat" size={17} />{label}</Link>
-  const personalise = async () => {
-    if (personalising) return
-    const id = ++requestId.current
-    setPersonalising(true); setStoryError('')
-    try {
-      const result = await personaliseItinerary(roomId, trip.id)
-      if (id === requestId.current) setPersonalStory(result.data)
-    } catch { if (id === requestId.current) setStoryError('The Companion couldn’t personalise this just now. Your original itinerary is still here; try again when you’re ready.') }
-    finally { if (id === requestId.current) setPersonalising(false) }
-  }
   const savePick = async () => {
     try {
       await createQuestPick(roomId, { type: 'itinerary', title: trip.title, destination: `${trip.destination}, ${trip.country}`, estimatedPrice: trip.estimated_cost_usd, note: trip.short_description })
@@ -68,19 +62,19 @@ export function ItineraryStory({ trip, roomId, travelDna, onDiscuss }: { trip: Q
       <span className="itinerary-postmark" aria-hidden="true"><Icon name="compass" size={27} /><span>GO · TOGETHER<br />A POSSIBLE CHAPTER</span></span>
       <div className="itinerary-cover-copy"><p className="eyebrow">{trip.country} / A SUGGESTED ITINERARY</p><h2>{trip.destination}<em>, together.</em></h2><p>{trip.title}</p></div>
     </header>
-    <div className="itinerary-passport"><span><Icon name="calendar" size={17} /><strong>{trip.duration_days} days</strong><small>A little room to roam</small></span><span><Icon name="wallet" size={17} /><strong>{trip.budget}</strong><small>Your travel comfort</small></span><span><Icon name="sun" size={17} /><strong>{trip.seasons.length ? trip.seasons.join(' / ') : 'Dates to decide'}</strong><small>{trip.seasons.length ? 'Suggested seasons' : 'Find a time together'}</small></span></div>
-    <div className="itinerary-introduction"><p>{trip.short_description}</p><p>A plan for the days you will talk about long after the trip ends.</p><div className="itinerary-reasons"><div><span className="itinerary-note-icon"><Icon name="heart" size={17} /></span><div><h3>Group alignment</h3><p>{trip.matchedPreferences.join(' · ') || 'A new direction with room for every voice.'}</p></div></div><div><span className="itinerary-note-icon"><Icon name="compass" size={17} /></span><div><h3>What was balanced</h3><p>{trip.compromises.join(' ') || 'Everyone’s must-haves have a place in this plan.'}</p></div></div></div></div>
+    <div className="itinerary-passport"><span><Icon name="calendar" size={17} /><strong>{trip.duration_days} days</strong><small>A little room to roam</small></span><span><Icon name="wallet" size={17} /><strong>{trip.budget}</strong><small>Your travel comfort</small></span>{trip.travel_dates?.start ? <span><Icon name="calendar" size={17} /><strong>{formatRange(trip.travel_dates.start, trip.travel_dates.end)}</strong><small>Planned travel dates</small></span> : <span><Icon name="sun" size={17} /><strong>{trip.seasons.length ? trip.seasons.join(' / ') : 'Dates to decide'}</strong><small>{trip.seasons.length ? 'Suggested seasons' : 'Find a time together'}</small></span>}</div>
+    <div className="itinerary-introduction"><p>{trip.short_description}</p><p>{trip.why_it_fits || 'A plan for the days you will talk about long after the trip ends.'}</p><div className="itinerary-reasons"><div><span className="itinerary-note-icon"><Icon name="heart" size={17} /></span><div><h3>Group alignment</h3><p>{trip.matchedPreferences.join(' · ') || 'A new direction with room for every voice.'}</p></div></div><div><span className="itinerary-note-icon"><Icon name="compass" size={17} /></span><div><h3>What was balanced</h3><p>{trip.compromises.join(' ') || 'Everyone’s must-haves have a place in this plan.'}</p></div></div></div></div>
     {days.length > 0 ? <>
       <nav className="itinerary-day-nav" aria-label="Jump to an itinerary day"><span>THE DAYS AHEAD</span><div>{days.map((day, index) => <button type="button" key={index} onClick={() => { dayRefs.current[index]?.scrollIntoView({ block: 'start', behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' }); dayRefs.current[index]?.focus({ preventScroll: true }) }}>{dayLabel(day, index)}</button>)}</div></nav>
       <div className="itinerary-timeline">{days.map((day, index) => <article className="itinerary-day" key={index} tabIndex={-1} ref={(node) => { dayRefs.current[index] = node }} aria-label={dayLabel(day, index)}>
         <div className="itinerary-day-heading"><div><span className="itinerary-day-number">{String(index + 1).padStart(2, '0')}</span><div><p className="eyebrow">{dayLabel(day, index)} · {trip.destination}</p><h3>{dayTitle(day, trip.destination)}</h3></div></div>{discussionAction({ label: `${dayLabel(day, index)} · ${trip.destination}`, detail: [day.title, day.morning, day.afternoon, day.evening, day.description].filter(Boolean).join(' · ') }, 'Discuss this day')}</div>
         {day.description && <p className="itinerary-day-description">{day.description}</p>}
-        <div className="itinerary-moments">{([{ key: 'morning', label: 'Morning', icon: 'sun' }, { key: 'afternoon', label: 'Afternoon', icon: 'sunset' }, { key: 'evening', label: 'Evening', icon: 'moon' }] as const).map(({ key, label, icon }) => day[key] && <div className={`itinerary-moment itinerary-moment-${key}`} key={key}><span><Icon name={icon} size={20} /></span><div><h4>{label}</h4><p>{day[key]}</p></div></div>)}</div>
+        <div className="itinerary-moments">{([{ key: 'morning', label: 'Morning', icon: 'sun' }, { key: 'afternoon', label: 'Afternoon', icon: 'sunset' }, { key: 'evening', label: 'Evening', icon: 'moon' }] as const).map(({ key, label, icon }) => <MomentCard key={key} slot={key} label={label} icon={icon} day={day} fallbackPhoto={recommendationPhoto(trip)} destination={trip.destination} />)}</div>
       </article>)}</div>
     </> : <p className="itinerary-open-days">The day-by-day details are still open. Use this idea as the starting point for your conversation.</p>}
-    <div className="itinerary-ai-explanation"><button type="button" className="secondary-button" disabled={explaining} onClick={explain}>{explaining ? 'Looking at your shared fit…' : 'Explain this match'}<Icon name="spark" size={17} /></button>{explanation && <div role="status"><small>{sourceLabel(explanation.source)}</small><p>{explanation.summary}</p>{explanation.notice && <p className="companion-notice">{explanation.notice}</p>}</div>}{storyError && <p className="form-error" role="alert">{storyError}</p>}</div>
-    <TravelPlanningOptions trip={trip} />
+    <TravelPlanningOptions trip={trip} travelDna={travelDna} />
     <footer className="itinerary-next-step"><div><Icon name="people" size={23} /><div><h3>The destination is the setting. Your people make the story.</h3><p>Bring an idea to the conversation before deciding.</p></div></div><div className="itinerary-next-actions"><button className="secondary-button" type="button" onClick={() => void savePick()} disabled={picked}>{picked ? 'Saved to My Picks' : 'Save to My Picks'} <Icon name={picked ? 'check' : 'heart'} size={16} /></button>{discussionAction(context, 'Talk it over with your crew', 'primary-button')}</div></footer>
-    <details className="itinerary-companion"><summary><Icon name="spark" size={19} /><span>Make it a little more you.<small>Personalise this idea with the Companion</small></span><Icon name="plus" size={17} /></summary><div><p>Give this starting point a little of your crew’s personality.</p><button className="secondary-button" type="button" disabled={personalising} onClick={personalise}>{personalising ? 'Finding your story…' : 'Personalise with Companion'}<Icon name="spark" size={17} /></button>{personalStory && <section className="companion-story" aria-live="polite"><p className="eyebrow">{sourceLabel(personalStory.source)}</p>{personalStory.notice && <p className="companion-notice">{personalStory.notice}</p>}<h3>{personalStory.resultTitle}</h3><p>{personalStory.scrapbookIntro}</p><ul>{(personalStory.whyItWorks ?? []).map((item) => <li key={item}>{item}</li>)}</ul><p>{personalStory.tradeoffNote}</p><div className="story-days">{personalStory.days.map((day) => <article key={day.day}><b>Day {day.day}</b><p>{day.note}</p></article>)}</div></section>}</div></details>
+    {pickError && <p className="form-error" role="alert">{pickError}</p>}
+    <ItineraryInsights key={trip.id} trip={trip} roomId={roomId} version={JSON.stringify(travelDna)} />
   </section>
 }

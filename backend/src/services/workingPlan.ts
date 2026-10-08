@@ -1,12 +1,12 @@
 import { randomUUID } from 'node:crypto'
 import { insertIfMissing, selectRows } from '../storage.js'
 import { assertQuestMember, HttpError } from './access.js'
-import { recommendForQuest } from './recommendationService.js'
+import { agreedStartingPoint } from './questJourney.js'
 import { applyStartPreference, learningPrompt, questPersonalContext, questPlanningConstraints, signalFromEdit, travelRpc } from './travelMemory.js'
 
-export type PlanItem = { id: string; title: string; kind: 'experience' | 'food' | 'stay' | 'transport' | 'free'; time: string; duration: number; note: string; locked: boolean }
+export type PlanItem = { id: string; title: string; kind: 'experience' | 'food' | 'stay' | 'transport' | 'free'; time: string; duration: number; note: string; locked: boolean; imageQuery?: string }
 export type PlanDay = { id: string; title: string; items: PlanItem[] }
-export type PlanDocument = { title: string; destination: string; country: string; catalogueId: string; days: PlanDay[] }
+export type PlanDocument = { title: string; destination: string; country: string; catalogueId: string; preferenceVersion?: string; days: PlanDay[]; bookings?: ReturnType<typeof bookingsFor> }
 type Snapshot = { eventId?: string; label: string; document: PlanDocument }
 type RecordData = { document: PlanDocument; history: Snapshot[]; requests: string[] }
 type PlanRow = { id: string; revision: number; data: RecordData; updated_at: string }
@@ -21,32 +21,45 @@ export async function assertPlanEditor(roomId: string, userId: string) {
   if (member?.role !== 'owner') throw new HttpError(403, 'The quest host can edit the shared plan. Discuss your suggestion with the crew.')
 }
 
+type BookingSource = { destination: string; duration_days: number; budget: string; location_type: string; estimated_cost_usd: number; currency?: string; travel_dates?: unknown; flights?: unknown[]; stays?: unknown[]; cover_image?: string | null }
+function bookingsFor(trip: BookingSource) {
+  if (!trip.flights?.length && !trip.stays?.length) return undefined
+  return { destination: trip.destination, duration_days: trip.duration_days, budget: trip.budget, location_type: trip.location_type, estimated_cost_usd: trip.estimated_cost_usd, currency: trip.currency, travel_dates: trip.travel_dates, flights: trip.flights, stays: trip.stays, cover_image: trip.cover_image ?? null }
+}
+
 export async function getWorkingPlan(roomId: string, userId: string) {
   await assertQuestMember(roomId, userId)
   const [row] = await selectRows<PlanRow>('quest_working_plans', columns, [{ column: 'id', operator: 'eq', value: roomId }])
-  return row ? describePlan(row) : null
+  if (!row) return null
+  return describePlan(row)
 }
 
 export async function startWorkingPlan(roomId: string, userId: string, catalogueId: unknown) {
   await assertPlanEditor(roomId, userId)
   const current = await getWorkingPlan(roomId, userId)
   if (current) return current
-  const recommendations = await recommendForQuest(roomId)
-  const trip = recommendations.results.find(item => item.id === catalogueId)
-  if (!trip) throw new HttpError(409, 'This starting point has changed. Refresh the trip ideas and choose again.')
+  const document = await startingDocument(roomId, userId, catalogueId)
+  await insertIfMissing('quest_working_plans', { id: roomId, data: { document, history: [], requests: [] } })
+  return getWorkingPlan(roomId, userId)
+}
+
+async function startingDocument(roomId: string, userId: string, catalogueId: unknown): Promise<PlanDocument> {
+  const { trip, preferenceVersion, solo } = await agreedStartingPoint(roomId, userId, catalogueId)
   const days = (Array.isArray(trip.daily_plan) ? trip.daily_plan : []).map((value, index): PlanDay => {
     const day = value as Record<string, unknown>
     return { id: randomUUID(), title: `Day ${index + 1}`, items: ['morning', 'afternoon', 'evening'].flatMap((slot, slotIndex) => {
-      const title = text(day[slot], 180)
-      return title ? [{ id: randomUUID(), title: title.charAt(0).toUpperCase() + title.slice(1), kind: /dinner|food|taste|lunch|breakfast/i.test(title) ? 'food' : 'experience', time: ['10:00', '14:00', '19:00'][slotIndex], duration: 90, note: 'Starting idea from the collection. Timing, location and availability need checking.', locked: false } satisfies PlanItem] : []
+      const moment = (day.moments as Record<string, { activity?: unknown; detail?: unknown; imageQuery?: unknown }> | undefined)?.[slot]
+      const title = text(moment?.activity, 180) || text(day[slot], 180)
+      const detail = text(moment?.detail, 400)
+      const imageQuery = text(moment?.imageQuery, 100)
+      return title ? [{ id: randomUUID(), title: title.charAt(0).toUpperCase() + title.slice(1), kind: /dinner|food|taste|lunch|breakfast|café|cafe|restaurant|market/i.test(`${title} ${detail}`) ? 'food' : 'experience', time: ['10:00', '14:00', '19:00'][slotIndex], duration: 90, note: detail ? `${detail} Timing and availability need checking.` : 'Starting idea from the collection. Timing, location and availability need checking.', locked: false, ...(imageQuery ? { imageQuery } : {}) } satisfies PlanItem] : []
     }) }
   })
   if (!days.length) throw new HttpError(409, 'This idea has no days yet. Choose another starting point.')
   const personal = await questPersonalContext(userId, roomId)
   applyStartPreference(days, personal.explicitStart || personal.effective.dayStart)
-  const document: PlanDocument = { title: `${trip.destination}, together`, destination: trip.destination, country: trip.country, catalogueId: trip.id, days }
-  await insertIfMissing('quest_working_plans', { id: roomId, data: { document, history: [], requests: [] } })
-  return getWorkingPlan(roomId, userId)
+  const document: PlanDocument = { preferenceVersion, title: solo ? `${trip.destination}, my way` : `${trip.destination}, together`, destination: trip.destination, country: trip.country, catalogueId: trip.id, days, bookings: bookingsFor(trip) }
+  return document
 }
 
 // These commands are also the contract for future reviewed AI edit proposals.
@@ -86,7 +99,9 @@ export function applyPlanCommand(document: PlanDocument, command: Record<string,
     return { document: next, label: `Removed ${item.title}` }
   }
   if (command.type === 'update') {
-    Object.assign(item, validateItem(command))
+    const value = validateItem(command)
+    if (value.title !== item.title) delete item.imageQuery
+    Object.assign(item, value)
     return { document: next, label: `Updated ${item.title}` }
   }
   throw new HttpError(400, 'This change is not supported.')
@@ -119,7 +134,11 @@ export async function changeWorkingPlan(roomId: string, userId: string, input: R
     document = history.at(-1)!.document
     history = history.slice(0, -1)
   } else {
-    if (input.type === 'proposal') {
+    if (input.type === 'itinerary' || input.type === 'switch') {
+      if (row.data.document.days.some(day => day.items.some(item => item.locked))) throw new HttpError(409, 'Your plan has locked activities. Unlock them before switching itineraries.')
+      document = await startingDocument(roomId, userId, input.catalogueId)
+      history = [...history, { eventId, label: 'Switched to a group-approved itinerary', document: row.data.document }].slice(-30)
+    } else if (input.type === 'proposal') {
       const [job] = await selectRows<{ id: string; base_revision: number; state: string; data: { commands: Record<string, unknown>[]; constraintsFingerprint?: string } }>('travel_ai_jobs', ['id', 'base_revision', 'state', 'data'], [{ column: 'id', operator: 'eq', value: String(input.proposalId) }, { column: 'user_id', operator: 'eq', value: userId }, { column: 'room_id', operator: 'eq', value: roomId }])
       if (!job || job.state !== 'ready' || job.base_revision !== row.revision) throw new HttpError(409, 'This suggestion is no longer current. Ask for a new preview.')
       if (job.data.constraintsFingerprint !== (await questPlanningConstraints(roomId)).fingerprint) throw new HttpError(409, 'Trip preferences changed since this preview. Ask for a fresh suggestion.')

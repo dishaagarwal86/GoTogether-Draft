@@ -22,7 +22,7 @@ async function storyContext(userId: string, input: unknown) {
   const itineraryId = text(request.itineraryId, 150)
   await assertQuestMember(roomId, userId)
   const plan = await recommendForQuest(roomId)
-  const trip = plan.results.find(item => item.id === itineraryId)
+  const trip = plan.allResults.find(item => item.id === itineraryId)
   if (!trip) throw new HttpError(409, 'This itinerary no longer matches the quest. Refresh your travel ideas.')
   const context = { group: plan.travelDna, trip, preferenceVersion: plan.preferenceVersion }
   return { roomId, trip, context, key: contextKey({ version: 1, ...context }) }

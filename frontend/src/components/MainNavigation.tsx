@@ -1,4 +1,4 @@
-import { Link, NavLink, useNavigate } from 'react-router-dom'
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { useEffect, useRef, useState } from 'react'
 import { useAuth } from '../auth/AuthContext'
 import { Brand, Icon } from './Ui'
@@ -9,6 +9,9 @@ export function GlobalNavbar() {
   const [menu, setMenu] = useState(false)
   const [profile, setProfile] = useState(false)
   const navigate = useNavigate()
+  const { pathname } = useLocation()
+  const [menuLocation, setMenuLocation] = useState(pathname)
+  if (menuLocation !== pathname) { setMenuLocation(pathname); setMenu(false); setProfile(false) }
   const profileRef = useRef<HTMLDivElement>(null)
   useEffect(() => { const close = (event: PointerEvent) => { if (!profileRef.current?.contains(event.target as Node)) setProfile(false) }; document.addEventListener('pointerdown', close); return () => document.removeEventListener('pointerdown', close) }, [])
   return <header className="journey-nav" onKeyDown={(event) => { if (event.key === 'Escape') { setMenu(false); setProfile(false) } }}><div className="journey-nav-inner">

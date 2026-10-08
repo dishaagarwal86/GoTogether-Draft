@@ -1,0 +1,45 @@
+/* Shared functional text. Component styles retain their colour and layout. */
+.journey-shell :is(button, label, summary),
+.journey-shell :is(.back-link, .text-button, .journey-nav-links a, .journey-nav-actions) {
+  font-size: var(--text-small);
+  line-height: 1.5;
+}
+.journey-shell :is(input, select, textarea) {
+  font-size: var(--text-body);
+  line-height: 1.5;
+}
+.journey-shell :is(.eyebrow, .section-kicker, .canvas-kicker) {
+  letter-spacing: .1em;
+}
+.journey-shell :is(.crew-message p, .canvas-activity-note, .group-preview-day article p) {
+  font-size: var(--text-body);
+  line-height: 1.6;
+}
+.journey-shell :is(h1, h2, h3) { overflow-wrap: break-word; }
+.journey-shell h1 { letter-spacing: -.035em; }
+.journey-shell :is(h2, h3) { letter-spacing: -.025em; }
+.journey-shell :is(.journey-quest-copy h2, .explore-card-copy h2) {
+  font-size: var(--text-card);
+}
+.journey-shell .filter-trigger span { font-size: var(--text-caption); }
+.journey-nav-links { gap: 22px; }
+.journey-shell .group-progress button { min-width: 0; }
+.group-progress strong { overflow-wrap: break-word; }
+.canvas-time { white-space: nowrap; }
+.journey-shell .canvas-card-actions { flex-wrap: wrap; }
+.journey-shell .canvas-dock button { min-height: 44px; }
+@media (max-width: 600px) {
+  .quest-toolbar .journey-tabs { flex-wrap: wrap; gap: 8px; max-width: 100%; }
+  .travel-mode-switch { display: flex; width: 100%; }
+  .travel-mode-switch button { padding: 10px 8px; gap: 7px; white-space: nowrap; }
+  .journey-shell .group-progress button { font-size: var(--text-caption); }
+  .canvas-slot { grid-template-columns: 54px minmax(0, 1fr); }
+  .canvas-timeline::before { left: 47px; }
+  .canvas-add-slot, .canvas-item-editor { margin-left: 59px; }
+  .canvas-slot.is-drop-target::before { left: 59px; }
+  .journey-shell .canvas-card-actions { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .canvas-card-actions > button { min-height: 44px; }
+  .canvas-card-actions > button:nth-child(-n+2) { grid-column: span 2; }
+  .journey-shell .canvas-dock button { font-size: var(--text-caption); }
+  .journey-shell .group-room-toolbar .group-invite-button { font-size: 0; }
+}

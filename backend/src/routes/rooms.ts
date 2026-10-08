@@ -8,6 +8,8 @@ import { assertPlanEditor } from '../services/workingPlan.js'
 import { listUserRooms } from '../services/roomService.js'
 import { routeParam } from './helpers.js'
 
+import { getQuestJourney, respondToJourney, getJoinLink, manageCrew, changeTravelMode } from '../services/questJourney.js'
+
 export const roomsRouter = Router()
 roomsRouter.use(requireUser)
 roomsRouter.get('/', async (_request, response) => response.json({ data: await listUserRooms(response.locals.userId) }))
@@ -18,6 +20,11 @@ roomsRouter.use('/:roomId', async (request, response, next) => {
   if (request.method === 'PATCH' && request.path === '/' || request.method === 'POST' && request.path === '/invites') await assertPlanEditor(roomId, response.locals.userId)
   next()
 })
+roomsRouter.get('/:roomId/journey', async (request, response) => response.json({ data: await getQuestJourney(routeParam(request, 'roomId'), response.locals.userId) }))
+roomsRouter.post('/:roomId/responses', async (request, response) => response.json({ data: await respondToJourney(routeParam(request, 'roomId'), response.locals.userId, request.body ?? {}) }))
+roomsRouter.post('/:roomId/join-link', async (request, response) => response.json({ data: await getJoinLink(routeParam(request, 'roomId'), response.locals.userId, request.body?.rotate === true) }))
+roomsRouter.post('/:roomId/travel-mode', async (request, response) => response.json({ data: await changeTravelMode(routeParam(request, 'roomId'), response.locals.userId, request.body ?? {}) }))
+roomsRouter.post('/:roomId/crew', async (request, response) => response.json({ data: await manageCrew(routeParam(request, 'roomId'), response.locals.userId, request.body ?? {}) }))
 roomsRouter.post('/:roomId/invites', postRoomInvite)
 roomsRouter.get('/:roomId/messages', getQuestMessages)
 roomsRouter.post('/:roomId/messages', postQuestMessage)

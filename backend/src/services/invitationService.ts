@@ -1,5 +1,9 @@
 import { createHash, randomBytes, randomUUID } from 'node:crypto'
 import { selectRows, insertRow, upsertRow, updateRows } from '../storage.js'
+import { validatePreferencePayload } from './preferenceValidation.js'
+import { preferencesComplete, preferenceFromAnswers, questParticipants } from './questParticipants.js'
+import { HttpError } from './access.js'
+import { getQuestJourney, respondToJourney } from './questJourney.js'
 import { create } from './apiStore.js'
 import { sendInvitationEmail } from './emailService.js'
 
@@ -20,8 +24,15 @@ export async function listPendingTripRoomInvites(email: string) {
 }
 
 export async function createTripRoomInvite(room: { id: string; name: string }, email: string) {
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) throw new HttpError(400, 'Enter a valid email address.')
+  const [existing] = await selectRows<{ id: string; status: string }>('trip_room_invites', ['id', 'status'], [{ column: 'trip_room_id', operator: 'eq', value: room.id }, { column: 'email', operator: 'eq', value: email.trim().toLowerCase() }])
+  if (existing?.status === 'accepted') {
+    const [person] = await selectRows<{ id: string }>('users', ['id'], [{ column: 'email', operator: 'eq', value: email.trim().toLowerCase() }])
+    const [joined] = person ? await selectRows('trip_room_people', ['id'], [{ column: 'trip_room_id', operator: 'eq', value: room.id }, { column: 'user_id', operator: 'eq', value: person.id }, { column: 'invite_status', operator: 'eq', value: 'accepted' }]) : []
+    if (joined) throw new HttpError(409, 'This person has already joined your quest.')
+  }
   const token = randomBytes(32).toString('hex')
-  const invite = { id: `invite_${randomUUID()}`, trip_room_id: room.id, email: email.trim().toLowerCase(), token_hash: hash(token), status: 'pending', expires_at: new Date(Date.now() + 1000 * 60 * 60 * 24 * 14).toISOString() }
+  const invite = { id: existing?.id ?? `invite_${randomUUID()}`, trip_room_id: room.id, email: email.trim().toLowerCase(), token_hash: hash(token), status: 'pending', expires_at: new Date(Date.now() + 1000 * 60 * 60 * 24 * 14).toISOString() }
   await upsertRow('trip_room_invites', invite, ['trip_room_id', 'email'])
   const baseUrl = (process.env.APP_URL ?? process.env.CLIENT_ORIGIN ?? 'http://localhost:5173').replace(/\/$/, '')
   const inviteUrl = `${baseUrl}/join/${token}`
@@ -30,14 +41,14 @@ export async function createTripRoomInvite(room: { id: string; name: string }, e
   // be sent again once email configuration is corrected.
   try {
     const delivery = await sendInvitationEmail({ recipient: invite.email, questName: room.name, inviteUrl })
-    return { email: invite.email, delivered: delivery.delivered, reason: delivery.reason, expiresAt: invite.expires_at }
+    return { inviteUrl, email: invite.email, delivered: delivery.delivered, reason: delivery.reason, expiresAt: invite.expires_at }
   } catch (error) {
     console.error('Invitation email delivery failed:', error)
     const responseCode = typeof error === 'object' && error !== null && 'responseCode' in error ? (error as { responseCode?: unknown }).responseCode : undefined
     const reason = responseCode === 550
       ? 'Resend is in testing mode and can only send to the account owner. Verify a domain in Resend to invite other email addresses.'
       : 'The invitation was saved, but email delivery could not be completed.'
-    return { email: invite.email, delivered: false, reason, expiresAt: invite.expires_at }
+    return { inviteUrl, email: invite.email, delivered: false, reason, expiresAt: invite.expires_at }
   }
 }
 
@@ -48,10 +59,9 @@ export async function getTripRoomInvite(token: string) {
   if (!room) return undefined
   const [owner] = await selectRows<{ user_id: string }>('trip_room_people', ['user_id'], [{ column: 'trip_room_id', operator: 'eq', value: room.id }, { column: 'role', operator: 'eq', value: 'owner' }])
   const [organiser] = owner ? await selectRows<{ first_name: string | null; last_name: string | null }>('users', ['first_name', 'last_name'], [{ column: 'id', operator: 'eq', value: owner.user_id }]) : []
-  const people = await selectRows<{ user_id: string }>('trip_room_people', ['user_id'], [{ column: 'trip_room_id', operator: 'eq', value: room.id }, { column: 'invite_status', operator: 'eq', value: 'accepted' }])
-  const preferences = await selectRows<{ user_id: string }>('preferences', ['user_id'], [{ column: 'trip_room_id', operator: 'eq', value: room.id }])
   const organiserName = organiser ? `${organiser.first_name ?? ''} ${organiser.last_name ?? ''}`.trim() || 'Your organiser' : 'Your organiser'
-  return { email: invite.email, expiresAt: new Date(invite.expires_at).toISOString(), room, organiserName, memberCount: Math.max(Number(room.members) || 0, people.length || 1), completedPreferences: new Set(preferences.map((item) => item.user_id)).size }
+  const group = await questParticipants(room.id)
+  return { email: invite.email, expiresAt: new Date(invite.expires_at).toISOString(), room, organiserName, memberCount: group.totalMembers, completedPreferences: group.completedMembers }
 }
 
 export async function saveGuestInvitePreferences(token: string, sessionId: string, answers: Record<string, unknown>) {
@@ -60,7 +70,9 @@ export async function saveGuestInvitePreferences(token: string, sessionId: strin
   if (!invite) throw new Error('This invitation is no longer available.')
   const [lookup] = await selectRows<{ id: string }>('trip_room_invites', ['id'], [{ column: 'token_hash', operator: 'eq', value: hash(token) }])
   if (!lookup) throw new Error('This invitation is no longer available.')
-  await upsertRow('guest_invite_preferences', { id: `guest_pref_${randomUUID()}`, invite_id: lookup.id, session_hash: hash(sessionId), data: answers, status: 'submitted', updated_at: new Date().toISOString() }, ['invite_id', 'session_hash'])
+  const data = validatePreferencePayload({ ...answers, submitted: true })
+  if (!preferencesComplete(preferenceFromAnswers(`guest:${lookup.id}`, data))) throw new HttpError(400, 'Confirm your dates, trip length, budget, interests and pace first.')
+  await upsertRow('guest_invite_preferences', { id: `guest_pref_${randomUUID()}`, invite_id: lookup.id, session_hash: hash(sessionId), data, status: 'submitted', updated_at: new Date().toISOString() }, ['invite_id', 'session_hash'])
   return { roomId: invite.room.id }
 }
 
@@ -96,4 +108,16 @@ export async function acceptTripRoomInviteById(inviteId: string, user: { id: str
   await upsertRow('trip_room_people', { trip_room_id: invite.trip_room_id, user_id: user.id, role: 'member', invite_status: 'accepted' }, ['trip_room_id', 'user_id'])
   await updateRows('trip_room_invites', { status: 'accepted', accepted_at: new Date().toISOString() }, [{ column: 'id', operator: 'eq', value: invite.id }], ['id'])
   return invite.trip_room_id
+}
+
+
+export async function guestJourney(token: string, sessionId: string, response?: Record<string, unknown>) {
+  const invite = await getTripRoomInvite(token)
+  if (!invite) throw new HttpError(404, 'This invitation is unavailable.')
+  const [lookup] = await selectRows<{ id: string }>('trip_room_invites', ['id'], [{ column: 'token_hash', operator: 'eq', value: hash(token) }])
+  const [guest] = lookup ? await selectRows<{ session_hash: string }>('guest_invite_preferences', ['session_hash'], [{ column: 'invite_id', operator: 'eq', value: lookup.id }, { column: 'status', operator: 'eq', value: 'submitted' }], { orderBy: 'updated_at', limit: 1 }) : []
+  if (!guest || guest.session_hash !== hash(sessionId)) throw new HttpError(403, 'Submit your preferences from this invitation before viewing the group options.')
+  const participant = `guest:${lookup.id}`
+  if (response) return respondToJourney(invite.room.id, participant, response)
+  return getQuestJourney(invite.room.id, participant)
 }

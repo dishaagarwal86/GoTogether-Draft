@@ -1,5 +1,7 @@
 import type { CreateRoomInput, Room } from '../models/room.js'
 import { selectRows, insertRow, updateRows, upsertRow } from '../storage.js'
+import { HttpError } from './access.js'
+import { questParticipants } from './questParticipants.js'
 import { createTripRoomInvite } from './invitationService.js'
 
 type RoomRow = { id: string; name: string; trip_name: string; members: number; created_at: Date | string }
@@ -36,6 +38,9 @@ export async function listUserRooms(userId: string) {
 }
 
 export async function createRoom(input: CreateRoomInput & { inviteEmail?: string; ownerId?: string }) {
+  if (input.members !== undefined && (!Number.isInteger(input.members) || input.members < 1 || input.members > 60)) throw new HttpError(400, 'Choose between 1 and 60 travellers.')
+  if (input.name.length > 100 || input.tripName.length > 150) throw new HttpError(400, 'Choose a shorter quest name.')
+  if (input.inviteEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.inviteEmail.trim())) throw new HttpError(400, 'Enter a valid invitation email.')
   const room = map(await insertRow<RoomRow>('trip_rooms', {
     id: `room_${crypto.randomUUID()}`, name: input.name.trim(), trip_name: input.tripName.trim(), members: input.members ?? 1,
   }, roomColumns))
@@ -61,6 +66,8 @@ export async function updateRoom(id: string, input: Partial<CreateRoomInput>) {
     row.trip_name = input.tripName.trim()
   }
   if (typeof input.members === 'number') {
+    const group = await questParticipants(id)
+    if (!Number.isInteger(input.members) || input.members < group.participants.length || input.members > 60) throw new HttpError(400, 'The group size must include every traveller who has joined or been invited.')
     row.members = input.members
   }
 

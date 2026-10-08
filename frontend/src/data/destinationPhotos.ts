@@ -1,4 +1,4 @@
-import coast from '../assets/coast-hero.png'
+import coast from '../assets/coast-hero.webp'
 import bali from '../assets/landing/bali.jpg'
 import kyoto from '../assets/landing/kyoto.jpg'
 import mountains from '../assets/landing/mountains.jpg'

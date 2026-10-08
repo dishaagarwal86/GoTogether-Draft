@@ -1,6 +1,8 @@
 import { Router } from 'express'
 import { create, find, list, remove, update } from '../services/apiStore.js'
 import { notFound, payload, routeParam } from './helpers.js'
+import { HttpError } from '../services/access.js'
+import { selectRows } from '../storage.js'
 
 export const travelServicesRouter = Router()
 export const userTravelRouter = Router({ mergeParams: true })
@@ -27,8 +29,16 @@ userTravelRouter.delete('/activities/:activityId', async (request, response) => 
   if (!await remove('activities', request.params.activityId)) return notFound(response, 'Activity')
   response.status(204).send()
 })
-userTravelRouter.post('/suggested-itineraries', async (request, response) => response.status(201).json({ data: await create('suggestedItineraries', 'suggestion', { userId: routeParam(request, 'userId'), ...payload(request) }) }))
-userTravelRouter.patch('/suggested-itineraries/:suggestionId', async (request, response) => updateResponse(response, 'suggestedItineraries', request.params.suggestionId, payload(request), 'Suggested itinerary'))
+userTravelRouter.post('/suggested-itineraries', async (request, response) => response.status(201).json({ data: await create('suggestedItineraries', 'suggestion', { ...payload(request), userId: response.locals.userId }) }))
+userTravelRouter.patch('/suggested-itineraries/:suggestionId', async (request, response) => {
+  const id = routeParam(request, 'suggestionId')
+  // Generated options, idea caches and activity confirmations share this table
+  // but may only change through their validated planning services.
+  if (!id.startsWith('suggestion_')) throw new HttpError(403, 'This planning record is managed by the quest.')
+  const [owned] = await selectRows('suggested_itineraries', ['id'], [{ column: 'id', operator: 'eq', value: id }, { column: 'user_id', operator: 'eq', value: response.locals.userId }])
+  if (!owned) return notFound(response, 'Suggested itinerary')
+  return updateResponse(response, 'suggestedItineraries', id, { ...payload(request), userId: response.locals.userId }, 'Suggested itinerary')
+})
 
 async function updateResponse(response: import('express').Response, collection: 'flights' | 'hotels' | 'activities' | 'suggestedItineraries', id: string, input: Record<string, unknown>, label: string) {
   const item = await update(collection, id, input)

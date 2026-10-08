@@ -3,16 +3,16 @@
 .companion-history { max-height: 380px; overflow-y: auto; overscroll-behavior: contain; margin: 20px 0; padding-right: 8px; }
 .companion-history article + article { border-top: 1px solid #c9c5ad; padding-top: 16px; margin-top: 20px; }
 .companion-user-note { margin-left: 20px; padding: 12px 16px; background: #fffcf0; border-radius: 12px 12px 0 12px; white-space: pre-wrap; }
-.companion-history small, .companion-notice { color: #536046; font-size: 12px; line-height: 1.6; }
+.companion-history small, .companion-notice { color: #536046; font-size: var(--text-small); line-height: 1.6; }
 .companion-reply { white-space: pre-wrap; }
 .companion-suggestions { border: 1px solid #b4baa3; border-radius: 8px; padding: 16px; margin: 20px 0; min-width: 0; }
-.companion-suggestions legend { font-weight: 600; font-size: 13px; padding: 0 6px; }
-.companion-suggestions label, .companion-crew-choice { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; font-size: 13px; line-height: 1.6; cursor: pointer; }
+.companion-suggestions legend { font-weight: 600; font-size: var(--text-small); padding: 0 6px; }
+.companion-suggestions label, .companion-crew-choice { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; font-size: var(--text-small); line-height: 1.6; cursor: pointer; }
 .companion-suggestions input, .companion-crew-choice input { flex: 0 0 auto; width: 18px; height: 18px; margin: 3px 0; accent-color: #496348; }
 .companion-suggestions strong, .companion-crew-choice small { display: block; }
 .companion-suggestions .secondary-button { margin-top: 12px; }
 .companion-panel button:disabled { opacity: .55; cursor: default; }
 .itinerary-ai-explanation { padding: 20px 28px; background: #faf6e9; }
-.itinerary-ai-explanation p { font-size: 14px; line-height: 1.8; }
-.planning-notice { padding: 14px 18px; border-left: 3px solid #9b7955; background: #f5ecd9; color: #544a39; font-size: 13px; line-height: 1.7; }
+.itinerary-ai-explanation p { font-size: var(--text-body); line-height: 1.8; }
+.planning-notice { padding: 14px 18px; border-left: 3px solid #9b7955; background: #f5ecd9; color: #544a39; font-size: var(--text-small); line-height: 1.7; }
 @media (max-width: 650px) { .companion-panel { padding: 20px; }.companion-history { max-height: 320px; }.itinerary-ai-explanation { padding: 18px; } }
