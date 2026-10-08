@@ -1,5 +1,5 @@
 /* A travel book you can shape: quiet paper, forest ink, destination colour. */
-.journey-shell .journey-main:has(.trip-canvas), .journey-shell .journey-main:has(.canvas-start) { width:min(1320px,calc(100% - 72px)); max-width:1320px; padding-top:24px; }
+.journey-shell .journey-main:has(.trip-canvas), .journey-shell .journey-main:has(.canvas-start) { width:min(1580px,calc(100% - 64px)); max-width:1580px; padding-top:24px; }
 .journey-shell:has(.trip-canvas)>.travel-canvas { opacity:.2; }
 .trip-canvas { --canvas-green:#294c3e; --canvas-muted:#72786c; padding-bottom:72px; }
 .trip-canvas button,.quick-start button { cursor:pointer; }
@@ -26,7 +26,7 @@
 .canvas-plain { display:inline-flex; align-items:center; gap:6px; padding:6px 0; border:0; background:none; color:#586650; font-size:var(--text-caption); }
 .canvas-share { display:flex; align-items:center; gap:8px; border:1px solid #bdc9b4; border-radius:5px; padding:8px 12px; color:#294c3e; background:#ecf0e3; }
 .canvas-layout { display:grid; grid-template-columns:minmax(0,1fr); gap:34px; align-items:start; padding-top:20px; }
-.canvas-layout.has-panel { grid-template-columns:minmax(0,1fr) 348px; }
+.canvas-layout.has-panel { grid-template-columns:minmax(0,1fr) 380px; }
 .canvas-plan-area { min-width:0; }
 .canvas-days { display:flex; gap:10px; overflow-x:auto; padding:3px 1px 15px; scrollbar-width:thin; }
 .canvas-days>button { text-align:left; flex:1 0 128px; min-width:0; border:1px solid #d3d9c9; border-radius:7px; background:#edeede; color:#66765e; padding:11px 14px; transition:background .16s,border-color .16s; }
@@ -133,73 +133,132 @@
 @media(max-width:600px) { .journey-shell .journey-main:has(.trip-canvas),.journey-shell .journey-main:has(.canvas-start) { width:calc(100% - 28px); padding-top:12px; }.canvas-breadcrumb { margin:7px 2px 17px; }.canvas-breadcrumb>span { display:none; }.canvas-preview-note { font-size:var(--text-caption); display:block; padding:9px 12px; }.canvas-preview-note>a { margin-top:5px; }.canvas-cover { padding:26px 23px; min-height:218px; border-radius:9px; }.canvas-cover-stamp { display:none; }.journey-shell .canvas-cover h1 { font-size:var(--text-page); max-width:270px; line-height:1.12; }.canvas-cover-note { font-size:var(--text-small); max-width:245px; line-height:1.5; margin:10px 0 19px; }.canvas-trip-meta { gap:9px 15px; font-size:var(--text-caption); }.canvas-cover .canvas-kicker { font-size:var(--text-caption); }.canvas-toolbar { gap:10px; padding:12px 2px; }.canvas-toolbar>div { gap:13px; }.canvas-toolbar .canvas-plain { font-size:var(--text-caption); }.canvas-save-state { font-size:var(--text-caption); }.canvas-share { font-size:var(--text-caption); padding:7px 9px; }.canvas-days { gap:8px; padding-bottom:10px; }.canvas-days>button { flex-basis:116px; padding:10px 12px; }.canvas-days>button strong { font-size:var(--text-caption); }.journey-shell .canvas-day-heading h2 { font-size:var(--text-section); max-width:270px; }.canvas-day-heading p:last-child { font-size:var(--text-caption); }.canvas-day-heading .canvas-kicker { font-size:var(--text-caption); }.canvas-round { width:34px; height:34px; }.canvas-slot { grid-template-columns:42px minmax(0,1fr); gap:5px; padding-bottom:12px; }.canvas-timeline:before { left:33px; }.canvas-time { font-size:var(--text-caption); gap:3px; padding-top:23px; }.canvas-time i { width:5px; height:5px; border-width:1px; }.canvas-activity { padding:12px 12px 0; }.journey-shell .canvas-activity h3 { font-size:var(--text-card); }.canvas-activity-note { font-size:var(--text-caption); line-height:1.7; }.canvas-type { font-size:var(--text-caption); }.canvas-activity-meta { font-size:var(--text-caption); gap:6px; }.canvas-card-actions { justify-content:space-between; gap:0; }.canvas-card-actions>button { padding:9px 7px; font-size:var(--text-caption); min-height:40px; }.canvas-card-actions>button:first-child { padding-right:5px; }.canvas-card-actions>.canvas-remove { margin-left:0; }.canvas-add-slot,.canvas-item-editor { margin-left:47px; }.canvas-add-slot>button { padding:16px 9px; font-size:var(--text-caption); }.canvas-add-slot span { font-size:var(--text-caption); }.canvas-slot.is-drop-target:before { left:47px; }.canvas-panel { top:62px; bottom:91px; left:10px; right:10px; }.canvas-dock { width:calc(100% - 28px); gap:0; padding:5px; border-radius:10px; }.canvas-dock button { flex:1; flex-direction:column; gap:4px; padding:8px 5px; font-size:var(--text-caption); }.canvas-announcement { left:14px; right:14px; bottom:95px; max-width:none; font-size:var(--text-caption); }.canvas-item-editor { padding:17px; }.canvas-editor-grid { grid-template-columns:1fr 1fr; gap:0 10px; }.canvas-editor-grid label:first-child { grid-column:1/-1; }.canvas-editor-grid input,.canvas-editor-grid select { margin-bottom:10px; }.canvas-footnote { font-size:var(--text-caption); }.quick-start-top { font-size:var(--text-caption); }.quick-start-heading { padding-top:10px; }.quick-start-emblem { width:46px; height:46px; margin-bottom:20px; }.quick-start-heading .canvas-kicker { font-size:var(--text-caption); }.journey-shell .quick-start-heading h1 { font-size:var(--text-page); }.quick-start-heading>p:last-child { font-size:var(--text-small); }.quick-start-composer { padding:17px 16px 15px; }.quick-start-composer textarea { font-size:var(--text-body); min-height:110px; }.quick-start-choices { gap:7px; padding-bottom:14px; }.quick-start-choices label { padding:6px; }.quick-start-choices input,.quick-start-choices select { font-size:var(--text-caption); max-width:135px; }.quick-start-submit { flex-direction:column-reverse; gap:12px; }.quick-start-submit button { width:100%; font-size:var(--text-small); padding:14px; }.quick-start-submit>span { font-size:var(--text-caption); }.quick-start-secondary { margin-bottom:32px; font-size:var(--text-caption); }.quick-start-inspiration>div:first-child>span { display:none; }.quick-start-inspiration .canvas-kicker { font-size:var(--text-caption); }.quick-start-postcards { grid-template-columns:1fr; gap:15px; }.quick-start-postcards>button { height:155px; }.quick-start-postcards>button>div { padding:15px 20px; }.canvas-start-options article { display:block; }.canvas-start-options img { height:180px; } }
 @media(prefers-reduced-motion:reduce) { .canvas-plan-area,.trip-canvas *,.quick-start * { animation:none!important; transition:none!important; scroll-behavior:auto!important; } }
 
-/* Activity photos and bookings on the trip canvas */
-.canvas-activity.has-photo { display:grid; grid-template-columns:minmax(0,1fr) 210px; column-gap:22px; align-content:start; }
-.canvas-activity-photo { grid-column:2; grid-row:1 / span 4; align-self:start; width:100%; aspect-ratio:4 / 3; object-fit:cover; border-radius:6px; background:#e6e0cc; }
-.canvas-activity.has-photo > .canvas-card-actions, .canvas-activity.has-photo > .canvas-move-menu { grid-column:1 / -1; }
-.canvas-bookings { margin:28px 0 8px; }
-.canvas-bookings .travel-planning-options { margin:0; padding:26px; border:1px solid #d5d5bb; border-radius:8px; background:#edf0df; }
-@media (max-width:760px) {
-  .canvas-activity.has-photo { grid-template-columns:1fr; }
-  .canvas-activity-photo { grid-column:1; grid-row:auto; order:-1; aspect-ratio:16 / 9; margin-bottom:12px; }
-  .canvas-bookings .travel-planning-options { padding:20px 16px; }
-}
+/* Planning canvas readability pass: hierarchy comes from type and restrained route accents. */
+.journey-shell:has(.trip-canvas) { background: #ffffff; background-image: none; }
+.journey-shell:has(.trip-canvas) > .travel-canvas { opacity: .05; }
+.trip-canvas { --canvas-ink: #10263b; --canvas-slate: #5f6e76; background: #ffffff; }
+.canvas-breadcrumb,.canvas-toolbar,.canvas-save-state,.canvas-plain,.canvas-share,.canvas-add-slot>button,.canvas-move-menu,.canvas-move-menu button,.canvas-item-editor label,.canvas-item-editor footer button { color: var(--canvas-ink); font-size: 13px; }
+.canvas-preview-note,.canvas-footnote,.canvas-viewer-note { color: var(--canvas-slate); font-size: 13px; line-height: 1.55; }
 
-/* Preferences changed since the plan was made */
-.canvas-outdated { margin:18px 0 6px; padding:18px 20px; border:1px solid #d9c48f; border-radius:8px; background:#f8efd6; }
-.canvas-outdated-head { display:flex; align-items:center; gap:14px; }
-.canvas-outdated-head > svg { flex-shrink:0; color:#9a7a3c; }
-.canvas-outdated-head strong { display:block; font:500 var(--text-body) var(--serif); color:#2f3b2c; }
-.canvas-outdated-head p { margin:4px 0 0; font-size:var(--text-caption); line-height:1.55; color:#5d5a45; }
-.canvas-outdated-head .secondary-button { margin-left:auto; white-space:nowrap; }
-.canvas-outdated .quest-itinerary-picker { margin-top:18px; }
-@media (max-width:760px) { .canvas-outdated-head { flex-direction:column; align-items:flex-start; } .canvas-outdated-head .secondary-button { margin-left:0; } }
+/* Lavender utility surfaces keep the planning canvas in the same visual family. */
+.canvas-preview-note,
+.canvas-share,
+.canvas-days>button,
+.canvas-add-slot,
+.canvas-panel,
+.canvas-panel-tabs,
+.canvas-context,
+.canvas-chat-example,
+.canvas-dock { background: #eee7fb; border-color: #d5c8ec; color: #3e2f61; }
+.canvas-days>button { color: #625278; }
+.canvas-days>button.active { background: #3e2f61; border-color: #3e2f61; color: #fff; }
+.canvas-round,
+.canvas-idea>span,
+.canvas-idea>button,
+.canvas-demo-orb { background: #f7f3ff; border-color: #d5c8ec; color: #65508f; }
+.canvas-activity,
+.canvas-activity.kind-experience,
+.canvas-activity.kind-free { background: #f7f3ff; border-color: #d9cfed; }
+.canvas-activity { border-left-color: #7c5ab4; }
+.canvas-activity.kind-experience { border-left-color: #a071cb; }
+.canvas-activity.kind-free { border-left-color: #8f83cf; }
+.canvas-card-actions { border-top-color: #ded5f0; }
+.canvas-card-actions>button:hover { background: #eee7fb; }
+.canvas-panel-tabs>button[aria-pressed=true] { background: #fff; color: #3e2f61; }
+.canvas-days>button { color: var(--canvas-ink); font-size: 13px; }
+.canvas-days>button span { color: #5f6e76; font-size: 12px; }
+.canvas-days>button strong { font-size: 14px; font-weight: 700; }
+.canvas-days>button small { color: #5f6e76; font-size: 12px; }
+.canvas-days>button.active { background: #10263b; border-color: #10263b; color: #fff; }
+.canvas-days>button.active span { color: #ffc533; }
+.canvas-days>button.active small { color: rgba(255,255,255,.78); }
+.canvas-day-heading p:last-child { color: var(--canvas-slate); font-size: 16px; line-height: 1.5; }
+.journey-shell .canvas-day-heading h2 { color: var(--canvas-ink); font-size: 32px; }
+.canvas-round { color: #10263b; border-color: #27c8f5; background: #e7f9ff; }
+.canvas-timeline:before { background: #27c8f5; }
+.canvas-time { color: var(--canvas-slate); font-size: 13px; }
+.canvas-time i { border-color: #27c8f5; background: #fff; }
+.canvas-activity { border-left-color: #27c8f5; }
+.canvas-activity.kind-experience,.canvas-activity.kind-free { border-left-color: #27c8f5; }
+.canvas-activity.kind-transport,.canvas-activity.kind-stay { border-left-color: #ff5a36; }
+.journey-shell .canvas-activity h3 { color: var(--canvas-ink); font-size: 26px; line-height: 1.18; }
+.canvas-activity-note { color: var(--canvas-ink); font-size: 16px; line-height: 1.55; }
+.canvas-activity-meta,.canvas-lock-label,.canvas-type { color: var(--canvas-slate); font-size: 12px; }
+.canvas-card-actions>button { color: var(--canvas-ink); font-size: 13px; }
+.canvas-card-actions>button:first-child { color: #ff5a36; font-weight: 700; }
+.canvas-add-slot { border-color: #27c8f5; background: #f4fcff; }
+.canvas-add-slot>button { color: #027ca5; font-weight: 700; }
+.canvas-add-slot span { color: var(--canvas-slate); font-size: 12px; }
+.canvas-panel-tabs { background: #edfaff; }
+.canvas-panel-tabs>button { color: #10263b; font-size: 14px; font-weight: 600; }
+.canvas-panel-tabs>button[aria-pressed=true],.canvas-dock button[aria-pressed=true] { background: #27c8f5; color: #10263b; box-shadow: none; }
+.canvas-panel-tabs>button[aria-pressed=true] svg,.canvas-dock button[aria-pressed=true] svg { color: #10263b; }
+.canvas-panel-body>p:not(.canvas-kicker),.canvas-demo-chat p { color: var(--canvas-ink); font-size: 16px; line-height: 1.55; }
+.journey-shell .canvas-panel-body h2,.canvas-companion-body .companion-panel h2 { color: var(--canvas-ink); font-size: 30px; }
+.canvas-idea strong { color: var(--canvas-ink); font-size: 16px; font-weight: 700; }
+.canvas-idea small { color: var(--canvas-slate); font-size: 12px; line-height: 1.45; }
+.canvas-idea>button { border-color: #27c8f5; background: #27c8f5; color: #10263b; }
+.canvas-idea>button:hover { background: #12b6e4; }
+.canvas-privacy,.canvas-context { color: var(--canvas-slate); font-size: 12px; line-height: 1.5; }
+.canvas-dock button { color: var(--canvas-ink); font-size: 13px; font-weight: 600; }
+.canvas-dock b,.canvas-panel-tabs b { background: #e94d7d; font-size: 12px; }
+.canvas-item-editor input,.canvas-item-editor select,.canvas-item-editor textarea { color: var(--canvas-ink); font-size: 15px; }
+.canvas-item-editor footer button[type=submit] { background: #ff5a36; color: #fff; }
 
-/* Crew confirmations on activities */
-.canvas-confirm { grid-column:1 / -1; display:flex; align-items:center; gap:12px; margin:12px 0 0; }
-.canvas-confirm button { display:inline-flex; align-items:center; gap:6px; padding:6px 12px; border:1px solid #c8d1b4; border-radius:999px; background:#fffdf7; color:#4e5d45; font-size:var(--text-caption); cursor:pointer; }
-.canvas-confirm.is-in button { background:#3f5a45; border-color:#3f5a45; color:#fff; }
-.canvas-confirm span { font-size:var(--text-caption); color:#7b8470; }
+/* A few existing planning notes use a solid violet surface to break up the cream canvas. */
+.canvas-preview-note,.canvas-context,.canvas-announcement { background: #65508f; border-color: #65508f; color: #fff; }
+.canvas-preview-note a,.canvas-context p,.canvas-announcement { color: #fff; }
+.canvas-preview-note svg,.canvas-context svg { color: #c8e53b; }
+.canvas-panel-tabs { background: #65508f; border-bottom-color: #65508f; }
+.canvas-panel-tabs>button { color: rgba(255,255,255,.88); }
+.canvas-panel-tabs>button[aria-pressed=true] { background: #27c8f5; color: #10263b; }
 
-/* Things to do in the area */
-.canvas-area-ideas { display:flex; flex-direction:column; }
-.canvas-idea-search { display:flex; gap:6px; margin:6px 0 10px; }
-.canvas-idea-search input { flex:1; min-width:0; padding:9px 12px; border:1px solid #d5d5bb; border-radius:6px; background:#fffdf7; font-size:var(--text-caption); }
-.canvas-idea-search button { padding:0 12px; border:1px solid #c8d1b4; border-radius:6px; background:#edf0df; color:#4e5d45; cursor:pointer; }
-.canvas-idea-loading { margin:8px 0; font-size:var(--text-caption); color:#7b8470; }
-.canvas-area-idea > img { width:52px; height:52px; flex-shrink:0; object-fit:cover; border-radius:6px; background:#e6e0cc; }
-.canvas-area-idea small { display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
-.canvas-quick-kicker { margin-top:22px; }
+/* A soft colour rotation for planning surfaces. */
+.canvas-preview-note { background: #f7f3ff; border-color: #d5c8ec; color: #3e2f61; }
+.canvas-preview-note a,.canvas-preview-note svg { color: #65508f; }
+.canvas-context { background: #f2f8df; border-color: #d6e5b3; color: #49613a; }
+.canvas-context p,.canvas-context svg { color: #49613a; }
+.canvas-announcement { background: #fff0ea; border-color: #ffd2c5; color: #7d3c31; }
+.canvas-panel { background: #fff9e8; border-color: #eadcb3; }
+.canvas-days>button:nth-child(2) { background: #f2f8df; border-color: #d6e5b3; color: #49613a; }
+.canvas-days>button:nth-child(3) { background: #fff8d9; border-color: #f0df9c; color: #66521e; }
+.canvas-days>button.active { background: #10263b; border-color: #10263b; color: #fff; }
+.canvas-activity { background: #f7f3ff; border-color: #d9cfed; border-left-color: #8f83cf; }
+.canvas-activity.kind-experience { background: #f2f8df; border-color: #d6e5b3; border-left-color: #9cb950; }
+.canvas-activity.kind-free { background: #fff8d9; border-color: #f0df9c; border-left-color: #e0b733; }
+.canvas-activity.kind-transport { background: #fff0ea; border-color: #ffd2c5; border-left-color: #ff8d70; }
+.canvas-activity.kind-stay { background: #f7f3ff; border-color: #d9cfed; border-left-color: #8f83cf; }
+.canvas-add-slot { background: #f2f8df; border-color: #d6e5b3; }
 
-/* Searchable destination and departure on the quick start */
-.quick-start-choices .quick-start-place { flex:1 1 210px; position:relative; }
-.quick-start-place .city-search { position:static; flex:1; min-width:0; margin-top:0; }
-.quick-start-place .city-search input { max-width:none; width:100%; padding:0; border:0; border-radius:0; background:transparent; font-size:var(--text-body); color:#707d62; }
-.quick-start-place .city-suggestions { left:-1px; right:-1px; top:calc(100% + 2px); text-align:left; }
-.canvas-outdated.canvas-options { border-color:#c8d1b4; background:#f1f2e4; }
-.canvas-outdated.canvas-options .canvas-outdated-head > svg { color:#718661; }
-.vote-current { display:inline-flex; align-items:center; gap:6px; padding:10px 14px; font-size:var(--text-small); color:#3f5a45; }
+/* Light aqua replaces the remaining pale-green planning bars and cards. */
+.canvas-context,
+.canvas-days>button:nth-child(2),
+.canvas-activity.kind-experience,
+.canvas-add-slot,
+.canvas-chat-example { background: #f3fcfd; border-color: #cdeff2; color: #315b68; }
+.canvas-context p,.canvas-context svg { color: #315b68; }
+.canvas-activity.kind-experience { border-left-color: #5fc8d2; }
 
-/* Ideas grouped by category */
-.canvas-idea-category { border-bottom:1px solid #e3e2d3; }
-.canvas-idea-category > summary { display:flex; align-items:center; gap:12px; padding:14px 2px; cursor:pointer; list-style:none; }
-.canvas-idea-category > summary::-webkit-details-marker { display:none; }
-.canvas-idea-category > summary > span:nth-child(2) { flex:1; min-width:0; display:flex; flex-direction:column; }
-.canvas-idea-category > summary strong { font-size:var(--text-small); color:#2f3b2c; }
-.canvas-idea-category > summary small { font-size:var(--text-caption); color:#8a907c; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.canvas-idea-category > summary > svg { color:#8a907c; transition:transform .2s; }
-.canvas-idea-category[open] > summary > svg { transform:rotate(45deg); }
-.canvas-idea-category-icon { display:grid; place-items:center; width:36px; height:36px; flex-shrink:0; border-radius:50%; background:#eceedf; color:#7b6a45; }
-.canvas-idea-category .canvas-area-idea { padding-left:8px; }
-.canvas-idea-more, .canvas-idea-free { display:inline-flex; align-items:center; gap:6px; margin:4px 0 12px 8px; padding:6px 10px; border:1px solid #d5d5bb; border-radius:999px; background:#fffdf7; color:#5d6652; font-size:var(--text-caption); cursor:pointer; }
-.canvas-idea-results { display:flex; justify-content:space-between; align-items:center; margin:2px 0 6px; font-size:var(--text-caption); color:#7b8470; }
-.canvas-idea-results button { border:0; background:none; color:#7b6a45; text-decoration:underline; font-size:var(--text-caption); cursor:pointer; }
-.canvas-focus-hide[hidden], .canvas-dock[hidden] { display:none !important; }
+/* The crew panel and its parent use a clean white paper surface. */
+.canvas-panel:has(.canvas-crew-body),
+.canvas-crew-body,
+.canvas-crew-body .crew-chat-panel { background: #ffffff; }
+.canvas-crew-body { border-color: #e5dcf2; }
 
-/* Custom activity in the ideas panel */
-.canvas-idea-custom { margin:4px 0 16px; padding:14px; border:1px dashed #c9c69f; border-radius:8px; background:#fbf8ec; }
-.canvas-idea-custom label { display:flex; align-items:center; gap:6px; margin-bottom:8px; font-size:var(--text-caption); font-weight:600; color:#4e5d45; }
-.canvas-idea-custom > div { display:flex; gap:6px; }
-.canvas-idea-custom input { flex:1; min-width:0; padding:9px 12px; border:1px solid #d5d5bb; border-radius:6px; background:#fffdf7; font-size:var(--text-caption); }
-.canvas-idea-custom button { padding:0 14px; border:0; border-radius:6px; background:#3f5a45; color:#fff; font-size:var(--text-caption); cursor:pointer; }
-.canvas-idea-custom button:disabled { opacity:.45; cursor:default; }
+/* Increase the compact planning typography for normal browser zoom. */
+.canvas-days>button span { font-size: 11px; }
+.canvas-days>button strong { font-size: 16px; }
+.canvas-days>button small { font-size: 13px; }
+.journey-shell .canvas-activity h3 { font-size: 28px; }
+.canvas-type { font-size: 12px; }
+.canvas-activity-meta { font-size: 13px; }
+.canvas-card-actions>button { font-size: 13px; }
+.canvas-idea strong { font-size: 17px; }
+.canvas-idea small { font-size: 13px; }
+.canvas-panel-body .canvas-kicker,.canvas-crew-body .canvas-privacy { font-size: 10px; }
+
+/* Planning tools share one white working canvas instead of a competing yellow panel. */
+.canvas-panel { background: #ffffff; border-color: #e5dcf2; }
+.canvas-crew-body { background: #ffffff; }
+.canvas-breadcrumb,.canvas-toolbar,.canvas-save-state,.canvas-plain,.canvas-share { font-size: 14px; }
+.canvas-share { padding: 10px 14px; }

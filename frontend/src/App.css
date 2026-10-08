@@ -51,6 +51,12 @@
     transform: translateY(-2px);
 }
 
+/* Coral actions always use high-contrast white labels. */
+.primary-button,
+.coral-button,
+.start-journey,
+.search-submit { color: #ffffff; }
+
 .save-button {
     transition: transform .2s, color .2s;
 }
@@ -61,12 +67,14 @@
 
 :root {
     font-family: var(--serif);
-    --ink: #173b4c;
-    --muted: #6d7e7b;
-    --cream: #f7f1e7;
+    --ink: #183e35;
+    --muted: #66766f;
+    --cream: #ffffff;
     --paper: #fffdf8;
-    --coral: #e36f4c;
-    --yellow: #eebf72;
+    --coral: #ff5a36;
+    --yellow: #ffc533;
+    --lime: #c8e53b;
+    --berry: #e94d7d;
     --line: #ded4c4;
     --serif: 'Fraunces', Georgia, serif;
     --mono: var(--serif);
@@ -75,10 +83,7 @@
 .app-shell {
     min-height: 100vh;
     background-color: var(--cream);
-    background-image: linear-gradient(110deg, rgba(247, 241, 231, .94) 0%, rgba(247, 241, 231, .82) 58%, rgba(238, 223, 201, .72) 100%), url('https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=2200&q=80');
-    background-attachment: fixed;
-    background-size: cover;
-    background-position: center;
+    background-image: none;
 }
 
 .topbar {
@@ -1132,13 +1137,15 @@ main {
 
 /* Master warm-coast template for every route outside the immersive home screen. */
 .app-shell:not(.landing-shell):not(.journey-shell) {
-    --ink: #173b4c;
-    --muted: #687b78;
+    --ink: #183e35;
+    --muted: #587068;
     --paper: rgba(255, 252, 246, .94);
     --line: rgba(210, 190, 162, .76);
-    --coral: #df6e4c;
-    --yellow: #eebf72;
-    background: linear-gradient(125deg, rgba(12, 54, 72, .7), rgba(63, 62, 116, .46) 58%, rgba(33, 112, 120, .38)), url('./assets/coast-hero.webp') center/cover fixed;
+    --coral: #ff5a36;
+    --yellow: #ffc533;
+    --lime: #c8e53b;
+    --berry: #e94d7d;
+    background: linear-gradient(125deg, rgba(12, 54, 72, .7), rgba(63, 62, 116, .46) 58%, rgba(33, 112, 120, .38)), url('./assets/coast-hero.png') center/cover fixed;
 }
 
 .app-shell:not(.landing-shell):not(.journey-shell) .topbar {
@@ -1185,7 +1192,7 @@ main {
 .app-shell:not(.landing-shell):not(.journey-shell) main.explore-route-main .route-view { max-width: none; padding: 0; }
 
 /* Readability pass: every surface has a deliberate high-contrast text treatment. */
-.app-shell:not(.landing-shell):not(.journey-shell) { --ink: #102f42; --muted: #365866; }
+.app-shell:not(.landing-shell):not(.journey-shell) { --ink: #183e35; --muted: #406158; }
 .app-shell:not(.landing-shell):not(.journey-shell) .nav-link { color: rgba(255,255,255,.94); }
 .app-shell:not(.landing-shell):not(.journey-shell) .nav-link:hover { color: #ffd49f; }
 .app-shell:not(.landing-shell):not(.journey-shell) .flow-heading .lede, .app-shell:not(.landing-shell):not(.journey-shell) .page-heading > p, .app-shell:not(.landing-shell):not(.journey-shell) .flow-topbar .back-link, .app-shell:not(.landing-shell):not(.journey-shell) .flow-topbar .flow-step { color: #fff9ed; text-shadow: 0 2px 9px rgba(4,24,36,.48); }
@@ -1195,8 +1202,8 @@ main {
 .app-shell:not(.landing-shell):not(.journey-shell) .room-card-copy small, .app-shell:not(.landing-shell):not(.journey-shell) .quest-travellers em, .app-shell:not(.landing-shell):not(.journey-shell) .question-helper, .app-shell:not(.landing-shell):not(.journey-shell) .option-button, .app-shell:not(.landing-shell):not(.journey-shell) .form-hint, .app-shell:not(.landing-shell):not(.journey-shell) .answer-list span, .app-shell:not(.landing-shell):not(.journey-shell) .suggestion-panel > p:not(.section-kicker), .app-shell:not(.landing-shell):not(.journey-shell) .date-fields label, .app-shell:not(.landing-shell):not(.journey-shell) .flexible-date, .app-shell:not(.landing-shell):not(.journey-shell) .token-status { color: #315561; }
 .app-shell:not(.landing-shell):not(.journey-shell) .question-title, .app-shell:not(.landing-shell):not(.journey-shell) .room-card-copy strong, .app-shell:not(.landing-shell):not(.journey-shell) .flow-section-heading h2, .app-shell:not(.landing-shell):not(.journey-shell) .overview-panel h2 { color: #102f42; }
 .app-shell:not(.landing-shell):not(.journey-shell) .option-button { background: rgba(255,255,255,.62); border-color: rgba(77,112,119,.48); font-weight: 600; }
-.app-shell:not(.landing-shell):not(.journey-shell) .option-button:hover, .app-shell:not(.landing-shell):not(.journey-shell) .option-button.selected { color: #102f42; background: #ffe4cf; border-color: #ce6248; }
-.app-shell:not(.landing-shell):not(.journey-shell) .question-input { background: #fffdf9; color: #102f42; border-color: rgba(104,82,57,.42); font-weight: 600; }
+.app-shell:not(.landing-shell):not(.journey-shell) .option-button:hover, .app-shell:not(.landing-shell):not(.journey-shell) .option-button.selected { color: #183e35; background: #ffc533; border-color: #d39a00; }
+.app-shell:not(.landing-shell):not(.journey-shell) .question-input { background: #fffdf9; color: #183e35; border-color: rgba(104,82,57,.42); font-weight: 600; }
 .app-shell:not(.landing-shell):not(.journey-shell) .question-input::placeholder { color: #60757a; opacity: 1; }
 .app-shell:not(.landing-shell):not(.journey-shell) .text-button { color: #ad472f; font-weight: 700; }
 .app-shell:not(.landing-shell):not(.journey-shell) .new-room-panel > p:not(.section-kicker) { color: #fff7eb; }

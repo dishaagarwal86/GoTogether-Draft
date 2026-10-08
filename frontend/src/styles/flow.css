@@ -46,9 +46,8 @@
 .plan-page .new-room-panel { min-height: 315px; }
 .new-room-panel h2 { color: white; font-size:var(--text-section); margin-bottom: 13px; }
 .new-room-panel .section-kicker { color: #f3bd7b; }
-.new-room-panel > p:not(.section-kicker) { color: #dbe7de; font-size: var(--text-small); line-height: 1.6; margin: 0 0 25px; }
-.new-room-panel .primary-button { background: #efbc71; color: var(--ink); box-shadow: none; }
-.plan-page .new-room-panel .primary-button { background: #fff1d7; color: #9a4650; }
+.new-room-panel > p:not(.section-kicker) { color: #dbe7de; font-size: 12px; line-height: 1.6; margin: 0 0 25px; }
+.new-room-panel .primary-button,.plan-page .new-room-panel .primary-button { background: #ff5a36; border-color: #ff5a36; color: #fff; box-shadow: 0 7px 14px rgba(255,90,54,.18); }
 .new-room-mark { display: grid; place-items: center; width: 39px; height: 39px; margin-bottom: 28px; border: 1px solid rgba(255,255,255,.35); color: #f3bd7b; font-size: 23px; }
 .form-page { max-width: 720px; }
 .room-form { display: grid; gap: 21px; padding: 30px; border-top: 4px solid var(--coral); }
@@ -66,8 +65,8 @@
 .question-title span { display: inline-grid; place-items: center; flex: 0 0 26px; width: 26px; height: 26px; color: var(--coral); background: #f7e3ce; border-radius: 50%; font: var(--text-caption) var(--mono); }
 .question-helper { margin: 8px 0 0 36px; color: var(--muted); font-size: var(--text-caption); line-height: 1.5; }
 .option-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 17px; }
-.option-button { flex: 1 1 145px; border: 1px solid var(--line); padding: 11px 13px; background: transparent; color: var(--muted); text-align: left; font-size: var(--text-caption); transition: border-color .2s, background .2s, color .2s; }
-.option-button:hover, .option-button.selected { border-color: var(--coral); background: #f8e3d1; color: var(--ink); }
+.option-button { flex: 1 1 145px; border: 1px solid var(--line); padding: 11px 13px; background: transparent; color: var(--muted); text-align: left; font-size: 11px; transition: border-color .2s, background .2s, color .2s; }
+.option-button:hover, .option-button.selected { border-color: #d39a00; background: #ffc533; color: #183e35; }
 .option-button b { float: right; color: var(--coral); }
 .question-input { display: block; width: 100%; margin-top: 16px; padding: 13px; border: 1px solid var(--line); background: rgba(255,255,255,.72); color: var(--ink); outline-color: var(--coral); font-size: var(--text-small); }
 .short-input { max-width: 220px; }
@@ -105,5 +104,19 @@
 .quest-readiness-decision { position:relative; z-index:1; }.decision-copy { max-width:680px; margin-bottom:19px; }.decision-copy .section-kicker { color:#ffc782; }.decision-copy>p:last-child { margin:7px 0 0; color:#fff8e9; font-size:var(--text-lead); line-height:1.45; }.decision-next { display:flex; flex-wrap:wrap; align-items:baseline; gap:8px 12px; margin-bottom:15px; color:rgba(255,248,233,.72); font-size:var(--text-caption); }.decision-next strong { color:#ffc782; font:500 20px var(--serif); }
 .readiness-options { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:13px; }.readiness-option { min-width:0; padding:21px; border:1px solid rgba(255,244,223,.23); border-radius:13px; background:rgba(255,253,245,.09); transition:transform .2s,background .2s,border-color .2s; }.readiness-option:hover { transform:translateY(-3px); border-color:rgba(255,199,130,.8); background:rgba(255,253,245,.14); }.readiness-option.is-selected { border-color:#ffc782; background:linear-gradient(135deg,rgba(227,111,76,.32),rgba(255,199,130,.17)); }.readiness-option .section-kicker { color:#ffc782; }.readiness-option h3 { margin:7px 0 8px; color:#fff9ed; font:500 var(--text-card) var(--serif); line-height:1.25; }.readiness-option>p:not(.section-kicker) { min-height:39px; margin:0 0 17px; color:rgba(255,248,233,.78); font-size:var(--text-caption); line-height:1.55; }.readiness-option .primary-button,.readiness-option .secondary-button { min-height:38px; padding:9px 12px; font-size:var(--text-caption); }.readiness-option .primary-button { background:#ffc782; color:#1b4350; }.readiness-option .secondary-button { border-color:rgba(255,241,215,.45); background:rgba(255,255,255,.08); color:#fff8e9; }.readiness-outcome { display:flex; align-items:flex-start; gap:9px; max-width:620px; margin:17px 0 0; padding:12px 14px; border-left:2px solid #ffc782; background:rgba(255,249,232,.1); color:#fff8e9; font-size:var(--text-small); line-height:1.5; }.readiness-outcome svg { flex:0 0 auto; color:#ffc782; }.readiness-discuss { display:inline-flex; align-items:center; gap:8px; margin-top:20px; color:#fff0d1; font-size:var(--text-caption); text-decoration:none; }.readiness-discuss:hover { color:#ffc782; }.quest-readiness.is-unlocked .quest-readiness-trail { margin-bottom:0; }.quest-readiness.is-unlocked { background:radial-gradient(circle at 89% 12%,rgba(255,193,116,.23),transparent 27%),linear-gradient(135deg,#16454d,#386354 62%,#59644f); }
 @keyframes readiness-pulse { 50% { transform:scale(1.11); box-shadow:0 0 0 10px rgba(227,111,76,.08),0 0 24px rgba(255,188,125,.9); } }
+
+/* Lime marks completed agreement and an unlocked quest, never general copy. */
+.quest-status-badge.upcoming { color: #183e35; background: #eaf5ae; }
+.quest-status-badge.completed { color: #183e35; background: #c8e53b; }
+.trail-marker.is-complete i { border-color: #c8e53b; background: #c8e53b; color: #183e35; }
+.trail-unlock { color: #c8e53b; }
+.trail-unlock svg { color: #c8e53b; background: #183e35; }
+.trail-unlock.is-unlocked svg { border-color: #c8e53b; background: #c8e53b; color: #183e35; box-shadow: 0 0 17px rgba(200,229,59,.62); }
+
+.quest-readiness,
+.quest-readiness.is-unlocked { background: #65508f; border-color: #65508f; }
+.suggestion-panel { background: #65508f; color: #fff; }
+.suggestion-panel :is(h2,h3,p,.text-button) { color: #fff; }
+.suggestion-panel .panel-symbol { color: #c8e53b; }
 @media (prefers-reduced-motion:reduce) { .trail-marker.is-decision i { animation:none; } .readiness-option { transition:none; } }
 @media (max-width:650px) { .quest-readiness { margin-top:21px; padding:24px 19px; }.quest-readiness-topline { align-items:flex-start; flex-direction:column; gap:10px; }.quest-readiness-intro { gap:13px; }.quest-readiness-intro h2 { font-size:var(--text-section); }.quest-readiness-compass { width:37px; height:37px; }.quest-readiness-trail { grid-template-columns:repeat(6,minmax(20px,1fr)); margin:29px 0 25px; }.trail-marker i,.trail-unlock svg { width:24px; height:24px; }.trail-marker small { font-size:0; }.trail-unlock small { white-space:normal; font-size:var(--text-caption); }.trail-line { top:12px; }.decision-copy>p:last-child { font-size:var(--text-body); }.readiness-options { grid-template-columns:1fr; }.readiness-option>p:not(.section-kicker) { min-height:auto; }.decision-next strong { font-size:var(--text-lead); } }

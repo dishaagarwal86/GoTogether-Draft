@@ -1,5 +1,5 @@
 /* A shared planning desk: the itinerary scrolls while the conversation stays in reach. */
-.journey-shell .journey-main:has(.quest-workspace-page) { width: min(1320px,calc(100% - 80px)); max-width: 1320px; padding-top: 25px; }
+.journey-shell .journey-main:has(.quest-workspace-page) { width: min(1580px,calc(100% - 64px)); max-width: 1580px; padding-top: 25px; }
 .journey-shell:has(.quest-workspace-page)>.travel-canvas { opacity: .35; }
 .quest-workspace-page { min-width: 0; }
 .contacts-panel { margin-top:28px; padding:26px; border:1px solid var(--line); background:var(--paper); color:var(--ink); }
@@ -288,82 +288,139 @@
   .journey-shell .quest-invite-dialog { padding: 29px 23px; }
   .journey-shell .quest-invite-form input { font-size: var(--text-body); }
 }
-.crew-panel-note { flex-wrap: wrap; }.crew-panel-note>span { flex:1; }.quest-notes-toggle { display:flex; align-items:center; gap:7px; width:100%; margin-top:4px; color:#506b51; font-size:var(--text-caption); cursor:pointer; }.quest-notes-toggle input { appearance:none; width:28px; height:16px; margin:0; border:1px solid #a9b99b; border-radius:99px; background:#cfd8c5; position:relative; transition:background .2s; }.quest-notes-toggle input::after { content:''; position:absolute; width:10px; height:10px; top:2px; left:2px; border-radius:50%; background:#fffdf4; transition:transform .2s; }.quest-notes-toggle input:checked { border-color:#d56c4d; background:#d56c4d; }.quest-notes-toggle input:checked::after { transform:translateX(12px); }.quest-notes-toggle input:focus-visible { outline:2px solid #d56c4d; outline-offset:2px; }.crew-panel-note small { width:100%; color:#78866f; font-size:var(--text-caption); line-height:1.45; }
-.quest-note-card { align-self:stretch; margin:4px 0 14px; padding:15px; border:1px solid #d8b584; border-radius:8px; background:linear-gradient(135deg,#f9ead3,#f3d9bd); box-shadow:0 8px 20px #80583712; color:#4e503a; }.quest-note-card .eyebrow { margin:0 0 8px; color:#ae6748; font-size:var(--text-caption); }.quest-note-card strong { display:block; color:#445940; font:500 var(--text-body) var(--serif); line-height:1.35; }.quest-note-card>p:not(.eyebrow) { margin:7px 0 0; color:#687057; font-size:var(--text-caption); line-height:1.55; }.quest-note-actions { display:flex; flex-wrap:wrap; gap:7px; margin-top:12px; }.quest-note-actions .secondary-button { min-height:31px; padding:7px 9px; border-color:#b99060; background:#fff6e8; color:#59624a; font-size:var(--text-caption); }.quest-note-actions .text-button { padding:5px 1px; color:#8d6241; font-size:var(--text-caption); }.quest-note-impact { margin-top:11px!important; padding:9px; border-left:2px solid #d56c4d; background:#fff6e888; color:#5e654d!important; }.quest-note-card.is-private { border-style:dashed; background:#edf0df; }.quest-note-card.is-private strong { color:#4d6348; }.crew-system-message { border-color:#d6b77f; background:#f1e5c9; }.crew-system-message p { color:#725d3c; }
+.crew-panel-note { flex-wrap: wrap; }.crew-panel-note>span { flex:1; }.quest-notes-toggle { display:flex; align-items:center; gap:7px; width:100%; margin-top:4px; color:#506b51; font-size:10px; cursor:pointer; }.quest-notes-toggle input { appearance:none; width:28px; height:16px; margin:0; border:1px solid #a9b99b; border-radius:99px; background:#cfd8c5; position:relative; transition:background .2s; }.quest-notes-toggle input::after { content:''; position:absolute; width:10px; height:10px; top:2px; left:2px; border-radius:50%; background:#fffdf4; transition:transform .2s; }.quest-notes-toggle input:checked { border-color:#d56c4d; background:#d56c4d; }.quest-notes-toggle input:checked::after { transform:translateX(12px); }.quest-notes-toggle input:focus-visible { outline:2px solid #d56c4d; outline-offset:2px; }.crew-panel-note small { width:100%; color:#78866f; font-size:8px; line-height:1.45; }
+.quest-note-card { align-self:stretch; margin:4px 0 14px; padding:15px; border:1px solid #d8b584; border-radius:8px; background:linear-gradient(135deg,#f9ead3,#f3d9bd); box-shadow:0 8px 20px #80583712; color:#4e503a; }.quest-note-card .eyebrow { margin:0 0 8px; color:#ae6748; font-size:7px; }.quest-note-card strong { display:block; color:#445940; font:500 16px var(--serif); line-height:1.35; }.quest-note-card>p:not(.eyebrow) { margin:7px 0 0; color:#687057; font-size:10px; line-height:1.55; }.quest-note-actions { display:flex; flex-wrap:wrap; gap:7px; margin-top:12px; }.quest-note-actions .secondary-button { min-height:31px; padding:7px 9px; border-color:#b99060; background:#fff6e8; color:#59624a; font-size:8px; }.quest-note-actions .text-button { padding:5px 1px; color:#8d6241; font-size:9px; }.quest-note-impact { margin-top:11px!important; padding:9px; border-left:2px solid #d56c4d; background:#fff6e888; color:#5e654d!important; }.quest-note-card.is-private { border-style:dashed; background:#edf0df; }.quest-note-card.is-private strong { color:#4d6348; }.crew-system-message { border-color:#d6b77f; background:#f1e5c9; }.crew-system-message p { color:#725d3c; }
 
-/* Activity photos on itinerary moments */
-.itinerary-moment.has-photo { padding: 0; gap: 0; overflow: hidden; flex-direction: column; align-items: stretch; }
-.itinerary-moment-photo { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; display: block; background: #e6e0cc; }
-.itinerary-moment-body { padding: 14px 15px 16px; }
-.itinerary-moment-body h4 { display: flex; align-items: center; gap: 6px; }
-.itinerary-moment-body strong { display: block; margin-bottom: 5px; font: 500 var(--text-body)/1.3 var(--serif); color: #2f3b2c; }
-.itinerary-moment.has-photo p::first-letter { text-transform: none; }
+/* The lime accent appears only when an item is positively aligned. */
+.shared-pick-card:not(.is-needs_alignment):not(.is-waiting) .group-fit-status { background: #eaf5ae; color: #183e35; }
 
-/* AI flights & stays */
-.trip-bookings-heading { margin: 22px 0 10px; font: 600 var(--text-caption) var(--mono, monospace); letter-spacing: .9px; text-transform: uppercase; color: #6c7a5c; }
-.trip-flights { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px; }
-.trip-flight { display: flex; flex-direction: column; gap: 14px; padding: 16px 18px; border: 1px solid #c8d1b4; border-radius: 6px; background: #f9f5e9; }
-.trip-flight header, .trip-flight footer { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
-.trip-flight-airline { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; font-size: var(--text-small); color: #2f3b2c; }
-.trip-flight-airline svg { color: #718661; }
-.trip-flight header small { color: #7b8470; font-size: var(--text-caption); }
-.trip-flight-leg { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 14px; }
-.trip-flight-leg > div:not(.trip-flight-line) { display: flex; flex-direction: column; }
-.trip-flight-leg > div:last-child { text-align: right; }
-.trip-flight-leg strong { font: 500 var(--text-card) var(--serif); color: #2f3b2c; }
-.trip-flight-leg span { font-weight: 600; font-size: var(--text-caption); color: #4e5d45; }
-.trip-flight-leg small { font-size: var(--text-caption); color: #7b8470; }
-.trip-flight-line { display: flex; flex-direction: column; align-items: center; gap: 4px; }
-.trip-flight-line small { font-size: var(--text-caption); color: #6c7a5c; }
-.trip-flight-line i { width: 100%; height: 1px; background: repeating-linear-gradient(90deg, #a7b394 0 6px, transparent 6px 10px); position: relative; }
-.trip-flight-line i::after { content: ''; position: absolute; right: -2px; top: -3px; width: 7px; height: 7px; border-radius: 50%; background: #718661; }
-.trip-flight-dates { display: flex; gap: 24px; margin: 0; padding: 10px 0 0; border-top: 1px dashed #d5d5bb; }
-.trip-flight-dates dt { font-size: var(--text-caption); letter-spacing: .7px; text-transform: uppercase; color: #8a907c; }
-.trip-flight-dates dd { margin: 2px 0 0; font-size: var(--text-caption); color: #3c4a36; }
-.trip-flight footer strong { display: block; font: 500 var(--text-lead) var(--serif); color: #2f3b2c; }
-.trip-flight footer small { font-size: var(--text-caption); color: #6c7a5c; }
-.trip-flight footer a { white-space: nowrap; }
+.crew-panel-heading { background: #65508f; }
+.quest-note-card { background: #65508f; border-color: #65508f; color: #fff; }
+.quest-note-card :is(.eyebrow,strong,p:not(.eyebrow)) { color: #fff; }
+.quest-note-card .eyebrow { color: #c8e53b; }
+.quest-note-actions .secondary-button { background: #fffdf8; color: #10263b; border-color: #fffdf8; }
+.quest-note-actions .text-button { color: #c8e53b; }
 
-.trip-stays { display: flex; flex-direction: column; gap: 12px; }
-.trip-stay { display: grid; grid-template-columns: 200px 1fr auto; gap: 18px; padding: 14px; border: 1px solid #c8d1b4; border-radius: 6px; background: #f9f5e9; }
-.trip-stay > img { width: 100%; height: 100%; min-height: 150px; object-fit: cover; border-radius: 4px; background: #e6e0cc; }
-.trip-stay-main h4 { margin: 2px 0 6px; font: 500 var(--text-lead)/1.25 var(--serif); color: #2f3b2c; }
-.trip-stay-stars { margin-left: 8px; font-size: var(--text-caption); letter-spacing: 1px; color: #c99a3d; vertical-align: middle; }
-.trip-stay-area { display: flex; align-items: center; gap: 5px; margin: 0 0 12px; font-size: var(--text-caption); color: #5d7050; }
-.trip-stay-main ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 5px; }
-.trip-stay-main li { display: flex; align-items: center; gap: 6px; font-size: var(--text-caption); color: #3f6a43; }
-.trip-stay-side { display: flex; flex-direction: column; align-items: flex-end; justify-content: space-between; gap: 12px; min-width: 170px; text-align: right; }
-.trip-stay-review { display: flex; align-items: center; gap: 8px; }
-.trip-stay-review span { display: flex; flex-direction: column; }
-.trip-stay-review strong { font-size: var(--text-small); color: #2f3b2c; }
-.trip-stay-review small { font-size: var(--text-caption); color: #7b8470; }
-.trip-stay-review b { display: grid; place-items: center; min-width: 34px; height: 34px; padding: 0 4px; border-radius: 6px 6px 6px 0; background: #3f5a45; color: #fff; font-size: var(--text-small); }
-.trip-stay-price { display: flex; flex-direction: column; }
-.trip-stay-price small { font-size: var(--text-caption); color: #7b8470; }
-.trip-stay-price strong { font: 500 var(--text-section) var(--serif); color: #2f3b2c; }
-.trip-stay-side .secondary-button { padding: 9px 14px; font-size: var(--text-caption); text-decoration: none; }
-.trip-bookings-total { margin: 18px 0 0; font-size: var(--text-caption); color: #4e5d45; }
-.trip-bookings-total strong { font: 500 var(--text-body) var(--serif); color: #2f3b2c; }
+/* Replace the old cream/green planning surfaces with the shared lavender. */
+.itinerary-passport,
+.itinerary-day-nav,
+.itinerary-next-step,
+.journey-shell .crew-chat-panel,
+.crew-panel-note,
+.crew-message-space,
+.crew-composer,
+.journey-shell .travel-planning-options,
+.journey-shell .travel-option-grid article,
+.journey-shell .quest-invite-dialog { background: #eee7fb; border-color: #d5c8ec; color: #3e2f61; }
+.itinerary-reasons>div,
+.itinerary-reasons>div+div,
+.itinerary-moment,
+.itinerary-moment-afternoon,
+.itinerary-moment-evening,
+.crew-message-mine { background: #f7f3ff; border-color: #d9cfed; }
+.itinerary-day-nav button,
+.itinerary-day-number,
+.crew-message-avatar,
+.crew-message-mine .crew-message-avatar,
+.crew-chat-empty>span,
+.quest-mobile-dock>button { background: #f7f3ff; border-color: #d5c8ec; color: #3e2f61; }
 
-@media (max-width: 760px) {
-  .trip-stay { grid-template-columns: 1fr; }
-  .trip-stay > img { min-height: 0; aspect-ratio: 16 / 9; }
-  .trip-stay-side { align-items: flex-start; text-align: left; min-width: 0; }
-  .trip-flights { grid-template-columns: 1fr; }
-}
+/* Rotate the light utility surfaces between lavender, lime, apricot and butter. */
+.itinerary-passport,
+.itinerary-next-step { background: #fff8d9; border-color: #f0df9c; color: #66521e; }
+.itinerary-day-nav,
+.journey-shell .crew-chat-panel,
+.crew-composer { background: #f7f3ff; border-color: #d5c8ec; color: #3e2f61; }
+.crew-panel-note,
+.crew-message-space,
+.journey-shell .travel-planning-options { background: #f2f8df; border-color: #d6e5b3; color: #49613a; }
+.journey-shell .travel-option-grid article,
+.journey-shell .quest-invite-dialog { background: #fff0ea; border-color: #ffd2c5; color: #7d3c31; }
+.itinerary-reasons>div,
+.itinerary-moment { background: #f7f3ff; border-color: #d9cfed; }
+.itinerary-reasons>div+div,
+.itinerary-moment-afternoon { background: #f2f8df; border-color: #d6e5b3; }
+.itinerary-moment-evening,
+.crew-message-mine { background: #fff0ea; border-color: #ffd2c5; }
+.quest-note-card { background: #fff8d9; border-color: #f0df9c; color: #66521e; }
+.quest-note-card :is(.eyebrow,strong,p:not(.eyebrow)) { color: #66521e; }
+.quest-note-card .eyebrow { color: #c85b42; }
+.quest-note-actions .secondary-button { background: #fff; color: #3e2f61; border-color: #d5c8ec; }
+.quest-note-actions .text-button { color: #65508f; }
 
-/* Choose-this-itinerary bar on the compare view */
-.itinerary-choose-bar { position: sticky; top: 12px; z-index: 5; display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: 18px 0 14px; padding: 14px 18px; border: 1px solid #c8d1b4; border-radius: 8px; background: #f9f5e9f2; backdrop-filter: blur(6px); box-shadow: 0 6px 18px #31472812; }
-.itinerary-choose-bar small { display: block; font-size: var(--text-caption); letter-spacing: .8px; text-transform: uppercase; color: #7b8470; }
-.itinerary-choose-bar strong { font: 500 var(--text-lead) var(--serif); color: #2f3b2c; }
-@media (max-width: 640px) { .itinerary-choose-bar { flex-direction: column; align-items: stretch; } }
+/* Replace the final pale-green bars with the shared aqua card surface. */
+.quest-shortlist,
+.crew-panel-note,
+.crew-message-space,
+.journey-shell .travel-planning-options,
+.itinerary-reasons>div+div,
+.itinerary-moment-afternoon,
+.itinerary-day-nav button,
+.itinerary-day-number,
+.crew-chat-empty>span,
+.quest-mobile-dock>button,
+.quest-note-card.is-private { background: #f3fcfd; border-color: #cdeff2; color: #315b68; }
+.itinerary-day-nav button,
+.itinerary-day-number,
+.quest-mobile-dock>button { color: #315b68; }
 
+/* Keep conversation itself calm and paper-white; purple is only a small accent. */
+.journey-shell .crew-chat-panel,
+.crew-panel-heading,
+.crew-panel-note,
+.crew-message-space,
+.crew-composer { background: #ffffff; border-color: #e5dcf2; color: #3e2f61; }
+.crew-panel-heading { border-bottom: 1px solid #e5dcf2; }
+.journey-shell .crew-panel-heading h2 { color: #3e2f61; }
+.journey-shell .crew-panel-heading .eyebrow { color: #806d9e; }
+.crew-panel-symbol { color: #65508f; border-color: #d9cfed; }
+.crew-composer textarea { background: #ffffff; border-color: #d9cfed; color: #3e2f61; }
+.crew-composer textarea::placeholder { color: #8b82a0; }
+.crew-message { background: #ffffff; border-color: #e5dcf2; color: #3e2f61; }
+.crew-message-mine { background: #fff5f1; border-color: #ffd7cb; color: #7d3c31; }
 
-.travel-photo-credit { display:block; font-size:var(--text-caption); color:#536448; overflow-wrap:anywhere; margin:6px 0; }
-.trip-flight, .trip-stay, .trip-stay-main { min-width:0; overflow-wrap:anywhere; }
-.trip-flight footer { flex-wrap:wrap; }
-.trip-flights { grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr)); }
-.canvas-activity > .travel-photo-credit { grid-column:2; grid-row:5; }
-@media (max-width:760px) { .canvas-activity > .travel-photo-credit { grid-column:1; grid-row:auto; order:-1; } }
-.canvas-confirm { flex-wrap:wrap; }
-.city-suggestions [aria-selected=true] { background:#e5ecd8; color:#2f4b34; }
+/* The embedded chat also clears the old yellow side-panel canvas. */
+.canvas-crew-body,
+.canvas-crew-body .crew-chat-panel { background: #ffffff; }
+
+/* Larger itinerary type prevents the cards from feeling like dense metadata. */
+.itinerary-passport>span { font-size: 14px; }
+.itinerary-passport small { font-size: 12px; }
+.itinerary-reasons>div { font-size: 14px; line-height: 1.55; }
+.itinerary-day-nav button { font-size: 13px; }
+.journey-shell .itinerary-day-heading h3 { font-size: 26px; }
+.itinerary-day-description,.itinerary-moment p { font-size: 14px; line-height: 1.55; }
+.itinerary-moment h4 { font-size: 12px; letter-spacing: .8px; }
+.itinerary-next-step p,.itinerary-companion small { font-size: 12px; }
+.itinerary-companion summary,.itinerary-companion>div { font-size: 14px; }
+
+/* Crew adopts the shared Journey master surface and type scale. */
+.contacts-panel { margin-top: 32px; padding: 32px; border-color: var(--border-soft); background: var(--surface-panel); color: var(--text-strong); box-shadow: 0 10px 28px rgba(60,42,100,.05); }
+.contacts-panel .eyebrow { color: #806d9e; font-size: 11px; }
+.journey-shell .contacts-panel h2 { color: var(--text-strong); font-size: 34px; }
+.contacts-panel>div>p:last-child { color: var(--text-muted); font-size: 16px; line-height: 1.6; }
+.contacts-form { gap: 16px; margin-top: 26px; }
+.contacts-form label { color: var(--text-strong); font-size: 14px; }
+.contacts-form input { min-height: 54px; padding: 13px 16px; border-color: var(--border-soft); background: #ffffff; color: var(--text-strong); font-size: 16px; }
+.contacts-form .primary-button { min-height: 54px; font-size: 14px; }
+.contacts-list { gap: 14px; margin-top: 24px; }
+.contacts-list article { min-height: 78px; gap: 12px; padding: 15px; border-color: #cdeff2; background: var(--surface-aqua); }
+.contacts-list article>span { width: 38px; height: 38px; background: var(--surface-soft); color: #65508f; font-size: 14px; }
+.contacts-list strong { color: var(--text-strong); font-size: 16px; }
+.contacts-list small { color: var(--text-muted); font-size: 14px; }
+.contacts-list button { font-size: 24px; }
+
+/* Readable conversation and supporting controls at standard desktop zoom. */
+.journey-shell .crew-panel-heading .eyebrow,
+.canvas-crew-body .canvas-privacy { font-size: 10px; }
+.journey-shell .crew-panel-heading h2 { font-size: 27px; }
+.crew-panel-note { font-size: 13px; line-height: 1.5; }
+.quest-notes-toggle { font-size: 12px; }
+.crew-panel-note small { font-size: 11px; line-height: 1.5; }
+.crew-date-divider { font-size: 12px; }
+.crew-message strong { font-size: 13px; }
+.crew-message time { font-size: 11px; }
+.crew-message p { font-size: 14px; line-height: 1.6; }
+.crew-composer textarea { font-size: 14px; }
+.crew-compose-actions>span { font-size: 11px; }
+.journey-shell .crew-compose-actions .primary-button { font-size: 13px; min-height: 40px; }

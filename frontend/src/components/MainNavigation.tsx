@@ -15,7 +15,7 @@ export function GlobalNavbar() {
   const profileRef = useRef<HTMLDivElement>(null)
   useEffect(() => { const close = (event: PointerEvent) => { if (!profileRef.current?.contains(event.target as Node)) setProfile(false) }; document.addEventListener('pointerdown', close); return () => document.removeEventListener('pointerdown', close) }, [])
   return <header className="journey-nav" onKeyDown={(event) => { if (event.key === 'Escape') { setMenu(false); setProfile(false) } }}><div className="journey-nav-inner">
-    <Link to={user ? '/dashboard' : '/'} aria-label="GoTogether home"><Brand /></Link>
+    <Link to="/" aria-label="GoTogether landing page"><Brand /></Link>
     <nav className={`journey-nav-links${menu ? ' is-open' : ''}`} id="journey-navigation" aria-label="Main navigation">
       {user && <NavLink to="/dashboard">Overview</NavLink>}<NavLink to="/trips">My quests</NavLink><NavLink to="/explore">Explore</NavLink><NavLink to="/saved">Saved places</NavLink>
     </nav>
