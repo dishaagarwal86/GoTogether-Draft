@@ -14,9 +14,10 @@
 .place-photo-caption { min-width: 0; margin: 6px 0; font-size: var(--text-caption); line-height: 1.5; color: #536448; }
 .place-photo-caption > small { display: block; font-size: inherit; line-height: inherit; }
 .canvas-activity > .place-photo-caption { grid-column: 2; grid-row: 5; }
-.canvas-area-idea { flex-wrap: wrap; }
-.canvas-area-idea > img { width: 100%; height: 140px; aspect-ratio: 16 / 9; object-fit: cover; }
-.canvas-area-idea > div { flex: 1; min-width: 0; }
+.canvas-idea.canvas-area-idea { display:grid; grid-template-columns:minmax(0,1fr) 32px; align-items:start; gap:12px; }
+.canvas-idea.canvas-area-idea > img { grid-column:1/-1; width:100%; max-width:100%; height:140px; object-fit:cover; }
+.canvas-idea.canvas-area-idea > div { min-width:0; overflow-wrap:anywhere; }
+.canvas-idea.canvas-area-idea > button { width:32px; height:32px; }
 @media (max-width: 760px) {
   .canvas-activity > .place-photo-caption { grid-column: 1; grid-row: auto; order: -1; }
 }

@@ -5,11 +5,14 @@ import { agreedStartingPoint } from './questJourney.js'
 import { applyStartPreference, learningPrompt, questPersonalContext, questPlanningConstraints, signalFromEdit, travelRpc } from './travelMemory.js'
 import { resolveRealPlace } from './realPlaceService.js'
 import type { PlaceSource } from '../data/realPlaces.js'
+import { resolveTravelDates, type TravelDates } from './travelDates.js'
+import { questParticipants, sharedAvailability } from './questParticipants.js'
+import { bookingTripDates, stayBookingDates, staysConflict } from './stayBookings.js'
 
 export type PlanItem = { id: string; title: string; kind: 'experience' | 'food' | 'stay' | 'transport' | 'free'; time: string; duration: number; note: string; locked: boolean; booked?: boolean; imageQuery?: string; placeSource?: PlaceSource }
 export type PlanDay = { id: string; title: string; items: PlanItem[] }
 type BookedItems = { flights: string[]; stays: string[] }
-export type PlanDocument = { title: string; destination: string; country: string; catalogueId: string; preferenceVersion?: string; days: PlanDay[]; bookings?: ReturnType<typeof bookingsFor>; booked?: BookedItems }
+export type PlanDocument = { title: string; destination: string; country: string; catalogueId: string; preferenceVersion?: string; travelDates?: TravelDates; days: PlanDay[]; bookings?: ReturnType<typeof bookingsFor>; booked?: BookedItems }
 type Snapshot = { eventId?: string; label: string; document: PlanDocument }
 type RecordData = { document: PlanDocument; history: Snapshot[]; requests: string[] }
 type PlanRow = { id: string; revision: number; data: RecordData; updated_at: string }
@@ -34,7 +37,19 @@ export async function getWorkingPlan(roomId: string, userId: string) {
   await assertQuestMember(roomId, userId)
   const [row] = await selectRows<PlanRow>('quest_working_plans', columns, [{ column: 'id', operator: 'eq', value: roomId }])
   if (!row) return null
-  return describePlan(row)
+  return describeDatedPlan(row)
+}
+
+async function describeDatedPlan(row: PlanRow) {
+  const saved = describePlan(row)
+  let travelDates = resolveTravelDates(saved.travelDates ?? saved.bookings?.travel_dates, saved.days.length)
+  if (!travelDates) {
+    const group = await questParticipants(row.id)
+    if (group.ready) travelDates = resolveTravelDates(undefined, saved.days.length, sharedAvailability(group.preferences))
+  }
+  // Legacy catalogue plans omitted dates. Enrich the response without rewriting
+  // the saved document, revision, history, or the crew's current agreement.
+  return { ...saved, ...(travelDates ? { travelDates } : {}) }
 }
 
 export async function startWorkingPlan(roomId: string, userId: string, catalogueId: unknown) {
@@ -62,7 +77,8 @@ async function startingDocument(roomId: string, userId: string, catalogueId: unk
   if (!days.length) throw new HttpError(409, 'This idea has no days yet. Choose another starting point.')
   const personal = await questPersonalContext(userId, roomId)
   applyStartPreference(days, personal.explicitStart || personal.effective.dayStart)
-  const document: PlanDocument = { preferenceVersion, title: solo ? `${trip.destination}, my way` : `${trip.destination}, together`, destination: trip.destination, country: trip.country, catalogueId: trip.id, days, bookings: bookingsFor(trip) }
+  const travelDates = resolveTravelDates(trip.travel_dates, days.length)
+  const document: PlanDocument = { preferenceVersion, title: solo ? `${trip.destination}, my way` : `${trip.destination}, together`, destination: trip.destination, country: trip.country, catalogueId: trip.id, ...(travelDates ? { travelDates } : {}), days, bookings: bookingsFor(trip) }
   return document
 }
 
@@ -83,6 +99,7 @@ export function applyPlanCommand(document: PlanDocument, command: Record<string,
     if (bookingType === 'activity') {
       const activity = next.days.flatMap(day => day.items).find(value => value.id === bookingId)
       if (!activity) throw new HttpError(404, 'This activity is no longer in the itinerary.')
+      if (activity.kind === 'stay' && command.booked) throw new HttpError(409, 'Manage your hotel booking in Flights & stays. A check-in stop does not need a separate booking.')
       activity.booked = command.booked
       return { document: next, label: `${command.booked ? 'Booked' : 'Marked unbooked'} ${activity.title}` }
     }
@@ -93,6 +110,13 @@ export function applyPlanCommand(document: PlanDocument, command: Record<string,
     if (!available) throw new HttpError(404, 'This booking option is no longer in the itinerary.')
     const booked = next.booked ?? { flights: [], stays: [] }
     const values = new Set(booked[key])
+    if (bookingType === 'stay' && command.booked && !values.has(bookingId)) {
+      const stays = next.bookings?.stays ?? []
+      const dates = bookingTripDates(next.travelDates ?? next.bookings?.travel_dates, next.bookings?.flights)
+      const selected = stayBookingDates(stays.find(value => stayKey(value) === bookingId), dates)
+      const conflict = [...values].some(id => staysConflict(selected, stayBookingDates(stays.find(value => stayKey(value) === id), dates)))
+      if (conflict) throw new HttpError(409, 'Another stay is already marked for overlapping or unconfirmed dates. Unmark it first, or use separate dates for a split stay.')
+    }
     if (command.booked) values.add(bookingId); else values.delete(bookingId)
     next.booked = { ...booked, [key]: [...values] }
     return { document: next, label: command.booked ? `Added ${bookingType} to your booked itinerary` : `Removed ${bookingType} from your booked itinerary` }
@@ -154,7 +178,7 @@ export async function changeWorkingPlan(roomId: string, userId: string, input: R
   const [row] = await selectRows<PlanRow>('quest_working_plans', columns, [{ column: 'id', operator: 'eq', value: roomId }])
   if (!row) throw new HttpError(404, 'Save a starting plan first.')
   // Known retries return the latest state. Older retries fail their revision check.
-  if (row.data.requests.includes(input.requestId)) return describePlan(row)
+  if (row.data.requests.includes(input.requestId)) return describeDatedPlan(row)
   if (input.expectedRevision !== row.revision) throw new HttpError(409, 'The plan changed in another window. Load the latest version before applying your change.')
   let document: PlanDocument
   let history = row.data.history
@@ -195,5 +219,5 @@ export async function changeWorkingPlan(roomId: string, userId: string, input: R
   // The revision is already durable; an optional nudge must not turn a saved
   // edit into a misleading failure response.
   const prompt = signal ? await learningPrompt(userId, eventId).catch(() => null) : null
-  return { ...describePlan(updated), learningPrompt: prompt }
+  return { ...await describeDatedPlan(updated).catch(() => describePlan(updated)), learningPrompt: prompt }
 }

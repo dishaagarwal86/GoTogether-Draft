@@ -1,0 +1,64 @@
+/* A day reads left to right on desktop and follows one timeline on mobile. */
+.group-options .group-itinerary-detail { overflow:hidden; border-radius:18px; box-shadow:0 12px 36px #23394c08; }
+.group-options .group-preview-cover { height:285px; }
+.group-options .group-preview-cover>div { padding:30px; }
+.group-itinerary-detail .group-estimate { flex:0 0 235px; padding:18px 20px; border:1px solid #e6ddf2; border-radius:12px; background:#f8f5ff; text-align:left; }
+.group-estimate strong { color:#26374b; font-variant-numeric:tabular-nums; }
+.group-estimate .group-currency-note { margin-top:10px; padding-top:10px; border-top:1px solid #e6ddf2; line-height:1.5; }
+.group-options .group-fit-notes { gap:12px; }
+.group-itinerary-detail .group-fit-notes>div { border-radius:10px; padding:18px; }
+.group-itinerary-detail .group-day-tabs { margin:26px 0 8px; padding:6px 0 18px; }
+.group-itinerary-detail .group-day-tabs button { min-height:44px; border-radius:999px; padding:10px 18px; }
+.group-itinerary-detail .group-preview-days { grid-template-columns:minmax(0,1fr); gap:34px; }
+.group-itinerary-detail .group-preview-day { padding:0; border:0; background:transparent; }
+.group-day-heading { display:flex; align-items:center; gap:16px; padding:0 0 18px; }
+.group-day-heading .group-day-number { display:grid; place-items:center; width:54px; height:62px; flex-shrink:0; border:1px solid #e4d8c5; border-radius:11px; background:#fcf6eb; font:500 28px var(--serif); color:#8c633c; }
+.group-day-heading>div { min-width:0; flex:1; }
+.group-day-heading .eyebrow { margin:0 0 6px; color:#7a7083; }
+.journey-shell .group-day-heading h3 { font-size:clamp(21px,2vw,27px); line-height:1.2; color:#23394c; }
+.group-day-heading>button { width:42px; height:42px; flex-shrink:0; border:1px solid #ddd5e8; border-radius:50%; background:#f8f5ff; color:#65508f; }
+.group-preview-day>.group-day-moments { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); align-items:stretch; gap:16px; border:0; padding:0; }
+.group-day-moments article.group-preview-moment { display:flex; flex-direction:column; align-items:stretch; gap:0; margin:0; padding:0; border:1px solid #e4deea; border-radius:12px; background:#fff; box-shadow:0 5px 12px #23394c05; }
+.group-day-moments .group-preview-moment>img { height:195px; aspect-ratio:4/3; object-fit:cover; }
+.group-day-moments .group-preview-moment>div { display:flex; flex-direction:column; flex:1; padding:18px; }
+.group-preview-moment .group-moment-slot { font-size:12px; font-weight:600; letter-spacing:.08em; color:#876339; margin-bottom:10px; }
+.group-day-moments .group-preview-moment:nth-child(2) .group-moment-slot { color:#996047; }
+.group-day-moments .group-preview-moment:nth-child(3) .group-moment-slot { color:#65508f; }
+.group-day-moments .group-preview-moment h4 { color:#26374b; font-size:17px; font-weight:600; line-height:1.4; }
+.journey-shell .group-day-moments .group-preview-moment p { color:#65717c; font-size:14px; line-height:1.65; margin-top:10px; }
+.group-day-moments .place-photo-caption { margin-top:auto; padding-top:12px; color:#75808a; }
+.group-itinerary-detail .group-option-decision { padding:24px; border:1px solid #ddd5e8; border-radius:12px; background:#f8f5ff; }
+.group-itinerary-detail .group-choose { margin-top:0; }
+.group-itinerary-detail .group-choose p { margin:0; }
+.group-itinerary-detail .group-responses+.group-choose { margin-top:18px; }
+.group-options .preview-bookings { margin-top:28px; }
+.group-options .travel-planning-options { padding-top:24px; }
+.group-options .trip-stays { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; }
+.group-options .trip-stay { display:flex; flex-direction:column; align-items:stretch; gap:0; overflow:hidden; padding:0; background:#fff; border:1px solid #e0d8eb; border-radius:12px; }
+.group-options .trip-stay>img { display:block; width:100%; height:210px; min-height:210px; object-fit:cover; }
+.group-options .trip-stay-main { padding:20px 20px 0; }
+.group-options .trip-stay-main h4 { font-size:23px; line-height:1.25; }
+.group-options .trip-stay-area { flex-wrap:wrap; line-height:1.6; margin-bottom:8px; }
+.group-options .trip-stay-side { flex:1; align-items:stretch; text-align:left; min-width:0; padding:18px 20px 20px; }
+.group-options .trip-stay-price strong { font-size:28px; margin:4px 0; }
+.group-options .trip-stay-side .secondary-button { justify-content:center; margin-top:6px; min-height:44px; }
+.trip-currency-note { font-size:var(--text-caption); color:var(--muted); line-height:1.6; }
+@media(max-width:1050px) and (min-width:701px) {
+  .group-preview-day>.group-day-moments { grid-template-columns:minmax(0,1fr); gap:12px; }
+  .group-day-moments article.group-preview-moment { display:grid; grid-template-columns:200px minmax(0,1fr); }
+  .group-day-moments .group-preview-moment>img { height:100%; min-height:190px; }
+}
+@media(max-width:700px) {
+  .group-options .group-preview-cover { height:230px; }
+  .group-options .group-preview-cover>div { padding:22px; }
+  .group-itinerary-detail>header { flex-direction:column; gap:18px; }
+  .group-itinerary-detail .group-estimate { flex:auto; width:100%; padding:16px 18px; }
+  .group-itinerary-detail .group-fit-notes { grid-template-columns:1fr; }
+  .group-preview-day>.group-day-moments { grid-template-columns:minmax(0,1fr); gap:16px; }
+  .group-day-heading { align-items:flex-start; gap:12px; }
+  .group-day-heading .group-day-number { width:42px; height:52px; font-size:23px; }
+  .group-day-moments .group-preview-moment>img { height:210px; }
+  .group-itinerary-detail .group-option-decision { padding:18px; }
+  .group-itinerary-detail .group-choose .primary-button { width:100%; justify-content:center; }
+  .group-options .trip-stays { grid-template-columns:minmax(0,1fr); }
+}

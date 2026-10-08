@@ -29,3 +29,4 @@ backend/.env
 
 # Local browser verification screenshots and test reports
 frontend/.journey-test-results/
+backend/.local-demo.json*

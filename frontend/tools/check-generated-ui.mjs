@@ -17,8 +17,14 @@ try {
   await context.addInitScript(({ token, user }) => {
     localStorage.setItem('gotogether.session-token', token)
     localStorage.setItem('gotogether.current-user-id', user.id)
-    if (!sessionStorage.getItem('gotogether.activity-photos.v6')) sessionStorage.setItem('gotogether.activity-photos.v6', 'null')
+    if (!sessionStorage.getItem('gotogether.activity-photos.v7')) sessionStorage.setItem('gotogether.activity-photos.v7', 'null')
   }, session)
+  // Keep this review independent of the fixture account's live AI/history state.
+  const trip = { id: 'booking-review-catalogue', destination: 'Tokyo', country: 'Japan', title: 'Tokyo days', duration_days: 2, budget: 'Moderate', estimated_cost_usd: 800, seasons: [], moods: [], location_type: 'City', short_description: 'A catalogue starting point.', matchedPreferences: [], compromises: [], label: 'Best for you', daily_plan: [{ title: 'Explore Tokyo', morning: 'Inokashira Park', afternoon: 'Ghibli Museum', evening: 'Harmonica Yokocho' }] }
+  let journey = { ready: true, totalMembers: 1, memberCount: 1, participants: [{ id: session.user.id, name: 'Traveller', role: 'owner', status: 'ready' }], results: [trip], allResults: [trip], travelDna: { sharedVibe: [], budgetStyle: 'Moderate', noGoActivities: [], groupSize: 1 }, blockers: [], preferenceVersion: 'booking-review', generationStatus: 'unconfigured', generationPending: false, currentPlan: null, planReview: null, availability: { start: null, end: null, days: null, conflict: false }, questReadiness: { totalMembers: 1, completedMembers: 1, readinessState: 'unlocked', options: [], mainTension: null, explanation: 'Ready' }, options: { [trip.id]: { people: [], agreed: true, answered: 1, concerns: 0 } } }
+  await context.route(`**/api/trip-rooms/${fixture.roomId}/journey`, route => route.fulfill({ json: { data: journey } }))
+  await context.route('**/api/personalise-itinerary?**', route => route.fulfill({ json: { data: null } }))
+  await context.route('**/api/companion/history?**', route => route.fulfill({ json: { data: [] } }))
   await context.route(`**/api/working-plans/${fixture.roomId}`, async route => {
     const response = await route.fetch()
     const value = await response.json()
@@ -32,10 +38,10 @@ try {
   await context.route('https://commons.wikimedia.org/**', route => {
     const query = new URL(route.request().url()).searchParams.get('gsrsearch').split(' filetype:')[0]
     const result = (index, suffix, description) => ({ index, title: `File:${query} ${description}.jpg`, imageinfo: [{ thumburl: image.replace('GoTogether_test', suffix), descriptionurl: source, mime: 'image/jpeg', mediatype: 'BITMAP', width: 1200, height: 800, extmetadata: { ImageDescription: { value: `${query} ${description}` }, Artist: { value: '<b>Synthetic photographer</b>' }, LicenseShortName: { value: 'CC BY-SA 4.0' } } }] })
-    return route.fulfill({ status: 200, json: { query: { pages: { 1: result(1, 'newspaper', 'newspaper scan'), 2: result(2, 'broken', 'photograph'), 3: result(3, 'GoTogether_test', 'photograph') } } } })
+    return route.fulfill({ status: 200, json: { query: { pages: { 1: result(1, 'newspaper', 'newspaper scan'), 2: result(2, 'specimen', 'scientific figure specimen'), 3: result(3, 'broken', 'photograph'), 4: result(4, 'GoTogether_test', 'photograph') } } } })
   })
   await context.route('https://thumb.wikimedia.org/**', route => {
-    if (route.request().url().includes('newspaper')) rejected.push(route.request().url())
+    if (/newspaper|specimen/.test(route.request().url())) rejected.push(route.request().url())
     return route.request().url().includes('broken') ? route.fulfill({ status: 404, body: 'Missing image' }) : route.fulfill({ path: 'src/assets/landing/kyoto.jpg', contentType: 'image/jpeg' })
   })
   const page = await context.newPage()
@@ -59,7 +65,7 @@ try {
     await page.screenshot({ path: `${out}/bookings-${width}.png` })
     console.log(`PASS Generated flight/stay cards, photos and readable layout at ${width}px`)
   }
-  assert.deepEqual(rejected, [], 'Newspaper results must never load')
+  assert.deepEqual(rejected, [], 'Newspaper and specimen results must never load')
   await page.locator('.trip-stay > img').evaluate(image => image.dispatchEvent(new Event('error')))
   await page.waitForFunction(() => !document.querySelector('.trip-stay .travel-photo-credit'))
   assert.equal(await page.locator('.trip-stay > img').evaluate(image => image.complete && image.naturalWidth > 0), true)
@@ -67,16 +73,11 @@ try {
   await page.getByRole('button', { name: /^AI planned/ }).click()
   await page.getByText('No AI plans currently match this trip. Open Recommended to continue with the catalogue.', { exact: true }).waitFor()
   await page.getByRole('button', { name: 'Recommended', exact: true }).click()
-  await page.getByRole('navigation', { name: 'Preview planning tools' }).getByRole('button', { name: 'Flights & stays' }).click()
+  await page.locator('.preview-bookings').scrollIntoViewIfNeeded()
   const catalogueBookings = page.getByRole('region', { name: 'Flights and stays' })
   assert.equal(await catalogueBookings.getByRole('link', { name: 'Check flights' }).getAttribute('href'), 'https://www.booking.com/flights/index.html')
   assert.match(await catalogueBookings.getByRole('link', { name: 'Find places to stay' }).getAttribute('href'), /^https:\/\/www.booking.com\/searchresults.html/)
-  await page.route(`**/api/trip-rooms/${fixture.roomId}/journey`, async route => {
-    const response = await route.fetch()
-    const value = await response.json()
-    Object.assign(value.data, { allResults: [], results: [], generationStatus: 'unconfigured', generationPending: false })
-    await route.fulfill({ response, json: value })
-  })
+  journey = { ...journey, allResults: [], results: [], generationStatus: 'unconfigured', generationPending: false }
   await page.waitForURL('**?tab=options')
   await page.reload()
   await page.getByText('AI itinerary planning is currently unavailable', { exact: true }).waitFor()

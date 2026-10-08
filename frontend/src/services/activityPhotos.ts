@@ -2,8 +2,8 @@ import { useEffect, useRef, useState, type SyntheticEvent } from 'react'
 import placeholder from '../assets/travel-placeholder.svg'
 
 export type Photo = { url: string; source: string; author: string; license: string; title?: string; licenseUrl?: string; changes?: string; fullUrl?: string; fullWidth?: number; fullHeight?: number }
-// v4 cached empty results when Commons moved thumbnails to thumb.wikimedia.org.
-const cacheKey = 'gotogether.activity-photos.v6'
+// v7 also excludes scientific/specimen images from older search caches.
+const cacheKey = 'gotogether.activity-photos.v7'
 const safeUrl = (value: unknown, host: string) => {
   try { const url = new URL(String(value)); return url.protocol === 'https:' && url.hostname === host } catch { return false }
 }
@@ -34,7 +34,7 @@ type ImageInfo = { url?: string; thumburl: string; descriptionurl: string; mime:
 function relevantPhoto(title: string, info: ImageInfo, query: string) {
   if (!['image/jpeg', 'image/png', 'image/webp'].includes(info.mime) || info.mediatype !== 'BITMAP' || info.width < 500 || info.height < 300 || info.width / info.height < .7 || info.width / info.height > 3) return false
   const description = normalize(`${title} ${plain(info.extmetadata?.ImageDescription?.value ?? '', 1800)} ${plain(info.extmetadata?.Categories?.value ?? '', 1800)}`)
-  if (/\b(newspapers?|newspaperarchive|scans?|scanned|manuscripts?|documents?|book covers?|book pages?|engravings?|lithographs?|illustrations?|advertisements?|posters?|diagrams?|maps?|logos?|flags?|portraits?|paintings?|coat of arms|sheet music)\b/.test(description)) return false
+  if (/\b(newspapers?|newspaperarchive|scans?|scanned|manuscripts?|documents?|book covers?|book pages?|engravings?|lithographs?|illustrations?|advertisements?|posters?|diagrams?|maps?|logos?|flags?|portraits?|paintings?|coat of arms|sheet music|scientific figures?|microscopy|specimens?|holotypes?|paratypes?)\b/.test(description)) return false
   const words = normalize(query).split(' ').filter(word => word.length > 2 && !['the', 'and', 'with', 'for', 'from', 'this', 'that', 'little', 'some', 'our', 'your', 'into'].includes(word))
   // Match named subjects in metadata, rather than incidental full-text search hits.
   return words.length > 0 && words.filter(word => description.includes(word)).length >= Math.min(3, words.length)

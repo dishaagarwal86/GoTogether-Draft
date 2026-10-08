@@ -6,6 +6,10 @@ import { AuthProvider, useAuth } from '../auth/AuthContext'
 import { AuthPrompt } from './AuthPrompt'
 import { EmptyState, LoadingState } from './Ui'
 import { TravelCanvas } from './TravelArtwork'
+import { demoAvailable } from '../services/questDemo'
+
+const QuestDemoPage = lazy(() => import('../pages/QuestDemoPage').then(module => ({ default: module.QuestDemoPage })))
+const QuestDemoToolbar = lazy(() => import('./QuestDemoToolbar').then(module => ({ default: module.QuestDemoToolbar })))
 
 const HomePage = lazy(() => import('../pages/HomePage').then(module => ({ default: module.HomePage })))
 const CreateRoomPage = lazy(() => import('../pages/CreateRoomPage').then(module => ({ default: module.CreateRoomPage })))
@@ -55,7 +59,8 @@ function AppLayout() {
     {!isLanding && !isAuth && <TravelCanvas />}
     {!isLanding && !isAuth && <GlobalNavbar />}
     {!isLanding && <a className="journey-skip" href="#main-content">Skip to content</a>}
-    <main id="main-content" className={isLanding ? 'landing-main' : isAuth ? 'journey-auth-main' : 'journey-main'}><RouteErrorBoundary key={location.pathname}><Suspense fallback={<LoadingState label="Opening your travel space…" />}><Routes>
+    <main id="main-content" className={isLanding ? 'landing-main' : isAuth ? 'journey-auth-main' : 'journey-main'}>{demoAvailable && <Suspense fallback={null}><QuestDemoToolbar /></Suspense>}<RouteErrorBoundary key={location.pathname}><Suspense fallback={<LoadingState label="Opening your travel space…" />}><Routes>
+      {demoAvailable && <Route path="/demo" element={<QuestDemoPage />} />}
       <Route path="/" element={<HomePage />} /><Route path="/landing-concept" element={<LandingConcept />} />
       <Route path="/login" element={<LoginPage />} /><Route path="/signup" element={<SignUpPage />} />
       <Route path="/join-room/:token" element={<SharedJoinPage key={location.pathname} />} /><Route path="/invite/:token" element={<InvitePage key={location.pathname} />} /><Route path="/join/:token" element={<JoinQuestPage key={location.pathname} />} /><Route path="/explore" element={<ExplorePage key={location.pathname + location.search} />} />

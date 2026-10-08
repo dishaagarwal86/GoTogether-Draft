@@ -2818,5 +2818,1147 @@
     "fullUrl": "/photos/places/scene-reykjavik-full.webp",
     "fullWidth": 2027,
     "fullHeight": 1448
+  },
+  {
+    "placeId": "thailand-bangkok",
+    "name": "Bangkok",
+    "destination": "Bangkok",
+    "destinations": [
+      "Bangkok"
+    ],
+    "aliases": [],
+    "kind": "area",
+    "url": "/photos/places/thailand-bangkok.webp",
+    "title": "Statetower.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Statetower.jpg",
+    "author": "Flickr user: Swaminathan Gurgaon, India https://www.flickr.com/people/araswami/",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b0/Statetower.jpg/960px-Statetower.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "variants": [
+      {
+        "url": "/photos/places/thailand-bangkok-640.webp",
+        "width": 640,
+        "height": 427
+      },
+      {
+        "url": "/photos/places/thailand-bangkok.webp",
+        "width": 1280,
+        "height": 854
+      },
+      {
+        "url": "/photos/places/thailand-bangkok-full.webp",
+        "width": 3840,
+        "height": 2560
+      }
+    ],
+    "fullUrl": "/photos/places/thailand-bangkok-full.webp",
+    "fullWidth": 3840,
+    "fullHeight": 2560
+  },
+  {
+    "placeId": "thailand-silom",
+    "name": "Silom",
+    "destination": "Bangkok",
+    "destinations": [
+      "Bangkok"
+    ],
+    "aliases": [
+      "Lub d Bangkok Silom"
+    ],
+    "kind": "area",
+    "url": "/photos/places/thailand-silom.webp",
+    "title": "201701 Si Lom–Sala Daeng Flyover.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:201701_Si_Lom%E2%80%93Sala_Daeng_Flyover.jpg",
+    "author": "MNXANL",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f2/201701_Si_Lom%E2%80%93Sala_Daeng_Flyover.jpg/960px-201701_Si_Lom%E2%80%93Sala_Daeng_Flyover.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "variants": [
+      {
+        "url": "/photos/places/thailand-silom-640.webp",
+        "width": 640,
+        "height": 426
+      },
+      {
+        "url": "/photos/places/thailand-silom.webp",
+        "width": 1280,
+        "height": 851
+      },
+      {
+        "url": "/photos/places/thailand-silom-full.webp",
+        "width": 3840,
+        "height": 2552
+      }
+    ],
+    "fullUrl": "/photos/places/thailand-silom-full.webp",
+    "fullWidth": 3840,
+    "fullHeight": 2552
+  },
+  {
+    "placeId": "thailand-sukhumvit",
+    "name": "Sukhumvit",
+    "destination": "Bangkok",
+    "destinations": [
+      "Bangkok"
+    ],
+    "aliases": [],
+    "kind": "area",
+    "url": "/photos/places/thailand-sukhumvit.webp",
+    "title": "Bangkok from sukhumvit.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Bangkok_from_sukhumvit.jpg",
+    "author": "Max221B",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b0/Bangkok_from_sukhumvit.jpg/960px-Bangkok_from_sukhumvit.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "variants": [
+      {
+        "url": "/photos/places/thailand-sukhumvit-640.webp",
+        "width": 640,
+        "height": 360
+      },
+      {
+        "url": "/photos/places/thailand-sukhumvit.webp",
+        "width": 1280,
+        "height": 720
+      },
+      {
+        "url": "/photos/places/thailand-sukhumvit-full.webp",
+        "width": 3840,
+        "height": 2160
+      }
+    ],
+    "fullUrl": "/photos/places/thailand-sukhumvit-full.webp",
+    "fullWidth": 3840,
+    "fullHeight": 2160
+  },
+  {
+    "placeId": "thailand-grand-palace",
+    "name": "Grand Palace",
+    "destination": "Bangkok",
+    "destinations": [
+      "Bangkok"
+    ],
+    "aliases": [],
+    "kind": "place",
+    "url": "/photos/places/thailand-grand-palace.webp",
+    "title": "Grand Palace Bangkok Thailand.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Grand_Palace_Bangkok_Thailand.jpg",
+    "author": "Wolfgang Holzem / https://ehalal.io/",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ea/Grand_Palace_Bangkok_Thailand.jpg/960px-Grand_Palace_Bangkok_Thailand.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "variants": [
+      {
+        "url": "/photos/places/thailand-grand-palace-640.webp",
+        "width": 640,
+        "height": 427
+      },
+      {
+        "url": "/photos/places/thailand-grand-palace.webp",
+        "width": 1280,
+        "height": 854
+      },
+      {
+        "url": "/photos/places/thailand-grand-palace-full.webp",
+        "width": 3840,
+        "height": 2560
+      }
+    ],
+    "fullUrl": "/photos/places/thailand-grand-palace-full.webp",
+    "fullWidth": 3840,
+    "fullHeight": 2560
+  },
+  {
+    "placeId": "thailand-yaowarat",
+    "name": "Yaowarat",
+    "destination": "Bangkok",
+    "destinations": [
+      "Bangkok"
+    ],
+    "aliases": [],
+    "kind": "place",
+    "url": "/photos/places/thailand-yaowarat.webp",
+    "title": "Yaowarat at night (32455695783).jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Yaowarat_at_night_(32455695783).jpg",
+    "author": "Ninara from Helsinki, Finland",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/64/Yaowarat_at_night_%2832455695783%29.jpg/960px-Yaowarat_at_night_%2832455695783%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "variants": [
+      {
+        "url": "/photos/places/thailand-yaowarat-640.webp",
+        "width": 640,
+        "height": 425
+      },
+      {
+        "url": "/photos/places/thailand-yaowarat.webp",
+        "width": 1280,
+        "height": 850
+      },
+      {
+        "url": "/photos/places/thailand-yaowarat-full.webp",
+        "width": 3007,
+        "height": 1995
+      }
+    ],
+    "fullUrl": "/photos/places/thailand-yaowarat-full.webp",
+    "fullWidth": 3007,
+    "fullHeight": 1995
+  },
+  {
+    "placeId": "thailand-wat-arun",
+    "name": "Wat Arun",
+    "destination": "Bangkok",
+    "destinations": [
+      "Bangkok"
+    ],
+    "aliases": [],
+    "kind": "place",
+    "url": "/photos/places/thailand-wat-arun.webp",
+    "title": "Wat Arun and Sunset.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Wat_Arun_and_Sunset.jpg",
+    "author": "No machine-readable author provided. Yosemite~commonswiki assumed (based on copyright claims).",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9d/Wat_Arun_and_Sunset.jpg/960px-Wat_Arun_and_Sunset.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "variants": [
+      {
+        "url": "/photos/places/thailand-wat-arun-640.webp",
+        "width": 640,
+        "height": 480
+      },
+      {
+        "url": "/photos/places/thailand-wat-arun.webp",
+        "width": 1280,
+        "height": 960
+      },
+      {
+        "url": "/photos/places/thailand-wat-arun-full.webp",
+        "width": 1600,
+        "height": 1200
+      }
+    ],
+    "fullUrl": "/photos/places/thailand-wat-arun-full.webp",
+    "fullWidth": 1600,
+    "fullHeight": 1200
+  },
+  {
+    "placeId": "thailand-chatuchak",
+    "name": "Chatuchak Weekend Market",
+    "destination": "Bangkok",
+    "destinations": [
+      "Bangkok"
+    ],
+    "aliases": [],
+    "kind": "place",
+    "url": "/photos/places/thailand-chatuchak.webp",
+    "title": "Chatuchak Weekend Market P1100754.JPG",
+    "source": "https://commons.wikimedia.org/wiki/File:Chatuchak_Weekend_Market_P1100754.JPG",
+    "author": "Deror Avi",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0c/Chatuchak_Weekend_Market_P1100754.JPG/960px-Chatuchak_Weekend_Market_P1100754.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "variants": [
+      {
+        "url": "/photos/places/thailand-chatuchak-640.webp",
+        "width": 640,
+        "height": 480
+      },
+      {
+        "url": "/photos/places/thailand-chatuchak.webp",
+        "width": 1280,
+        "height": 960
+      },
+      {
+        "url": "/photos/places/thailand-chatuchak-full.webp",
+        "width": 3840,
+        "height": 2880
+      }
+    ],
+    "fullUrl": "/photos/places/thailand-chatuchak-full.webp",
+    "fullWidth": 3840,
+    "fullHeight": 2880
+  },
+  {
+    "placeId": "thailand-sky-bar",
+    "name": "Sky Bar",
+    "destination": "Bangkok",
+    "destinations": [
+      "Bangkok"
+    ],
+    "aliases": [],
+    "kind": "place",
+    "url": "/photos/places/thailand-sky-bar.webp",
+    "title": "Sky Bar, Bangkok (33407660291).jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Sky_Bar,_Bangkok_(33407660291).jpg",
+    "author": "Ninara from Helsinki, Finland",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/84/Sky_Bar%2C_Bangkok_%2833407660291%29.jpg/960px-Sky_Bar%2C_Bangkok_%2833407660291%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "variants": [
+      {
+        "url": "/photos/places/thailand-sky-bar-640.webp",
+        "width": 640,
+        "height": 407
+      },
+      {
+        "url": "/photos/places/thailand-sky-bar.webp",
+        "width": 1280,
+        "height": 813
+      },
+      {
+        "url": "/photos/places/thailand-sky-bar-full.webp",
+        "width": 3073,
+        "height": 1951
+      }
+    ],
+    "fullUrl": "/photos/places/thailand-sky-bar-full.webp",
+    "fullWidth": 3073,
+    "fullHeight": 1951
+  },
+  {
+    "placeId": "thailand-safari-world",
+    "name": "Safari World",
+    "destination": "Bangkok",
+    "destinations": [
+      "Bangkok"
+    ],
+    "aliases": [],
+    "kind": "place",
+    "url": "/photos/places/thailand-safari-world.webp",
+    "title": "Giraffes- safari- bangkok.JPG",
+    "source": "https://commons.wikimedia.org/wiki/File:Giraffes-_safari-_bangkok.JPG",
+    "author": "XerxesII",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e7/Giraffes-_safari-_bangkok.JPG/960px-Giraffes-_safari-_bangkok.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "variants": [
+      {
+        "url": "/photos/places/thailand-safari-world-640.webp",
+        "width": 640,
+        "height": 480
+      },
+      {
+        "url": "/photos/places/thailand-safari-world.webp",
+        "width": 1280,
+        "height": 960
+      },
+      {
+        "url": "/photos/places/thailand-safari-world-full.webp",
+        "width": 2592,
+        "height": 1944
+      }
+    ],
+    "fullUrl": "/photos/places/thailand-safari-world-full.webp",
+    "fullWidth": 2592,
+    "fullHeight": 1944
+  },
+  {
+    "placeId": "thailand-marine-park",
+    "name": "Safari World Marine Park",
+    "destination": "Bangkok",
+    "destinations": [
+      "Bangkok"
+    ],
+    "aliases": [
+      "Marine Park Show"
+    ],
+    "kind": "place",
+    "url": "/photos/places/thailand-marine-park.webp",
+    "title": "Safari World.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Safari_World.jpg",
+    "author": "Lerdsuwa",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/00/Safari_World.jpg/960px-Safari_World.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "variants": [
+      {
+        "url": "/photos/places/thailand-marine-park-640.webp",
+        "width": 640,
+        "height": 480
+      },
+      {
+        "url": "/photos/places/thailand-marine-park.webp",
+        "width": 1280,
+        "height": 960
+      },
+      {
+        "url": "/photos/places/thailand-marine-park-full.webp",
+        "width": 1600,
+        "height": 1200
+      }
+    ],
+    "fullUrl": "/photos/places/thailand-marine-park-full.webp",
+    "fullWidth": 1600,
+    "fullHeight": 1200
+  },
+  {
+    "placeId": "thailand-suvarnabhumi",
+    "name": "Suvarnabhumi Airport",
+    "destination": "Bangkok",
+    "destinations": [
+      "Bangkok"
+    ],
+    "aliases": [],
+    "kind": "place",
+    "url": "/photos/places/thailand-suvarnabhumi.webp",
+    "title": "Terminal de l'aéroport international de Bangkok.JPG",
+    "source": "https://commons.wikimedia.org/wiki/File:Terminal_de_l%27a%C3%A9roport_international_de_Bangkok.JPG",
+    "author": "User:gronico",
+    "license": "Public domain",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/59/Terminal_de_l%27a%C3%A9roport_international_de_Bangkok.JPG/960px-Terminal_de_l%27a%C3%A9roport_international_de_Bangkok.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "variants": [
+      {
+        "url": "/photos/places/thailand-suvarnabhumi-640.webp",
+        "width": 640,
+        "height": 480
+      },
+      {
+        "url": "/photos/places/thailand-suvarnabhumi.webp",
+        "width": 1280,
+        "height": 960
+      },
+      {
+        "url": "/photos/places/thailand-suvarnabhumi-full.webp",
+        "width": 3072,
+        "height": 2304
+      }
+    ],
+    "fullUrl": "/photos/places/thailand-suvarnabhumi-full.webp",
+    "fullWidth": 3072,
+    "fullHeight": 2304
+  },
+  {
+    "placeId": "thailand-rayong",
+    "name": "Rayong",
+    "destination": "Rayong",
+    "destinations": [
+      "Rayong"
+    ],
+    "aliases": [
+      "Riverside café Rayong"
+    ],
+    "kind": "area",
+    "url": "/photos/places/thailand-rayong.webp",
+    "title": "RayongView.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:RayongView.jpg",
+    "author": "User:YukioSanjo",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e6/RayongView.jpg/960px-RayongView.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "variants": [
+      {
+        "url": "/photos/places/thailand-rayong-640.webp",
+        "width": 640,
+        "height": 480
+      },
+      {
+        "url": "/photos/places/thailand-rayong.webp",
+        "width": 1280,
+        "height": 960
+      },
+      {
+        "url": "/photos/places/thailand-rayong-full.webp",
+        "width": 3488,
+        "height": 2616
+      }
+    ],
+    "fullUrl": "/photos/places/thailand-rayong-full.webp",
+    "fullWidth": 3488,
+    "fullHeight": 2616
+  },
+  {
+    "placeId": "thailand-rayong-coast",
+    "name": "Rayong seaside",
+    "destination": "Rayong",
+    "destinations": [
+      "Rayong"
+    ],
+    "aliases": [
+      "Mae Ramphueng Beach",
+      "Rayong Seaside"
+    ],
+    "kind": "area",
+    "url": "/photos/places/thailand-rayong-coast.webp",
+    "title": "Laem Mae Phim Beach.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Laem_Mae_Phim_Beach.jpg",
+    "author": "Vee Satayamas",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/44/Laem_Mae_Phim_Beach.jpg/960px-Laem_Mae_Phim_Beach.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "variants": [
+      {
+        "url": "/photos/places/thailand-rayong-coast-640.webp",
+        "width": 640,
+        "height": 480
+      },
+      {
+        "url": "/photos/places/thailand-rayong-coast.webp",
+        "width": 1280,
+        "height": 960
+      },
+      {
+        "url": "/photos/places/thailand-rayong-coast-full.webp",
+        "width": 3840,
+        "height": 2880
+      }
+    ],
+    "fullUrl": "/photos/places/thailand-rayong-coast-full.webp",
+    "fullWidth": 3840,
+    "fullHeight": 2880
+  },
+  {
+    "placeId": "thailand-rayong-old-town",
+    "name": "Rayong old town",
+    "destination": "Rayong",
+    "destinations": [
+      "Rayong"
+    ],
+    "aliases": [
+      "Rayong City Centre",
+      "Rayong Fruit and Craft Market"
+    ],
+    "kind": "area",
+    "url": "/photos/places/thailand-rayong-old-town.webp",
+    "title": "Rayong Museum.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Rayong_Museum.jpg",
+    "author": "Gatetaixin",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/42/Rayong_Museum.jpg/960px-Rayong_Museum.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "variants": [
+      {
+        "url": "/photos/places/thailand-rayong-old-town-640.webp",
+        "width": 640,
+        "height": 480
+      },
+      {
+        "url": "/photos/places/thailand-rayong-old-town.webp",
+        "width": 1280,
+        "height": 960
+      },
+      {
+        "url": "/photos/places/thailand-rayong-old-town-full.webp",
+        "width": 3840,
+        "height": 2880
+      }
+    ],
+    "fullUrl": "/photos/places/thailand-rayong-old-town-full.webp",
+    "fullWidth": 3840,
+    "fullHeight": 2880
+  },
+  {
+    "placeId": "thailand-rayong-night",
+    "name": "Rayong night streets",
+    "destination": "Rayong",
+    "destinations": [
+      "Rayong"
+    ],
+    "aliases": [
+      "Rayong Night Market"
+    ],
+    "kind": "area",
+    "url": "/photos/places/thailand-rayong-night.webp",
+    "title": "Yonjinda Road Festival.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Yonjinda_Road_Festival.jpg",
+    "author": "Gatetaixin",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/61/Yonjinda_Road_Festival.jpg/960px-Yonjinda_Road_Festival.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "variants": [
+      {
+        "url": "/photos/places/thailand-rayong-night-640.webp",
+        "width": 640,
+        "height": 480
+      },
+      {
+        "url": "/photos/places/thailand-rayong-night.webp",
+        "width": 1280,
+        "height": 960
+      },
+      {
+        "url": "/photos/places/thailand-rayong-night-full.webp",
+        "width": 3840,
+        "height": 2880
+      }
+    ],
+    "fullUrl": "/photos/places/thailand-rayong-night-full.webp",
+    "fullWidth": 3840,
+    "fullHeight": 2880
+  },
+  {
+    "placeId": "thailand-rayong-sunset",
+    "name": "Rayong coast at sunset",
+    "destination": "Rayong",
+    "destinations": [
+      "Rayong"
+    ],
+    "aliases": [
+      "Seafood restaurant Rayong"
+    ],
+    "kind": "area",
+    "url": "/photos/places/thailand-rayong-sunset.webp",
+    "title": "Sunset beach Rayong 3.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Sunset_beach_Rayong_3.jpg",
+    "author": "Love Krittaya",
+    "license": "Public domain",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/02/Sunset_beach_Rayong_3.jpg/960px-Sunset_beach_Rayong_3.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "variants": [
+      {
+        "url": "/photos/places/thailand-rayong-sunset-640.webp",
+        "width": 640,
+        "height": 480
+      },
+      {
+        "url": "/photos/places/thailand-rayong-sunset.webp",
+        "width": 1200,
+        "height": 900
+      }
+    ],
+    "fullUrl": "/photos/places/thailand-rayong-sunset.webp",
+    "fullWidth": 1200,
+    "fullHeight": 900
+  },
+  {
+    "placeId": "thailand-u-tapao",
+    "name": "U-Tapao Airport",
+    "destination": "Rayong",
+    "destinations": [
+      "Rayong"
+    ],
+    "aliases": [],
+    "kind": "place",
+    "url": "/photos/places/thailand-u-tapao.webp",
+    "title": "U-Tapao–Rayong–Pattaya International Airport.png",
+    "source": "https://commons.wikimedia.org/wiki/File:U-Tapao%E2%80%93Rayong%E2%80%93Pattaya_International_Airport.png",
+    "author": "MGR Online VDO",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fc/U-Tapao%E2%80%93Rayong%E2%80%93Pattaya_International_Airport.png/960px-U-Tapao%E2%80%93Rayong%E2%80%93Pattaya_International_Airport.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "variants": [
+      {
+        "url": "/photos/places/thailand-u-tapao-640.webp",
+        "width": 640,
+        "height": 427
+      },
+      {
+        "url": "/photos/places/thailand-u-tapao.webp",
+        "width": 1280,
+        "height": 854
+      }
+    ],
+    "fullUrl": "/photos/places/thailand-u-tapao.webp",
+    "fullWidth": 1280,
+    "fullHeight": 854
+  },
+  {
+    "placeId": "thailand-khao-kheow-zoo",
+    "name": "Khao Kheow Open Zoo",
+    "destination": "Rayong",
+    "destinations": [
+      "Rayong",
+      "Chonburi",
+      "Pattaya"
+    ],
+    "aliases": [],
+    "kind": "place",
+    "url": "/photos/places/thailand-khao-kheow-zoo.webp",
+    "title": "White Tiger (4323862577).jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:White_Tiger_(4323862577).jpg",
+    "author": "Dean Croshere from Los Angeles, USA",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/87/White_Tiger_%284323862577%29.jpg/960px-White_Tiger_%284323862577%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "variants": [
+      {
+        "url": "/photos/places/thailand-khao-kheow-zoo-640.webp",
+        "width": 640,
+        "height": 426
+      },
+      {
+        "url": "/photos/places/thailand-khao-kheow-zoo.webp",
+        "width": 1280,
+        "height": 852
+      },
+      {
+        "url": "/photos/places/thailand-khao-kheow-zoo-full.webp",
+        "width": 1920,
+        "height": 1277
+      }
+    ],
+    "fullUrl": "/photos/places/thailand-khao-kheow-zoo-full.webp",
+    "fullWidth": 1920,
+    "fullHeight": 1277
+  },
+  {
+    "placeId": "thailand-khao-kheow",
+    "name": "Khao Kheow",
+    "destination": "Chonburi",
+    "destinations": [
+      "Rayong",
+      "Chonburi",
+      "Pattaya"
+    ],
+    "aliases": [
+      "Khao Khiao"
+    ],
+    "kind": "area",
+    "url": "/photos/places/thailand-khao-kheow.webp",
+    "title": "Khao Khiao Massif-74.JPG",
+    "source": "https://commons.wikimedia.org/wiki/File:Khao_Khiao_Massif-74.JPG",
+    "author": "Xavier Romero-Frias",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ed/Khao_Khiao_Massif-74.JPG/960px-Khao_Khiao_Massif-74.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "variants": [
+      {
+        "url": "/photos/places/thailand-khao-kheow-640.webp",
+        "width": 640,
+        "height": 318
+      },
+      {
+        "url": "/photos/places/thailand-khao-kheow.webp",
+        "width": 1280,
+        "height": 636
+      }
+    ],
+    "fullUrl": "/photos/places/thailand-khao-kheow.webp",
+    "fullWidth": 1280,
+    "fullHeight": 636
+  },
+  {
+    "placeId": "thailand-wat-pa-pradu",
+    "name": "Wat Pa Pradu",
+    "destination": "Rayong",
+    "destinations": [
+      "Rayong"
+    ],
+    "aliases": [],
+    "kind": "place",
+    "url": "/photos/places/thailand-wat-pa-pradu.webp",
+    "title": "วัดป่าประดู่ จ.ระยอง 06.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:%E0%B8%A7%E0%B8%B1%E0%B8%94%E0%B8%9B%E0%B9%88%E0%B8%B2%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B8%94%E0%B8%B9%E0%B9%88_%E0%B8%88.%E0%B8%A3%E0%B8%B0%E0%B8%A2%E0%B8%AD%E0%B8%87_06.jpg",
+    "author": "Damdramatic",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1e/%E0%B8%A7%E0%B8%B1%E0%B8%94%E0%B8%9B%E0%B9%88%E0%B8%B2%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B8%94%E0%B8%B9%E0%B9%88_%E0%B8%88.%E0%B8%A3%E0%B8%B0%E0%B8%A2%E0%B8%AD%E0%B8%87_06.jpg/960px-%E0%B8%A7%E0%B8%B1%E0%B8%94%E0%B8%9B%E0%B9%88%E0%B8%B2%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B8%94%E0%B8%B9%E0%B9%88_%E0%B8%88.%E0%B8%A3%E0%B8%B0%E0%B8%A2%E0%B8%AD%E0%B8%87_06.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "variants": [
+      {
+        "url": "/photos/places/thailand-wat-pa-pradu-640.webp",
+        "width": 640,
+        "height": 424
+      },
+      {
+        "url": "/photos/places/thailand-wat-pa-pradu.webp",
+        "width": 1280,
+        "height": 848
+      },
+      {
+        "url": "/photos/places/thailand-wat-pa-pradu-full.webp",
+        "width": 3840,
+        "height": 2544
+      }
+    ],
+    "fullUrl": "/photos/places/thailand-wat-pa-pradu-full.webp",
+    "fullWidth": 3840,
+    "fullHeight": 2544
+  },
+  {
+    "placeId": "thailand-trang",
+    "name": "Trang",
+    "destination": "Trang",
+    "destinations": [
+      "Trang"
+    ],
+    "aliases": [
+      "Old Town Trang",
+      "Trang Old Town"
+    ],
+    "kind": "area",
+    "url": "/photos/places/thailand-trang.webp",
+    "title": "Trang, Thailand, April 2025 - Street scene.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Trang,_Thailand,_April_2025_-_Street_scene.jpg",
+    "author": "Sharon Hahn Darlin",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/44/Trang%2C_Thailand%2C_April_2025_-_Street_scene.jpg/960px-Trang%2C_Thailand%2C_April_2025_-_Street_scene.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "variants": [
+      {
+        "url": "/photos/places/thailand-trang-640.webp",
+        "width": 640,
+        "height": 465
+      },
+      {
+        "url": "/photos/places/thailand-trang.webp",
+        "width": 1280,
+        "height": 930
+      }
+    ],
+    "fullUrl": "/photos/places/thailand-trang.webp",
+    "fullWidth": 1280,
+    "fullHeight": 930
+  },
+  {
+    "placeId": "thailand-trang-gardens",
+    "name": "Trang gardens",
+    "destination": "Trang",
+    "destinations": [
+      "Trang"
+    ],
+    "aliases": [
+      "Trang Zoo"
+    ],
+    "kind": "area",
+    "url": "/photos/places/thailand-trang-gardens.webp",
+    "title": "Canopy walkway at Peninsular Botanical Garden (Thung Khai),Trang - panoramio.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Canopy_walkway_at_Peninsular_Botanical_Garden_(Thung_Khai),Trang_-_panoramio.jpg",
+    "author": "::::=UT=::::",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8c/Canopy_walkway_at_Peninsular_Botanical_Garden_%28Thung_Khai%29%2CTrang_-_panoramio.jpg/960px-Canopy_walkway_at_Peninsular_Botanical_Garden_%28Thung_Khai%29%2CTrang_-_panoramio.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "variants": [
+      {
+        "url": "/photos/places/thailand-trang-gardens-640.webp",
+        "width": 640,
+        "height": 640
+      },
+      {
+        "url": "/photos/places/thailand-trang-gardens.webp",
+        "width": 1280,
+        "height": 1280
+      },
+      {
+        "url": "/photos/places/thailand-trang-gardens-full.webp",
+        "width": 1920,
+        "height": 1920
+      }
+    ],
+    "fullUrl": "/photos/places/thailand-trang-gardens-full.webp",
+    "fullWidth": 1920,
+    "fullHeight": 1920
+  },
+  {
+    "placeId": "thailand-trang-night",
+    "name": "Trang night streets",
+    "destination": "Trang",
+    "destinations": [
+      "Trang"
+    ],
+    "aliases": [
+      "Trang Night Market"
+    ],
+    "kind": "area",
+    "url": "/photos/places/thailand-trang-night.webp",
+    "title": "Trang, Thailand night time street scene April 2025.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Trang,_Thailand_night_time_street_scene_April_2025.jpg",
+    "author": "Sharon Hahn Darlin",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2f/Trang%2C_Thailand_night_time_street_scene_April_2025.jpg/960px-Trang%2C_Thailand_night_time_street_scene_April_2025.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "variants": [
+      {
+        "url": "/photos/places/thailand-trang-night-640.webp",
+        "width": 640,
+        "height": 461
+      },
+      {
+        "url": "/photos/places/thailand-trang-night.webp",
+        "width": 1280,
+        "height": 922
+      },
+      {
+        "url": "/photos/places/thailand-trang-night-full.webp",
+        "width": 1920,
+        "height": 1383
+      }
+    ],
+    "fullUrl": "/photos/places/thailand-trang-night-full.webp",
+    "fullWidth": 1920,
+    "fullHeight": 1383
+  },
+  {
+    "placeId": "thailand-trang-food",
+    "name": "Trang food stalls",
+    "destination": "Trang",
+    "destinations": [
+      "Trang"
+    ],
+    "aliases": [
+      "Southern Thai cooking class",
+      "Khao Khaew Local Market"
+    ],
+    "kind": "area",
+    "url": "/photos/places/thailand-trang-food.webp",
+    "title": "Trang, Thailand, April 2025 - sweets.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Trang,_Thailand,_April_2025_-_sweets.jpg",
+    "author": "Sharon Hahn Darlin",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d6/Trang%2C_Thailand%2C_April_2025_-_sweets.jpg/960px-Trang%2C_Thailand%2C_April_2025_-_sweets.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "variants": [
+      {
+        "url": "/photos/places/thailand-trang-food-640.webp",
+        "width": 640,
+        "height": 854
+      },
+      {
+        "url": "/photos/places/thailand-trang-food.webp",
+        "width": 1280,
+        "height": 1707
+      },
+      {
+        "url": "/photos/places/thailand-trang-food-full.webp",
+        "width": 1920,
+        "height": 2560
+      }
+    ],
+    "fullUrl": "/photos/places/thailand-trang-food-full.webp",
+    "fullWidth": 1920,
+    "fullHeight": 2560
+  },
+  {
+    "placeId": "thailand-hat-chao-mai",
+    "name": "Hat Chao Mai National Park",
+    "destination": "Trang",
+    "destinations": [
+      "Trang"
+    ],
+    "aliases": [],
+    "kind": "place",
+    "url": "/photos/places/thailand-hat-chao-mai.webp",
+    "title": "Koh Ngai 07.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Koh_Ngai_07.jpg",
+    "author": "Khunkay",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6d/Koh_Ngai_07.jpg/960px-Koh_Ngai_07.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "variants": [
+      {
+        "url": "/photos/places/thailand-hat-chao-mai-640.webp",
+        "width": 640,
+        "height": 427
+      },
+      {
+        "url": "/photos/places/thailand-hat-chao-mai.webp",
+        "width": 1280,
+        "height": 854
+      },
+      {
+        "url": "/photos/places/thailand-hat-chao-mai-full.webp",
+        "width": 3840,
+        "height": 2561
+      }
+    ],
+    "fullUrl": "/photos/places/thailand-hat-chao-mai-full.webp",
+    "fullWidth": 3840,
+    "fullHeight": 2561
+  },
+  {
+    "placeId": "thailand-emerald-cave",
+    "name": "Emerald Cave",
+    "destination": "Trang",
+    "destinations": [
+      "Trang"
+    ],
+    "aliases": [],
+    "kind": "place",
+    "url": "/photos/places/thailand-emerald-cave.webp",
+    "title": "Inside the emerald cave (8161381748).jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Inside_the_emerald_cave_(8161381748).jpg",
+    "author": "Nik Cyclist from Bangkok, Thailand",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/51/Inside_the_emerald_cave_%288161381748%29.jpg/960px-Inside_the_emerald_cave_%288161381748%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "variants": [
+      {
+        "url": "/photos/places/thailand-emerald-cave-640.webp",
+        "width": 640,
+        "height": 426
+      },
+      {
+        "url": "/photos/places/thailand-emerald-cave.webp",
+        "width": 1280,
+        "height": 851
+      }
+    ],
+    "fullUrl": "/photos/places/thailand-emerald-cave.webp",
+    "fullWidth": 1280,
+    "fullHeight": 851
+  },
+  {
+    "placeId": "thailand-emerald-cave-view",
+    "name": "Emerald Cave entrance",
+    "destination": "Trang",
+    "destinations": [
+      "Trang"
+    ],
+    "aliases": [
+      "Emerald Cave Lookout",
+      "Emerald Cave sunset view"
+    ],
+    "kind": "area",
+    "url": "/photos/places/thailand-emerald-cave-view.webp",
+    "title": "Wayinoutcave.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Wayinoutcave.jpg",
+    "author": "Uncharted25",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0b/Wayinoutcave.jpg/960px-Wayinoutcave.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "variants": [
+      {
+        "url": "/photos/places/thailand-emerald-cave-view-640.webp",
+        "width": 640,
+        "height": 480
+      },
+      {
+        "url": "/photos/places/thailand-emerald-cave-view.webp",
+        "width": 1280,
+        "height": 960
+      },
+      {
+        "url": "/photos/places/thailand-emerald-cave-view-full.webp",
+        "width": 1920,
+        "height": 1440
+      }
+    ],
+    "fullUrl": "/photos/places/thailand-emerald-cave-view-full.webp",
+    "fullWidth": 1920,
+    "fullHeight": 1440
+  },
+  {
+    "placeId": "thailand-pak-meng-sunset",
+    "name": "Pak Meng Beach at sunset",
+    "destination": "Trang",
+    "destinations": [
+      "Trang"
+    ],
+    "aliases": [
+      "Pak Meng Beach sunset",
+      "Seafood Dinner at Pak Meng Beach"
+    ],
+    "kind": "place",
+    "url": "/photos/places/thailand-pak-meng-sunset.webp",
+    "title": "Pakmeng Beach 01.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Pakmeng_Beach_01.jpg",
+    "author": "Khunkay",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f4/Pakmeng_Beach_01.jpg/960px-Pakmeng_Beach_01.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "variants": [
+      {
+        "url": "/photos/places/thailand-pak-meng-sunset-640.webp",
+        "width": 640,
+        "height": 427
+      },
+      {
+        "url": "/photos/places/thailand-pak-meng-sunset.webp",
+        "width": 1280,
+        "height": 854
+      },
+      {
+        "url": "/photos/places/thailand-pak-meng-sunset-full.webp",
+        "width": 3840,
+        "height": 2560
+      }
+    ],
+    "fullUrl": "/photos/places/thailand-pak-meng-sunset-full.webp",
+    "fullWidth": 3840,
+    "fullHeight": 2560
+  },
+  {
+    "placeId": "thailand-pak-meng",
+    "name": "Pak Meng Beach",
+    "destination": "Trang",
+    "destinations": [
+      "Trang"
+    ],
+    "aliases": [],
+    "kind": "area",
+    "url": "/photos/places/thailand-pak-meng.webp",
+    "title": "หาดปากเมง อุทยานแห่งชาติหาดเจ้าไหม.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:%E0%B8%AB%E0%B8%B2%E0%B8%94%E0%B8%9B%E0%B8%B2%E0%B8%81%E0%B9%80%E0%B8%A1%E0%B8%87_%E0%B8%AD%E0%B8%B8%E0%B8%97%E0%B8%A2%E0%B8%B2%E0%B8%99%E0%B9%81%E0%B8%AB%E0%B9%88%E0%B8%87%E0%B8%8A%E0%B8%B2%E0%B8%95%E0%B8%B4%E0%B8%AB%E0%B8%B2%E0%B8%94%E0%B9%80%E0%B8%88%E0%B9%89%E0%B8%B2%E0%B9%84%E0%B8%AB%E0%B8%A1.jpg",
+    "author": "Pitchaya.h",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "originalThumbnail": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0f/%E0%B8%AB%E0%B8%B2%E0%B8%94%E0%B8%9B%E0%B8%B2%E0%B8%81%E0%B9%80%E0%B8%A1%E0%B8%87_%E0%B8%AD%E0%B8%B8%E0%B8%97%E0%B8%A2%E0%B8%B2%E0%B8%99%E0%B9%81%E0%B8%AB%E0%B9%88%E0%B8%87%E0%B8%8A%E0%B8%B2%E0%B8%95%E0%B8%B4%E0%B8%AB%E0%B8%B2%E0%B8%94%E0%B9%80%E0%B8%88%E0%B9%89%E0%B8%B2%E0%B9%84%E0%B8%AB%E0%B8%A1.jpg/960px-%E0%B8%AB%E0%B8%B2%E0%B8%94%E0%B8%9B%E0%B8%B2%E0%B8%81%E0%B9%80%E0%B8%A1%E0%B8%87_%E0%B8%AD%E0%B8%B8%E0%B8%97%E0%B8%A2%E0%B8%B2%E0%B8%99%E0%B9%81%E0%B8%AB%E0%B9%88%E0%B8%87%E0%B8%8A%E0%B8%B2%E0%B8%95%E0%B8%B4%E0%B8%AB%E0%B8%B2%E0%B8%94%E0%B9%80%E0%B8%88%E0%B9%89%E0%B8%B2%E0%B9%84%E0%B8%AB%E0%B8%A1.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "checkedAt": "2026-10-08",
+    "changes": "Resized without upscaling and converted to WebP. Display crops vary by card; full-size image retains its aspect ratio.",
+    "variants": [
+      {
+        "url": "/photos/places/thailand-pak-meng-640.webp",
+        "width": 640,
+        "height": 480
+      },
+      {
+        "url": "/photos/places/thailand-pak-meng.webp",
+        "width": 1280,
+        "height": 960
+      },
+      {
+        "url": "/photos/places/thailand-pak-meng-full.webp",
+        "width": 3840,
+        "height": 2880
+      }
+    ],
+    "fullUrl": "/photos/places/thailand-pak-meng-full.webp",
+    "fullWidth": 3840,
+    "fullHeight": 2880
   }
 ]

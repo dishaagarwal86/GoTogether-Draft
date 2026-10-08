@@ -1,3 +1,4 @@
+import { planDates, formatTravelRange } from '../services/bookingDates'
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext'
@@ -8,14 +9,14 @@ import { EmptyState, ErrorState, Icon, LoadingState, PageHeading } from '../comp
 type Itinerary = { quest: Quest; plan: WorkingPlan }
 type Bucket = 'upcoming' | 'ongoing' | 'planned' | 'past'
 
-const dates = (plan: WorkingPlan) => plan.bookings?.travel_dates
-const formatDate = (value?: string) => value ? new Date(`${value}T00:00:00`).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }) : ''
+const dates = planDates
 function bucket(plan: WorkingPlan): Bucket {
   const range = dates(plan)
   if (!range?.start) return 'planned'
   const today = new Date(); today.setHours(0, 0, 0, 0)
   const start = new Date(`${range.start}T00:00:00`)
-  const end = range.end ? new Date(`${range.end}T00:00:00`) : start
+  if (!range.end) return 'planned'
+  const end = new Date(`${range.end}T00:00:00`)
   if (end < today) return 'past'
   if (start <= today) return 'ongoing'
   return 'upcoming'
@@ -64,7 +65,7 @@ function ItineraryCard({ quest, plan, kind }: { quest: Quest; plan: WorkingPlan;
   return <article className="itinerary-library-card">
     <div className={`itinerary-library-status is-${kind}`}>{kind === 'ongoing' ? 'Ongoing' : kind === 'upcoming' ? 'Upcoming' : kind === 'past' ? 'Past' : 'Final plan'}</div>
     <p className="eyebrow">{quest.name}</p><h3>{plan.title}</h3><p className="itinerary-library-destination"><Icon name="pin" size={15} />{plan.destination}{plan.country ? `, ${plan.country}` : ''}</p>
-    <div className="itinerary-library-date"><Icon name="calendar" size={16} />{range?.start ? <span>{formatDate(range.start)}{range.end && range.end !== range.start ? ` – ${formatDate(range.end)}` : ''}</span> : <span>{plan.days.length} days · dates to confirm</span>}</div>
+    <div className="itinerary-library-date"><Icon name="calendar" size={16} /><span>{plan.days.length} days · {formatTravelRange(range)}</span></div>
     <div className="itinerary-library-summary"><span><Icon name="check" size={14} />{count ? `${count} booked` : 'No bookings marked yet'}</span><span><Icon name="compass" size={14} />{bookedActivities.length ? `${bookedActivities.length} moments confirmed` : `${plan.days.length} days planned`}</span></div>
     <Link to={`/quests/${quest.id}?tab=itinerary`} className="primary-button">Open itinerary <Icon name="arrow" size={16} /></Link>
   </article>

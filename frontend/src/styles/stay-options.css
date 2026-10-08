@@ -1,0 +1,22 @@
+.stay-choice-panel{margin-top:28px;padding-top:24px;border-top:1px solid #ded6c4;min-width:0}
+.stay-choice-header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px}
+.stay-choice-header .eyebrow{font-size:11px;margin:0 0 6px;color:#7b725c;letter-spacing:1.2px}
+.stay-choice-header h4{font:500 25px/1.25 var(--serif);margin:0;color:#18362f}
+.stay-choice-rule{display:inline-flex;align-items:center;gap:7px;padding:8px 10px;border-radius:8px;background:#eef2e8;color:#425b43;font-size:12px}
+.stay-choice-status{display:flex;align-items:flex-start;gap:9px;padding:12px 14px;margin:12px 0 18px;border:1px solid #e5dfcd;background:#faf7ef;border-radius:8px;font-size:13px;line-height:1.6;color:#566153}
+.stay-choice-status svg{flex-shrink:0;margin-top:3px}.stay-choice-status strong{font-weight:600}
+.stay-option-tabs{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 10px;scrollbar-width:thin}
+.stay-option-tabs>button{flex:1;min-width:120px;display:flex;flex-direction:column;gap:5px;align-items:flex-start;text-align:left;padding:12px 16px;border:1px solid #d9dfd5;border-radius:10px;background:#fafbf8;color:#586752;cursor:pointer}
+.stay-option-tabs>button>span{font-size:10px;letter-spacing:1px}.stay-option-tabs>button>strong{font-size:15px;font-weight:600;line-height:1.4}
+.stay-option-tabs>button[aria-selected=true]{border-color:#456652;background:#e8f0e5;color:#284d38;box-shadow:inset 0 -3px #456652}
+.stay-option-tabs>button:focus-visible{outline:2px solid #6c568f;outline-offset:2px}
+.stay-choice-panel .trip-stays{margin-top:0}
+.stay-choice-panel .trip-stay{grid-template-columns:minmax(130px,30%) minmax(0,1fr);gap:18px;align-items:start;padding:18px;border-radius:12px}
+.stay-choice-panel .trip-stay>img{width:100%;height:220px;min-height:0;max-height:260px;border-radius:8px}
+.stay-choice-panel .trip-stay-main h4{font-size:22px;line-height:1.3}
+.stay-choice-panel .trip-stay-side{grid-column:1/-1;min-width:0;display:flex;flex-direction:row;align-items:center;text-align:left;gap:16px;flex-wrap:wrap;border-top:1px solid #dce3da;padding-top:14px}
+.stay-choice-panel .trip-stay-price strong{font-size:28px}.stay-choice-panel .trip-stay-price small{font-size:12px}
+.stay-option-actions{display:flex;justify-content:flex-end;align-items:center;flex-wrap:wrap;gap:10px;min-width:0}
+.stay-option-actions .booking-mark,.stay-option-actions .booking-confirmed{white-space:normal;font-size:13px;max-width:100%}
+.stay-alternative-note{grid-column:1/-1;margin:0;padding:10px 12px;border-radius:6px;background:#f4f0e5;font-size:13px;line-height:1.6;color:#646146}
+@media(max-width:700px){.stay-choice-panel .trip-stay{grid-template-columns:minmax(0,1fr);padding:14px;gap:14px}.stay-choice-panel .trip-stay>img{height:auto;aspect-ratio:16/9;max-height:220px}.stay-choice-panel .trip-stay-side{grid-column:1;align-items:flex-start}.stay-option-actions{justify-content:flex-start}.stay-choice-header h4{font-size:23px}.stay-option-tabs>button{padding:10px 12px;min-width:105px}.stay-choice-panel .trip-stay-main h4{font-size:20px}}

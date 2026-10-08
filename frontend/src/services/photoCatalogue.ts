@@ -33,7 +33,11 @@ export function matchingPlacePhoto({ placeId, title, destination, imageQuery, ki
   const query = normalizePlace(imageQuery ?? '')
   const inText = (text: string, name: string) => ` ${text} `.includes(` ${name} `)
   return photos.filter(photo => photo.destinations.some(value => inText(location, normalizePlace(value))) && (kind !== 'stay' || photo.kind === 'stay'))
-    .flatMap(photo => [photo.name, ...photo.aliases].map(normalizePlace).filter(name => name.length >= 5 && (kind === 'stay' ? text === name : inText(text, name) || inText(query, name))).map(name => ({photo, score: name.length})))
+    .flatMap(photo => [photo.name, ...photo.aliases].map(normalizePlace)
+      // A city mentioned in an image query must not outrank the named attraction.
+      .filter(name => !(photo.kind === 'area' && name === normalizePlace(photo.destination) && text !== name && query !== name))
+      .filter(name => name.length >= 5 && (kind === 'stay' ? text === name : inText(text, name) || inText(query, name)))
+      .map(name => ({ photo, score: name.length + (inText(text, name) ? 100 : 0) })))
     .sort((a,b) => b.score-a.score)[0]?.photo
 }
 export const photoSrcSet = (photo?: CataloguePhoto | null) => photo?.variants?.map(item => `${item.url} ${item.width}w`).join(', ')

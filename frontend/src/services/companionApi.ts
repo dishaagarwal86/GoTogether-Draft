@@ -28,4 +28,4 @@ export async function applyCompanionSuggestion(id: string, fields: string[], roo
 }
 export const personaliseItinerary = (roomId: string, itineraryId: string) => request<{ data: PersonalStory }>('/personalise-itinerary', { roomId, itineraryId })
 export const savedPersonalStory = (roomId: string, itineraryId: string) => request<{ data: PersonalStory | null }>(`/personalise-itinerary?${new URLSearchParams({ roomId, itineraryId })}`)
-export const sourceLabel = (source: AiSource) => source === 'fallback' ? 'Planning suggestion · AI unavailable' : `AI suggestion · ${source === 'openai' ? 'OpenAI' : 'Ollama'}`
+export const sourceLabel = (source: AiSource) => source === 'fallback' ? 'Planning suggestion · AI unavailable' : 'AI suggestion'

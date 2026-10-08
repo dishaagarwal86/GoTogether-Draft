@@ -2,10 +2,11 @@ import type { BookingTrip } from '../apis/quests'
 import type { LearningPrompt } from './travelMemoryApi'
 import { apiUrl } from './apiUrl'
 import type { PlaceSource } from './placeSources'
+import type { TravelDates } from './bookingDates'
 
 export type PlanItem = { id: string; title: string; kind: 'experience' | 'food' | 'stay' | 'transport' | 'free'; time: string; duration: number; note: string; locked: boolean; booked?: boolean; imageQuery?: string; placeSource?: PlaceSource }
 export type PlanDay = { id: string; title: string; items: PlanItem[] }
-export type WorkingPlan = { learningPrompt?: LearningPrompt | null; title: string; destination: string; country: string; catalogueId: string; days: PlanDay[]; bookings?: BookingTrip; booked?: { flights: string[]; stays: string[] }; revision: number; canUndo: boolean; updatedAt: string }
+export type WorkingPlan = { travelDates?: TravelDates; learningPrompt?: LearningPrompt | null; title: string; destination: string; country: string; catalogueId: string; days: PlanDay[]; bookings?: BookingTrip; booked?: { flights: string[]; stays: string[] }; revision: number; canUndo: boolean; updatedAt: string }
 export type PlanCommand = { type: 'move' | 'add' | 'remove' | 'update' | 'lock' | 'undo' | 'rename' | 'proposal' | 'itinerary' | 'booking'; proposalId?: string; catalogueId?: string; itemId?: string; dayId?: string; index?: number; title?: string; kind?: PlanItem['kind']; time?: string; duration?: number; note?: string; placeId?: string; bookingType?: 'flight' | 'stay' | 'activity'; bookingId?: string; booked?: boolean }
 export class PlanError extends Error { status: number; constructor(message: string, status: number) { super(message); this.status = status } }
 async function request<T>(roomId: string, suffix = '', body?: unknown): Promise<T> {

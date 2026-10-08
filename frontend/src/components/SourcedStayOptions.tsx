@@ -1,3 +1,4 @@
+import { formatTravelRange, tripDates } from '../services/bookingDates'
 import { useEffect, useState } from 'react'
 import type { BookingTrip } from '../apis/quests'
 import { apiUrl } from '../services/apiUrl'
@@ -30,7 +31,7 @@ export function SourcedStayOptions({ trip }: { trip: BookingTrip }) {
   const stays = result?.key === query ? result.places.filter(place => place.kind === 'stay' && place.placeSource && !shown.has(place.placeSource.placeId)) : []
   if (!stays.length) return null
   return <div className="sourced-stays" aria-label="Stays from official sources">
-    <h4>Real stays to explore</h4><p>A starting point for your research. Compare rates, room capacity and your budget on the property’s site.</p>
+    <h4>Real stays to explore</h4><p className="booking-trip-dates">Trip dates · {formatTravelRange(tripDates(trip))} · Availability to check</p><p>A starting point for your research. Compare rates, room capacity and your budget on the property’s site.</p>
     <div className="sourced-stays-grid">{stays.map(stay => <SourcedStayCard key={stay.placeSource!.placeId} stay={stay} destination={trip.destination} />)}</div>
   </div>
 }

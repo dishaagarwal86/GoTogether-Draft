@@ -15,7 +15,7 @@ const databaseUrl = 'postgres://provider_test:provider_test@127.0.0.1:55436/goto
 const children = []
 let stopping = false
 let stopPreview = () => {}
-const env = { ...process.env, NODE_ENV: 'test', DOTENV_CONFIG_PATH: '/dev/null', DATABASE_PROVIDER: 'postgres', DATABASE_URL: databaseUrl, SUPABASE_URL: '', SUPABASE_SERVICE_ROLE_KEY: '', SMTP_HOST: '', SMTP_PORT: '', SMTP_USER: '', SMTP_PASS: '', SMTP_FROM: '', OPENAI_API_KEY: '', OLLAMA_API_KEY: '', PORT: apiPort, CLIENT_ORIGIN: `${uiUrl},http://localhost:${uiPort}`, APP_URL: uiUrl, VITE_API_URL: directApi ? apiUrl : '', VITE_API_BASE_URL: '', VITE_LOCAL_PREVIEW: preview ? 'true' : '', JOURNEY_TEST_API_URL: directApi ? apiUrl : uiUrl }
+const env = { ...process.env, NODE_ENV: 'test', LOCAL_QUEST_DEMO: preview ? 'true' : '', DOTENV_CONFIG_PATH: '/dev/null', DATABASE_PROVIDER: 'postgres', DATABASE_URL: databaseUrl, SUPABASE_URL: '', SUPABASE_SERVICE_ROLE_KEY: '', SMTP_HOST: '', SMTP_PORT: '', SMTP_USER: '', SMTP_PASS: '', SMTP_FROM: '', OPENAI_API_KEY: '', OLLAMA_API_KEY: '', PORT: apiPort, CLIENT_ORIGIN: `${uiUrl},http://localhost:${uiPort}`, APP_URL: uiUrl, VITE_API_URL: directApi ? apiUrl : '', VITE_API_BASE_URL: '', VITE_LOCAL_PREVIEW: preview ? 'true' : '', JOURNEY_TEST_API_URL: directApi ? apiUrl : uiUrl }
 // Review the real AI experience locally without importing hosted DB or mail settings.
 const aiKeys = ['AI_PROVIDER', 'OPENAI_API_KEY', 'OPENAI_MODEL', 'OPENAI_ITINERARY_MODEL', 'OLLAMA_API_KEY', 'OLLAMA_MODEL', 'OLLAMA_ITINERARY_MODEL', 'OLLAMA_BASE_URL']
 if (preview && existsSync(resolve(root, 'backend/.env'))) {

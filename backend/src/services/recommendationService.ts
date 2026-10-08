@@ -4,6 +4,9 @@ import { budgetRank, moodName, normalize, violatesNoGo } from './travelPreferenc
 import { contextFor, effectiveMemories, getTravelProfile } from './travelMemory.js'
 import { aiQuestItineraries, type AiItinerary } from './aiItineraryService.js'
 import { contextKey } from './aiHistory.js'
+import { isDemoRoom } from '../demo/config.js'
+import { demoOptions } from '../demo/scenario.js'
+import { resolveTravelDates } from './travelDates.js'
 
 export type Preference = { user_id?: string; dates?: { start?: string | null; end?: string | null; flexible?: boolean }; budget: string | null; days_count: number | null; location_preferences: { scope?: string; destination?: string; departureCity?: string; fixed?: boolean } | null; mood_preferences: string[] | null; activities_must_have: string | null; activities_preferred: string | null; accommodation_preferences: string[] | null; data: { submitted?: boolean; noGo?: string; pace?: string; ageGroups?: string[]; companions?: string; dayStart?: string; personalizationEnabled?: boolean } }
 export type Catalogue = Partial<Pick<AiItinerary, 'currency' | 'travel_dates' | 'flights' | 'stays' | 'source' | 'cover_image'>> & { id: string; title: string; destination: string; country: string; duration_days: number; budget: string; estimated_cost_usd: number; seasons: string[]; moods: string[]; location_type: string; short_description: string; why_it_fits: string; daily_plan: unknown; ai_context: { pace?: string; highlights?: string[]; avoidIf?: string[]; activityTags?: string[] } }
@@ -39,7 +42,8 @@ export function rankRecommendations(preferences: Preference[], catalogue: Catalo
     const minFit = Math.min(...fits)
     const score = Math.max(0, Math.min(100, Math.round(mean(fits) - (minFit < 30 ? 10 : 0))))
     const matchedPreferences = [...new Set(trip.moods.filter(value => sharedMoods.includes(moodName(value))).concat(highlights.filter(value => preferences.some(item => words(item.activities_must_have ?? '').some(word => normalize(value).includes(word))))))]
-    return { ...trip, score, minFit, memberFits: preferences.map((preference, index) => ({ userId: preference.user_id, score: fits[index] })), matchedPreferences, compromises: minFit < 50 ? ['Some travellers have fewer interests represented. Discuss optional activities together.'] : ['Fits the saved budget and trip length. Confirm the activities respect everyone’s boundaries.'] }
+    const travelDates = resolveTravelDates(trip.travel_dates, trip.duration_days, availability)
+    return { ...trip, ...(travelDates ? { travel_dates: travelDates } : {}), score, minFit, memberFits: preferences.map((preference, index) => ({ userId: preference.user_id, score: fits[index] })), matchedPreferences, compromises: minFit < 50 ? ['Some travellers have fewer interests represented. Discuss optional activities together.'] : ['Fits the saved budget and trip length. Confirm the activities respect everyone’s boundaries.'] }
   }).sort((a, b) => b.score - a.score || a.id.localeCompare(b.id))
   const best = scored[0]
   const fair = scored.filter(trip => trip.id !== best?.id).sort((a, b) => b.minFit - a.minFit || b.score - a.score || a.id.localeCompare(b.id))[0]
@@ -75,11 +79,12 @@ export async function recommendForQuest(roomId: string) {
   }))
   const availability = sharedAvailability(savedPreferences)
   const preferenceVersion = contextKey([group.totalMembers, group.participants.map(person => [person.id, person.status]), effectivePreferences, acceptedNotes])
-  const generated = group.ready && !availability.conflict
+  const demo = isDemoRoom(roomId)
+  const generated = group.ready && !availability.conflict && !demo
     ? await aiQuestItineraries(roomId, group.participants.find(person => person.role === 'owner')?.id, effectivePreferences, preferenceVersion)
     : { results: [], pending: false, status: 'waiting' as const }
   // Generated options pass the same hard filters and scoring as the catalogue.
-  const ranked = rankRecommendations(group.ready ? effectivePreferences : [], [...catalogue, ...generated.results])
+  const ranked = rankRecommendations(group.ready ? effectivePreferences : [], demo ? demoOptions() : [...catalogue, ...generated.results])
   const blockers = !group.ready ? [`${group.completedMembers} of ${group.totalMembers} travellers are ready. Everyone must confirm their preferences before group matches appear.`]
     : availability.conflict ? ['Your travel dates do not overlap. Discuss another date window and update your preferences.'] : ranked.blockers
   return { ...ranked, generationPending: generated.pending, generationStatus: generated.status, blockers, totalMembers: group.totalMembers, memberCount: group.completedMembers, ready: group.ready,

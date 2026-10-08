@@ -1,0 +1,47 @@
+import type { Catalogue } from '../services/recommendationService.js'
+export const dates = { start: '2027-01-14', end: '2027-01-17', flexible: false }
+export const people = [
+ {key:'aarav',firstName:'Aarav',lastName:'Rao',city:'Hyderabad',airport:'HYD',role:'Host',budget:'Moderate',pace:'A balanced mix',start:'10:00',moods:['Food & Culture','History','Relaxation'],must:'Street food with vegetarian choices and one riverside evening',preferred:'Shared lunches, river views and time to talk',noGo:'animal shows',story:'The organiser. Loves food and wants everyone to feel included. Planning around ₹60,000 per person.',color:'#355b4a',flight:18000},
+ {key:'meera',firstName:'Meera',lastName:'Iyer',city:'Bengaluru',airport:'BLR',role:'Traveller',budget:'Premium',pace:'Busy & activity-filled',start:'09:00',moods:['History','Food & Culture','Nature'],must:'Grand Palace and Wat Arun photography',preferred:'Architecture, temple courtyards and a quiet coffee break',noGo:'animal shows',story:'The photographer. Wants the main temples and is comfortable spending more, but is happy to share twin rooms.',color:'#866146',flight:19000},
+ {key:'kabir',firstName:'Kabir',lastName:'Shah',city:'Mumbai',airport:'BOM',role:'Traveller',budget:'Budget-friendly',pace:'Slow & relaxed',start:'10:00',moods:['Food & Culture','Relaxation','History'],must:'Vegetarian meal choices and a proper lunch break',preferred:'Short walks, air-conditioned breaks and affordable transport',noGo:'animal shows; hiking',story:'The thoughtful budget keeper. Vegetarian, prefers later starts and wants the trip near ₹55,000 including flights.',color:'#5b638d',flight:20000},
+ {key:'riya',firstName:'Riya',lastName:'Menon',city:'Pune',airport:'PNQ',role:'Traveller',budget:'Moderate',pace:'Slow & relaxed',start:'10:30',moods:['Shopping','Relaxation','Food & Culture'],must:'Chatuchak Weekend Market and unhurried café time',preferred:'A little shopping, neighbourhood wandering and quiet evenings',noGo:'animal shows',story:'The spontaneous one. Wants markets and cafés, with space to change her mind. A packed museum day is not her idea of a holiday.',color:'#9b5e73',flight:22000},
+] as const
+export const scenes = [
+ {key:'gather',name:'Meet the crew',tab:'crew',description:'Three preferences are ready. Switch to Riya to review her draft and confirm the last voice.',guide:['Open each traveller’s profile below.','Enter as Riya and finish her travel preferences.','Watch the room unlock group recommendations.']},
+ {key:'compare',name:'Make a group decision',tab:'options',description:'Four distinct preferences, three plans, two positive responses, one concern and one pending response.',guide:['Compare the three full itineraries and their responses.','Kabir explains why a long temple afternoon needs a break.','Switch to Kabir and Riya to respond, then return to Aarav to choose the shared plan.']},
+ {key:'review',name:'Shape the shared trip',tab:'itinerary',description:'A four-day draft is saved. One traveller has a concern and one has not reviewed it yet.',guide:['As Aarav, edit a time, drag a card or add an idea. Try undo and activity locks.','Use Crew chat to discuss Kabir’s concern; browse the accepted and rejected saved ideas.','Switch travellers to review the latest version. Every edit requires fresh agreement.']},
+ {key:'ready',name:'Everyone is on board',tab:'itinerary',description:'A fully agreed, editable plan, ready to present with flights, stay ideas and a complete travel story.',guide:['Show the 100% readiness card and all four travellers’ agreement.','Open Flights & stays, the AI Companion and Saved ideas.','Open Travel Style for fictional past trips, confirmed preferences, points and planning credits.']},
+] as const
+export type SceneKey = typeof scenes[number]['key']
+const moment = (activity:string,detail:string,imageQuery=activity) => ({activity,detail,imageQuery})
+const day = (title:string, slots: ReturnType<typeof moment>[]) => ({title,...Object.fromEntries(['morning','afternoon','evening'].map((slot,i)=>[slot,slots[i].activity])),moments:Object.fromEntries(['morning','afternoon','evening'].map((slot,i)=>[slot,slots[i]]))})
+export function demoOptions(): Catalogue[] {
+ const arrival = day('Thu 14 Jan · Arrive and find your rhythm',[
+  moment('Arrive at Suvarnabhumi Airport','Allow time for immigration and luggage. Compare the airport rail link and a licensed taxi; this is a planning window, not a flight schedule.','Suvarnabhumi Airport'),
+  moment('Settle into Silom','Leave bags, request two twin rooms and take a proper lunch break. Confirm check-in time with the property.','Silom'),
+  moment('A gentle riverside dinner','Find a restaurant with vegetarian choices and take in the river. Head back whenever the crew is tired.','Bangkok'),
+ ])
+ const temple = day('Fri 15 Jan · Temples, with breathing room',[
+  moment('Grand Palace','Plan a 10:00 visit after breakfast. Check the official visitor notice and dress requirements before travelling.','Grand Palace'),
+  moment('Wat Arun','Lunch first, then cross the river for architecture and photographs. Allow a taxi or ferry buffer and skip steep steps if anyone prefers.','Wat Arun'),
+  moment('Yaowarat food walk','Choose a few stalls together, check vegetarian ingredients directly and keep the walk short. There is no obligation to stay out late.','Yaowarat'),
+ ])
+ const market = day('Sat 16 Jan · Markets and a free afternoon',[
+  moment('Chatuchak Weekend Market','A Saturday visit for Riya’s shopping wish. Set a meeting point, carry water and agree a two-hour browse.','Chatuchak Weekend Market'),
+  moment('Sukhumvit café time','Take a seated lunch and an air-conditioned café break. Optional shopping; anyone can return to the hotel.','Sukhumvit'),
+  moment('Silom dinner together','A simple group dinner, a budget check and a chance to choose tomorrow’s breakfast.','Silom'),
+ ])
+ const departure = day('Sun 17 Jan · One last breakfast',[
+  moment('A slow Silom breakfast','Pack and leave bags with the hotel after checking its luggage-storage policy. No early sightseeing today.','Silom'),
+  moment('Flexible last stop in Sukhumvit','Only add a café or shop if departure timing allows. Keep a generous airport-transfer buffer.','Sukhumvit'),
+  moment('Return to Suvarnabhumi Airport','Replace this placeholder with each traveller’s actual flight and airline check-in deadline. No tickets have been booked.','Suvarnabhumi Airport'),
+ ])
+ const flights=people.map(p=>({from:p.city,fromCode:p.airport,to:'Bangkok',toCode:'BKK',airline:'',flightNumber:'',departDate:dates.start,departTime:'',arriveTime:'',duration:'',stops:-1,returnDate:dates.end,returnDepartTime:'',pricePerPerson:p.flight}))
+ const stays=[{name:'Silom hotels with twin rooms',area:'Silom',type:'Neighbourhood stay search',stars:0,reviewScore:0,reviewLabel:'',highlights:[],pricePerNight:4800,nights:3,totalPrice:14400,imageQuery:'Silom'}, {name:'Sukhumvit hotels near public transport',area:'Sukhumvit',type:'Neighbourhood stay search',stars:0,reviewScore:0,reviewLabel:'',highlights:[],pricePerNight:5200,nights:3,totalPrice:15600,imageQuery:'Sukhumvit'}]
+ const common={destination:'Bangkok',country:'Thailand',duration_days:4,budget:'Budget-friendly',estimated_cost_usd:480,seasons:['Winter'],moods:['Food & Culture','History','Relaxation','Shopping'],location_type:'City',why_it_fits:'A prepared demo starting point balancing the four fictional travellers. Amounts are planning estimates; check real availability.',currency:'INR',travel_dates:{start:dates.start,end:dates.end},flights,stays}
+ return [
+  {...common,id:'demo-bangkok-balanced',title:'Bangkok, with room for everyone',short_description:'Temples for Meera, markets for Riya, thoughtful meals for Kabir and shared evenings for Aarav. One free afternoon keeps it flexible.',daily_plan:[arrival,temple,market,departure],ai_context:{pace:'A balanced mix',highlights:['Grand Palace','Wat Arun','vegetarian meal choices','Chatuchak Weekend Market','café time','shared lunches']}},
+  {...common,id:'demo-bangkok-culture',title:'Architecture and riverside stories',estimated_cost_usd:505,short_description:'More time with temples and architecture. The trade-off is less shopping and a fuller Friday for the relaxed travellers.',daily_plan:[arrival,day('Fri 15 Jan · A longer temple day',[temple.moments.morning,moment('Grand Palace architecture details','Stay in the palace neighbourhood for a second look after lunch; Meera leads the photographs. This is a fuller afternoon.','Grand Palace'),temple.moments.evening]),day('Sat 16 Jan · Wat Arun and neighbourhood wandering',[temple.moments.afternoon,market.moments.afternoon,market.moments.evening]),departure],ai_context:{pace:'Busy & activity-filled',highlights:['Grand Palace','Wat Arun','architecture','temple courtyards','History']}},
+  {...common,id:'demo-bangkok-slow',title:'Markets, cafés and slow mornings',estimated_cost_usd:450,short_description:'Later starts and more downtime. Keep Wat Arun, trade the Grand Palace visit for a quieter neighbourhood morning.',daily_plan:[arrival,day('Fri 15 Jan · One landmark, at our pace',[moment('Silom breakfast and local wandering','Meet after 10:30 for breakfast with clear vegetarian choices.','Silom'),temple.moments.afternoon,temple.moments.evening]),market,departure],ai_context:{pace:'Slow & relaxed',highlights:['vegetarian meal choices','Chatuchak Weekend Market','café time','short walks','quiet evenings']}},
+ ]
+}

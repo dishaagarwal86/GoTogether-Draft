@@ -76,6 +76,64 @@ Run `npm --prefix frontend run build` followed by `npm --prefix frontend run tes
 
 ## Application journey
 
+### Local Bangkok group demo
+
+Open **http://localhost:5191/demo** while the workspace preview is running. The
+demo uses four fictional accounts (Aarav, Meera, Kabir and Riya) in the isolated
+local database. The traveller switcher opens normal authenticated sessions;
+host permissions, preference privacy, versioned votes and edit checks still apply.
+**Exit demo** restores the account that was open before entering.
+
+| Scene | Starting state | What to demonstrate |
+| --- | --- | --- |
+| Meet the crew | 3/4 preferences ready; 19% readiness | Enter as Riya, complete her existing preference cards and unlock group matches |
+| Make a group decision | Three options; two positive votes, a concern and a pending vote on the balanced option | Compare full itineraries; resolve Kabir's concern, respond as Riya, then let Aarav choose |
+| Shape the shared trip | Saved four-day draft; 88% readiness | Edit, move, lock, undo; discuss the lunch break and review the new version as each traveller |
+| Everyone is on board | Four current-version approvals; 100% readiness | Present the complete plan, activity confirmations, photos, flights/stay searches and group chat |
+
+Every scene has persistent chat and three shared ideas showing agreement,
+rejection and pending responses. Each traveller has their own budgets, interests,
+pace, departure city and fictional confirmed Kochi history. Travel Style includes
+confirmed memories, 100 points and welcome planning credits; the normal redemption
+flow exchanges 100 points for five credits. These local points have no cash value.
+
+The scenes are independent rooms, not snapshots that overwrite one another.
+The three Bangkok options are prepared catalogue examples passed through the
+normal group filters and ranking. Opening them does not call an AI provider.
+Companion, explanations and reviewed plan changes retain their normal configured
+provider/fallback behavior; the demo does not simulate successful AI responses.
+Flight costs and neighbourhood stay budgets are illustrative, with Booking.com
+search links. No flight schedules, hotel inventory or completed bookings are claimed.
+Destination photos use the existing local catalogue. Place references include
+[Grand Palace visitor information](https://www.royalgrandpalace.th/en/visit/faq)
+and [Tourism Thailand's Chatuchak listing](https://www.tourismthailand.org/Shop/chatuchak-market).
+
+To prepare a fresh cohort, with the migrated isolated PostgreSQL fixture running:
+
+```bash
+LOCAL_QUEST_DEMO=true NODE_ENV=test DATABASE_PROVIDER=postgres \
+DATABASE_URL=postgres://provider_test:provider_test@127.0.0.1:55436/gotogether_provider_test \
+APP_URL=http://localhost:5191 npm --prefix backend run seed:demo
+npm --prefix backend run build
+npm --prefix frontend run dev:workspace
+```
+
+Seeding adds new accounts/rooms and replaces only the Git-ignored private
+`backend/.local-demo.json` manifest after all scenes succeed. Existing rooms and
+edits are preserved. It does not load `.env`, call AI, send email or touch a hosted
+database. The server requires `LOCAL_QUEST_DEMO=true`, a non-production environment,
+a loopback PostgreSQL connection to `gotogether_provider_test` or `gotogether_demo`,
+and a loopback HTTP peer. `/demo` is available only in the local Vite preview.
+Do not expose this developer preview through a public tunnel.
+
+Run `node tools/check-quest-demo.mjs` from `frontend` against the workspace preview
+for the real-API browser checks. It creates a separate cohort, checks desktop/mobile
+rendering, session restoration, permissions, readiness invalidation, undo, preferences,
+votes, chat and idempotent redemption, then seeds fresh presentation scenes after
+success. Screenshots and the result report are under
+`frontend/.journey-test-results/quest-demo/`. Production/remote-database guard tests
+are included in `npm --prefix backend test`.
+
 The app continues the landing page’s design across public browsing and the signed-in experience.
 
 | Route | Purpose |
@@ -134,13 +192,25 @@ For a separate local review environment, start the isolated fixtures and build t
 
 Flights and stays are reachable through **Flights & stays** in both an option preview and the saved itinerary. **AI planned** separates generated plans from catalogue suggestions; the status explains when generation is pending, unconfigured, or unavailable. After choosing a plan, **AI Companion → Edit the plan** prepares changes for review before Apply. Flight/stay cards are research ideas and estimates with external search links; there is no live inventory, payment, or completed-booking integration.
 
-Destination covers, option previews, saved activities, Ideas and hotel cards share a catalogue of 67 locally bundled photographs, covering all 24 catalogue destinations. Tokyo coverage includes Kichijoji, Inokashira Park, Harmonica Yokocho, Ghibli Museum, Shimokitazawa, Jindaiji Temple, Todoroki Valley, Yanaka Ginza, Nezu Shrine and surrounding neighbourhoods. Matching uses stable place IDs or destination-scoped names/aliases, including common Kichijoji spellings. Unknown hotel names use a labelled area view rather than a different property's photograph.
+Travel dates appear on flight cards, hotel check-in/out, itinerary days, the booked summary and **My itineraries**. Explicit dates take priority; catalogue plans can recover dates from group preferences only when the shared window exactly matches the trip length. Wider windows and undated shorter stays show **Date to confirm**. Hotel search links use the same resolved check-in/out dates displayed on the card.
+
+Hotels are alternatives for a shared stay. A tabbed comparison shows one option at a time, with its own dates, estimate and availability link. Crew members see a host-managed status; only the host sees controls to record or unmark a booking. Switching tabs never changes the saved plan. Repeated suggestions appear once, and the UI and API reject marking another stay with overlapping or unconfirmed dates. Split stays with explicit, non-overlapping dates are allowed, including checking out and into another hotel on the same day. Existing overlapping flags stay visible with a review message and can be unmarked; this only updates the plan and never cancels an external reservation. Traveller-specific hotel assignments and multiple room reservations are not modelled yet.
+
+Run `npm --prefix backend test` for stay-conflict and date rules, `cd frontend && node --experimental-strip-types --test tools/check-booking-dates.test.ts` for client date logic, and `node tools/check-booking-dates.mjs` against the local demo preview for desktop/mobile date and hotel-choice checks. The browser check changes response copies only and verifies that saved demo plans and agreement versions remain unchanged.
+
+Destination covers, option previews, saved activities, Ideas and hotel cards share a catalogue of locally bundled photographs, covering all 24 catalogue destinations plus Bangkok, Rayong and Trang. Tokyo coverage includes Kichijoji, Inokashira Park, Harmonica Yokocho, Ghibli Museum, Shimokitazawa, Jindaiji Temple, Todoroki Valley, Yanaka Ginza, Nezu Shrine and surrounding neighbourhoods. Matching uses stable place IDs or destination-scoped names/aliases, including common Kichijoji spellings. Unknown hotel names use a labelled area view rather than a different property's photograph.
 
 Responsive WebP variants let small cards load a smaller image while larger displays use sources up to 3840px wide. Originals below that resolution are not upscaled or described as 4K. Images are lazy-loaded. There are no licence or full-size links below individual photos; attribution is available via **Photo credits** in the page footer, at `/photo-credits`, and in [the asset attribution file](frontend/public/photos/places/ATTRIBUTION.md).
 
-Uncatalogued activities use metadata-filtered Commons searches that reject scans, newspapers and unrelated results. Both Wikimedia thumbnail hosts are supported. The `v6` cache isolates updated discovery from older cached results; rate limits pause queued lookups without storing outages as empty results. Curated photos load directly from the app even when the provider is unavailable. Broken responsive variants retry the base image, then a labelled destination view or travel illustration. Hotel photographs do not verify current room conditions or availability.
+Uncatalogued activities use metadata-filtered Commons searches that reject scans, newspapers, scientific specimens and unrelated results. Both Wikimedia thumbnail hosts are supported. The `v7` cache isolates updated discovery from older cached results; rate limits pause queued lookups without storing outages as empty results. Curated photos load directly from the app even when the provider is unavailable. Broken responsive variants retry the base image, then a labelled destination view or travel illustration. Hotel photographs do not verify current room conditions or availability.
 
 Run `npm --prefix frontend run test:journey -- --script=tools/check-option-photos.mjs` for the Tokyo photo UI replay, including provider unavailability, labelled stays, all catalogue covers, small-screen layouts, full-resolution asset delivery and image failure recovery.
+
+Group rooms show a **Quest readiness** card with four equal milestones: preferences, agreement on one option, host selection, and agreement on the current plan. Counts distinguish positive responses, concerns and missing responses; expected travellers without a response remain pending. The card uses existing versioned journey responses, so edits and changed preferences invalidate earlier agreement. The full card appears in **Your crew**; options and itinerary views show an expandable summary. Run `node tools/check-group-readiness.mjs` from `frontend` against the local review server for the four-person browser replay.
+
+Option previews show day headings with morning, afternoon and evening photo cards, stacking into a single column on phones. Preview totals and flight/stay estimates display INR, converted from the stored source currency using the public Frankfurter v2 reference-rate endpoint. Rates are shared across cards, cached for six hours and rejected when more than seven days old. A dated, verified USD reference is bundled for short-term offline fallback; unavailable conversions are identified rather than relabelled as rupees. Booking providers set the final prices.
+
+For a running local review server, run `cd frontend && node --test tools/check-inr-pricing.test.ts` and `node tools/check-itinerary-preview.mjs`. The browser check replays synthetic Thai itineraries without room writes or AI calls, simulates the photo provider being unavailable, and checks INR amounts, photos, navigation and responsive layouts. Set `PHOTO_REVIEW_ITINERARIES` to a local saved-itinerary JSON export to replay reported content.
 
 ### Real places and recommendation accuracy
 
