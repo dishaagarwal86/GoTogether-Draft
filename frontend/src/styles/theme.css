@@ -1,0 +1,386 @@
+/* GoTogether master theme: shared, high-contrast surfaces for every routed screen. */
+:root {
+  --gt-ink: #10263b;
+  --gt-muted: #5f6e76;
+  --gt-coral: #ff5a36;
+  --gt-yellow: #ffc533;
+  --gt-lime: #c8e53b;
+  --gt-aqua: #f3fcfd;
+  --gt-lavender: #f7f3ff;
+  --gt-apricot: #fff0ea;
+  --gt-butter: #fff8d9;
+  --gt-border: #e5dcf2;
+  --gt-white: #ffffff;
+}
+
+.journey-shell {
+  --ink: var(--gt-ink);
+  --muted: var(--gt-muted);
+  --cream: var(--gt-white);
+  --paper: var(--gt-white);
+  --line: var(--gt-border);
+  --surface-panel: var(--gt-white);
+  --surface-soft: var(--gt-lavender);
+  --surface-aqua: var(--gt-aqua);
+  --border-soft: var(--gt-border);
+  --text-strong: var(--gt-ink);
+  --text-muted: var(--gt-muted);
+  background: var(--gt-white);
+  color: var(--gt-ink);
+}
+
+.journey-shell :is(.primary-button, .nav-create, .canvas-rename button[type='submit'], .canvas-item-editor footer button[type='submit'], .quick-start-submit button) {
+  background: var(--gt-coral);
+  border-color: var(--gt-coral);
+  color: #fff !important;
+}
+.journey-shell :is(.primary-button, .nav-create, .canvas-rename button[type='submit'], .canvas-item-editor footer button[type='submit'], .quick-start-submit button) * { color: inherit; }
+.journey-shell :is(.primary-button, .nav-create, .canvas-rename button[type='submit'], .canvas-item-editor footer button[type='submit'], .quick-start-submit button):hover { background: #ec4c2e; border-color: #ec4c2e; }
+
+/* Planning canvas */
+.journey-shell .trip-canvas { --canvas-green: var(--gt-ink); --canvas-muted: var(--gt-muted); color: var(--gt-ink); }
+.journey-shell .canvas-preview-note, .journey-shell .canvas-share { background: var(--gt-lavender); border-color: #d9cfed; color: #3e2f61; }
+.journey-shell .canvas-toolbar { border-color: var(--gt-border); }
+.journey-shell .canvas-save-state, .journey-shell .canvas-plain { color: var(--gt-muted); }
+.journey-shell .canvas-days>button { background: var(--gt-lavender); border-color: #d9cfed; color: #3e2f61; }
+.journey-shell .canvas-days>button:nth-child(2n) { background: var(--gt-aqua); border-color: #cdeff2; color: #315b68; }
+.journey-shell .canvas-days>button:nth-child(3n) { background: var(--gt-butter); border-color: #f0df9c; color: #66521e; }
+.journey-shell .canvas-days>button.active { background: var(--gt-ink); border-color: var(--gt-ink); color: #fff; }
+.journey-shell .canvas-day-heading h2, .journey-shell .canvas-day-heading h2 em { color: var(--gt-ink); }
+.journey-shell .canvas-day-heading p:last-child, .journey-shell .canvas-time, .journey-shell .canvas-activity-note, .journey-shell .canvas-activity-meta { color: var(--gt-muted); }
+.journey-shell .canvas-round { background: var(--gt-lavender); border-color: #d9cfed; color: #65508f; }
+.journey-shell .canvas-timeline:before { background: #cdeff2; }
+.journey-shell .canvas-time i { border-color: #12ace5; background: #fff; }
+.journey-shell .canvas-activity, .journey-shell .canvas-activity.kind-experience, .journey-shell .canvas-activity.kind-free { background: var(--gt-aqua); border-color: #cdeff2; border-left-color: #12ace5; }
+.journey-shell .canvas-activity.kind-stay { background: var(--gt-lavender); border-color: #d9cfed; border-left-color: #65508f; }
+.journey-shell .canvas-activity.kind-transport { background: var(--gt-apricot); border-color: #ffd2c5; border-left-color: var(--gt-coral); }
+.journey-shell .canvas-type, .journey-shell .kind-experience .canvas-type, .journey-shell .kind-free .canvas-type { color: #65508f; }
+.journey-shell .canvas-card-actions { border-color: var(--gt-border); }
+.journey-shell .canvas-card-actions>button, .journey-shell .canvas-drag-handle { color: var(--gt-ink); }
+.journey-shell .canvas-card-actions>button:first-child { color: var(--gt-coral); }
+.journey-shell .canvas-card-actions>button:hover { background: var(--gt-lavender); }
+.journey-shell .canvas-add-slot { background: var(--gt-butter); border-color: #f0df9c; }
+.journey-shell .canvas-add-slot>button, .journey-shell .canvas-add-slot span { color: #66521e; }
+.journey-shell .canvas-panel { background: #fff; border-color: var(--gt-border); }
+.journey-shell .canvas-panel-tabs { background: #65508f; border-color: #65508f; }
+.journey-shell .canvas-panel-tabs>button { color: #fff; }
+.journey-shell .canvas-panel-tabs>button[aria-pressed=true] { background: #12ace5; color: var(--gt-ink); box-shadow: none; }
+.journey-shell .canvas-panel-body>p:not(.canvas-kicker) { color: var(--gt-ink); }
+.journey-shell .canvas-idea>span { background: var(--gt-lavender); color: #65508f; }
+.journey-shell .canvas-idea { border-color: var(--gt-border); }
+.journey-shell .canvas-idea small { color: var(--gt-muted); }
+.journey-shell .canvas-idea>button { background: #12ace5; border-color: #12ace5; color: var(--gt-ink); }
+.journey-shell .canvas-dock { background: #f7f3fffa; border-color: #d9cfed; }
+.journey-shell .canvas-dock button { color: var(--gt-ink); }
+.journey-shell .canvas-dock button[aria-pressed=true] { background: #12ace5; color: var(--gt-ink); }
+.journey-shell .canvas-item-editor, .journey-shell .quick-start-composer { background: #fff; border-color: var(--gt-border); box-shadow: 0 10px 28px rgba(60,42,100,.06); }
+.journey-shell .canvas-item-editor input, .journey-shell .canvas-item-editor select, .journey-shell .canvas-item-editor textarea, .journey-shell .quick-start-composer textarea { color: var(--gt-ink); border-color: var(--gt-border); background: #fff; }
+
+/* Results, shared options, planning and memory screens */
+.journey-shell .quest-shortlist, .journey-shell .past-trip-paste, .journey-shell .plan-suggestions, .journey-shell .member-recap { background: var(--gt-lavender); border-color: #d9cfed; color: var(--gt-ink); }
+.journey-shell .itinerary-introduction>p, .journey-shell .itinerary-reasons p, .journey-shell .itinerary-day-description, .journey-shell .itinerary-moment p { color: var(--gt-muted); }
+.journey-shell .itinerary-day-nav { background: #fff; border-color: var(--gt-border); }
+.journey-shell .itinerary-day-nav button { background: var(--gt-aqua); border-color: #cdeff2; color: #315b68; }
+.journey-shell .itinerary-day-number { background: var(--gt-butter); border-color: #f0df9c; color: #66521e; }
+.journey-shell .itinerary-moment, .journey-shell .itinerary-moment-afternoon, .journey-shell .itinerary-moment-evening { background: #fff; border-color: var(--gt-border); }
+.journey-shell .itinerary-moment-body { background: var(--gt-lavender); }
+.journey-shell .itinerary-next-step { background: var(--gt-butter); border-color: #f0df9c; }
+.journey-shell .travel-planning-options, .journey-shell .travel-option-grid article { background: #fff; border-color: var(--gt-border); color: var(--gt-ink); }
+.journey-shell .trip-stay { background: var(--gt-aqua); border-color: #cdeff2; }
+.journey-shell .trip-stay-main h4, .journey-shell .trip-stay-price strong { color: var(--gt-ink); }
+
+/* Shared supporting controls and old pale-green form surfaces. */
+.journey-shell :is(input, select, textarea) { border-color: var(--gt-border); background: #fff; color: var(--gt-ink); }
+.journey-shell :is(input, select, textarea)::placeholder { color: #8a94a0; opacity: 1; }
+.journey-shell input:not([type='checkbox']):not([type='radio']):not([type='range']), .journey-shell select, .journey-shell textarea {
+  border: 1px solid #d9cfed;
+  border-radius: 6px;
+  background: #fff;
+  color: var(--gt-ink);
+  box-shadow: none;
+}
+.journey-shell input:not([type='checkbox']):not([type='radio']):not([type='range']), .journey-shell select { min-height: 46px; padding: 10px 12px; }
+.journey-shell textarea { min-height: 96px; padding: 12px; line-height: 1.55; }
+.journey-shell :is(input, select, textarea):focus { outline: 3px solid rgba(18,172,229,.2); outline-offset: 1px; border-color: #12ace5; }
+
+/* Compact fields used inside itinerary and ideas panels. */
+.journey-shell .canvas-idea-custom, .journey-shell .canvas-idea-search { margin: 18px 0; }
+.journey-shell .canvas-idea-custom label { display:flex; align-items:center; gap:6px; margin:0 0 8px; color:#3e2f61; font-size:16px; font-weight:600; }
+.journey-shell .canvas-idea-custom>div, .journey-shell .canvas-idea-search { display:flex; align-items:stretch; gap:8px; }
+.journey-shell .canvas-idea-custom input, .journey-shell .canvas-idea-search input { min-width:0; flex:1; width:100%; height:46px; margin:0; font-size:16px; }
+.journey-shell .canvas-idea-custom button, .journey-shell .canvas-idea-search button { display:grid; place-items:center; min-width:46px; min-height:46px; margin:0; border:1px solid #12ace5; border-radius:6px; background:#12ace5; color:#10263b; font-size:14px; font-weight:600; }
+.journey-shell .canvas-idea-custom button:disabled { border-color:#e5dcf2; background:#f7f3ff; color:#a29ab3; cursor:not-allowed; }
+.journey-shell .canvas-idea-loading { padding:13px 14px; border:1px solid #e5dcf2; border-radius:6px; background:#f7f3ff; color:#3e2f61; font-size:14px; line-height:1.55; }
+.journey-shell .canvas-idea-loading .canvas-idea-more { margin-left:8px; border:0; border-bottom:1px solid currentColor; background:none; color:#3e2f61; font:inherit; cursor:pointer; }
+.journey-shell .secondary-button { background: var(--gt-lavender); border-color: #d9cfed; color: #3e2f61; }
+.journey-shell .text-button, .journey-shell a:not(.primary-button):not(.secondary-button) { color: inherit; }
+.journey-shell .quest-status-badge.upcoming { background: var(--gt-butter); color: #66521e; }
+.journey-shell .quest-status-badge.completed { background: #eff8c9; color: #435400; }
+
+/* Quest detail and solo-planning flow. */
+.journey-shell .group-room { color: var(--gt-ink); }
+.journey-shell .group-room-cover { background: #3e2f61; box-shadow: 0 14px 40px rgba(62,47,97,.12); }
+.journey-shell .group-room-cover:after { border-color: rgba(255,255,255,.2); box-shadow: 0 0 0 40px rgba(255,255,255,.05), 0 0 0 80px rgba(255,255,255,.04); }
+.journey-shell .group-room-cover :is(a, .eyebrow, p:not(.eyebrow), div>span) { color: rgba(255,255,255,.86); }
+.journey-shell .group-room-cover h1 { color: #fff; }
+.journey-shell .group-cover-stamp { border-color: rgba(255,255,255,.52); outline-color: rgba(255,255,255,.25); color: #fff; }
+.journey-shell .group-progress { background: var(--gt-lavender); border-color: #d9cfed; }
+.journey-shell .group-progress button { color: var(--gt-muted); }
+.journey-shell .group-progress button>span { border-color: #d9cfed; color: #65508f; }
+.journey-shell .group-progress button[aria-current] { color: var(--gt-ink); }
+.journey-shell .group-progress button[aria-current]>span { background: #12ace5; border-color: #12ace5; color: var(--gt-ink); box-shadow: 0 0 0 4px #e3f8fb; }
+.journey-shell .group-progress .is-complete>span { background: #eff8c9; border-color: #dbe9a3; color: #435400; }
+.journey-shell .room-travel-mode { background: var(--gt-butter); border-color: #f0df9c; }
+.journey-shell .room-travel-mode strong, .journey-shell .room-travel-mode>p { color: var(--gt-ink); }
+.journey-shell .room-travel-mode .eyebrow { color: #8a6431; }
+.journey-shell .travel-mode-switch { background: #fff; border-color: #d9cfed; }
+.journey-shell .travel-mode-switch button { color: #3e2f61; }
+.journey-shell .travel-mode-switch button[aria-pressed=true] { background: #65508f; color: #fff; box-shadow: none; }
+.journey-shell .group-room-toolbar { border-color: var(--gt-border); }
+.journey-shell .group-room-toolbar button { color: var(--gt-muted); }
+.journey-shell .group-room-toolbar button[aria-pressed=true] { background: var(--gt-lavender); color: #3e2f61; }
+.journey-shell .group-plan-review, .journey-shell .group-plan-review.is-agreed { background: var(--gt-aqua); border-color: #cdeff2; }
+.journey-shell .group-plan-review .eyebrow { color: #315b68; }
+.journey-shell .group-plan-review :is(h2, p:not(.eyebrow)) { color: var(--gt-ink); }
+.journey-shell .group-plan-review .secondary-button { background: var(--gt-lavender); border-color: #d9cfed; color: #3e2f61; }
+.journey-shell .group-empty { background: var(--gt-lavender); }
+.journey-shell .group-empty :is(h2, p) { color: var(--gt-ink); }
+
+/* Workspace, My Picks and Shared Shortlist. */
+.journey-shell .quest-workspace-header, .journey-shell .quest-planning-links, .journey-shell .shortlist-heading, .journey-shell .shortlist-readiness { border-color: var(--gt-border); }
+.journey-shell .quest-workspace-breadcrumb>span, .journey-shell .quest-workspace-meta, .journey-shell .quest-planning-links, .journey-shell .shortlist-heading>div>p:last-child, .journey-shell .my-picks-strip span, .journey-shell .my-picks-empty, .journey-shell .shared-pick-meta, .journey-shell .shared-pick-note, .journey-shell .group-fit small { color: var(--gt-muted); }
+.journey-shell .quest-role-tag { background: var(--gt-lavender); border-color: #d9cfed; color: #3e2f61; }
+.journey-shell .quest-shortlist { background: #fff; border-color: var(--gt-border); box-shadow: 0 10px 28px rgba(60,42,100,.05); }
+.journey-shell .shortlist-heading h2, .journey-shell .shortlist-readiness h3, .journey-shell .shortlist-category h3, .journey-shell .shared-pick-body h4 { color: var(--gt-ink); }
+.journey-shell .shortlist-heading h2 em { color: var(--gt-coral); }
+.journey-shell .pick-form { border-color: var(--gt-border); }
+.journey-shell .my-picks-strip { background: var(--gt-butter); border-left-color: var(--gt-coral); }
+.journey-shell .my-picks-strip .section-kicker, .journey-shell .shortlist-readiness>.section-kicker, .journey-shell .shared-pick-body .section-kicker { color: #9b513d; }
+.journey-shell .my-picks-list article { background: #fff; border-color: var(--gt-border); }
+.journey-shell .my-picks-list strong { color: var(--gt-ink); }
+.journey-shell .shortlist-readiness-row { background: var(--gt-aqua); border-top-color: #12ace5; }
+.journey-shell .shortlist-readiness-row strong { color: var(--gt-ink); }
+.journey-shell .shared-pick-card { background: #fff; border-color: var(--gt-border); }
+.journey-shell .shared-pick-visual { background: #65508f; color: #fff; }
+.journey-shell .shared-pick-visual span { background: rgba(16,38,59,.82); color: #fff; }
+.journey-shell .group-fit strong { color: var(--gt-ink); }
+.journey-shell .group-fit-status { background: var(--gt-lavender); color: #3e2f61; }
+.journey-shell .is-needs_alignment .group-fit-status { background: var(--gt-apricot); color: #7d3c31; }
+.journey-shell .reaction-avatar { border-color: #fff; background: var(--gt-lavender); color: #3e2f61; }
+.journey-shell .reaction-avatar.is-works { background: #eff8c9; color: #435400; }
+.journey-shell .reaction-actions button, .journey-shell .see-alternatives, .journey-shell .shared-pick-actions { border-color: var(--gt-border); background: #fff; color: var(--gt-ink); }
+.journey-shell .reaction-actions button.is-active, .journey-shell .reaction-actions button:hover { background: var(--gt-apricot); border-color: #ffd2c5; color: #7d3c31; }
+.journey-shell .shared-pick-actions { border-top-color: var(--gt-border); }
+.journey-shell .shared-pick-actions button, .journey-shell .shared-pick-actions button:last-child { color: #3e2f61; }
+
+/* Crew, readiness and preference-gathering views. */
+.journey-shell .group-gather-main :is(h2, h2 em), .journey-shell .group-section-heading :is(h2, h2 em), .journey-shell .group-gather-main>p:not(.eyebrow), .journey-shell .group-ready-note { color: var(--gt-ink); }
+.journey-shell .group-gather-main .eyebrow, .journey-shell .group-section-heading .eyebrow { color: #8a6431; }
+.journey-shell .group-progress-track { background: #e5dcf2; }
+.journey-shell .group-progress-track>span, .journey-shell .group-live-status>span { background: #c8e53b; }
+.journey-shell .group-while-waiting, .journey-shell .group-crew-card, .journey-shell .group-itinerary-detail, .journey-shell .member-preferences { background: #fff; border-color: var(--gt-border); box-shadow: none; }
+.journey-shell .group-while-waiting p, .journey-shell .group-roster small, .journey-shell .group-manage, .journey-shell .group-empty p, .journey-shell .group-section-heading p:not(.eyebrow), .journey-shell .member-preferences header>p:not(.eyebrow) { color: var(--gt-muted); }
+.journey-shell .group-while-waiting>svg, .journey-shell .group-person-icon { background: var(--gt-lavender); border-color: #d9cfed; color: #65508f; }
+.journey-shell .group-person-icon.is-ready { background: #eff8c9; border-color: #dbe9a3; color: #435400; }
+.journey-shell .group-room-toolbar .group-invite-button, .journey-shell .group-manage button { background: var(--gt-lavender); border-color: #d9cfed; color: #3e2f61; }
+.journey-shell .group-option-controls>div, .journey-shell .member-step-tabs button, .journey-shell .member-choice-grid button, .journey-shell .member-pace button { background: var(--gt-lavender); border-color: #d9cfed; color: #3e2f61; }
+.journey-shell .group-option-controls button[aria-pressed=true], .journey-shell .member-step-tabs button[aria-pressed=true] { background: #12ace5; border-color: #12ace5; color: var(--gt-ink); box-shadow: none; }
+.journey-shell .member-choice-grid button[aria-pressed=true], .journey-shell .member-pace button[aria-pressed=true] { background: var(--gt-butter); border-color: #f0df9c; color: #66521e; box-shadow: none; }
+.journey-shell .group-option-card, .journey-shell .group-preview-day { background: #fff; border-color: var(--gt-border); color: var(--gt-ink); }
+.journey-shell .group-option-card.is-selected { border-color: #12ace5; box-shadow: 0 0 0 2px #12ace5; }
+.journey-shell .group-option-photo { background: var(--gt-aqua); }
+.journey-shell .group-option-photo>small { background: #65508f; color: #fff; }
+.journey-shell .group-option-card p, .journey-shell .group-option-card>div>span, .journey-shell .group-preview-day p { color: var(--gt-muted); }
+.journey-shell .group-fit-notes>div, .journey-shell .group-preview-day { background: var(--gt-aqua); border-color: #cdeff2; }
+.journey-shell .group-day-tabs button { background: var(--gt-lavender); border-color: #d9cfed; color: #3e2f61; }
+.journey-shell .group-day-tabs button[aria-pressed=true] { background: var(--gt-ink); border-color: var(--gt-ink); color: #fff; }
+.journey-shell .member-recap, .journey-shell .group-share-link, .journey-shell .mode-notice, .journey-shell .guest-group-room>header { background: var(--gt-aqua); border-color: #cdeff2; color: #315b68; }
+
+/* Travel memory, companion and saved-plan screens. */
+.journey-shell :is(.memory-nudge, .memory-example, .memory-settings, .memory-empty, .memory-editor, .past-chapter-shelf, .perks-wallet, .quick-start-memory) { background: #fff; border-color: var(--gt-border); color: var(--gt-ink); }
+.journey-shell :is(.memory-nudge, .memory-example, .memory-settings, .memory-empty, .memory-editor, .past-chapter-shelf, .perks-wallet, .quick-start-memory) :is(p, small, label) { color: var(--gt-muted); }
+.journey-shell .memory-nudge-icon, .journey-shell .memory-fact-icon { background: var(--gt-lavender); color: #65508f; }
+.journey-shell .memory-companion-tabs button[aria-pressed=true], .journey-shell .memory-choice-row button[aria-pressed=true], .journey-shell .memory-value-chips button[aria-pressed=true] { background: var(--gt-aqua); border-color: #cdeff2; color: #315b68; }
+.journey-shell .memory-facts article, .journey-shell .plan-proposal article, .journey-shell .past-day-cards>label { background: var(--gt-lavender); border-color: #d9cfed; }
+.journey-shell .travel-style-hero h1 em { color: var(--gt-coral); }
+.journey-shell .travel-style-tabs { border-color: var(--gt-border); }
+.journey-shell .travel-style-tabs button[aria-pressed=true] { color: #3e2f61; border-bottom-color: #65508f; }
+
+/* Activity attendance: never fall back to browser button styling. */
+.journey-shell .canvas-confirm {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin: 12px 0 2px;
+  padding: 10px 0;
+  border-top: 1px solid var(--gt-border);
+  color: var(--gt-muted);
+  font-size: 14px;
+  line-height: 1.45;
+}
+.journey-shell .canvas-confirm button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 36px;
+  padding: 8px 13px;
+  border: 1px solid #d9cfed;
+  border-radius: 999px;
+  background: var(--gt-white);
+  color: #3e2f61;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(67, 45, 105, 0.07);
+  transition: background-color 160ms ease, border-color 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+}
+.journey-shell .canvas-confirm button:hover:not(:disabled) {
+  background: var(--gt-lavender);
+  border-color: #8d79bd;
+  box-shadow: 0 4px 12px rgba(67, 45, 105, 0.12);
+  transform: translateY(-1px);
+}
+.journey-shell .canvas-confirm.is-in button,
+.journey-shell .canvas-confirm button[aria-pressed='true'] {
+  background: #eff8c9;
+  border-color: #d7e89c;
+  color: #3e5100;
+}
+.journey-shell .canvas-confirm button:disabled { cursor: not-allowed; opacity: 0.58; }
+.journey-shell .canvas-confirm > span { color: var(--gt-muted); font-size: 14px; }
+
+/* Legacy route compatibility: all pre-theme planning surfaces use the same
+   white + light-accent system instead of their former olive/cream variants. */
+.journey-shell :is(.room-list-panel, .room-form, .question-card, .overview-panel, .profile-edit, .dna-insights article, .path-card, .path-note.itinerary-story, .journey-quest-card) {
+  background: #fff;
+  border-color: var(--gt-border);
+  color: var(--gt-ink);
+  box-shadow: 0 8px 22px rgba(62, 47, 97, .06);
+}
+.journey-shell :is(.plan-page .room-list-panel, .overview-hero, .suggestion-panel, .dna-detail-hero) {
+  background: var(--gt-lavender);
+  border-color: #d9cfed;
+  color: var(--gt-ink);
+  box-shadow: none;
+}
+.journey-shell :is(.room-card, .question-card, .option-button, .question-input, .room-form input, .profile-edit input, .profile-edit select) {
+  border-color: var(--gt-border);
+  background: #fff;
+  color: var(--gt-ink);
+}
+.journey-shell .room-card:hover { border-color: #12ace5; background: var(--gt-aqua); box-shadow: 0 8px 20px rgba(18, 172, 229, .12); }
+.journey-shell :is(.room-card-copy small, .question-helper, .form-hint, .answer-list span, .suggestion-panel > p:not(.section-kicker), .profile-edit > p, .profile-identity > p, .profile-identity > span:last-child, .path-card small, .dna-detail-hero p:not(.eyebrow), .path-note p) { color: var(--gt-muted); }
+.journey-shell :is(.option-button:hover, .option-button.selected) { border-color: #f0df9c; background: var(--gt-butter); color: #66521e; }
+.journey-shell .option-button b, .journey-shell .room-arrow, .journey-shell .text-button { color: var(--gt-coral); }
+.journey-shell .room-mint { background: var(--gt-aqua); color: #315b68; }
+.journey-shell .room-blue { background: var(--gt-apricot); color: #7d3c31; }
+.journey-shell .quest-traits i { background: var(--gt-butter); color: #66521e; }
+.journey-shell .quest-status-badge { background: var(--gt-apricot); color: #7d3c31; }
+.journey-shell .profile-identity { background: var(--gt-lavender); border-color: #d9cfed; }
+.journey-shell .profile-monogram { background: var(--gt-aqua); border-color: #cdeff2; color: #315b68; }
+.journey-shell .journey-heading > div > p:not(.eyebrow),
+.journey-shell .page-heading > p,
+.journey-shell .flow-heading > p,
+.journey-shell .lede { color: var(--gt-muted); }
+.journey-shell .journey-heading h1 em,
+.journey-shell .flow-heading h1 em { color: var(--gt-coral); }
+
+/* New-quest workspace: structured form and optional AI guide share one draft. */
+.journey-shell .quest-starter { width: min(1500px, calc(100vw - 96px)); margin: 0 auto; padding: 8px 0 72px; }
+.journey-shell .quest-starter-top { display:flex; align-items:center; justify-content:space-between; margin:0 0 34px; font-size:14px; }
+.journey-shell .quest-starter-top>a { color:var(--gt-muted); text-decoration:none; font-weight:600; }
+.journey-shell .quest-starter-top>p { margin:0; color:#8a6431; font-size:12px; font-weight:800; letter-spacing:1.4px; }
+.journey-shell .quest-starter-heading { max-width:750px; margin:0 0 36px; }
+.journey-shell .quest-starter-heading .eyebrow { color:#8a6431; }
+.journey-shell .quest-starter-heading h1 { margin:8px 0 14px; color:var(--gt-ink); font:500 clamp(40px,4vw,60px)/1.02 var(--serif); letter-spacing:-.045em; }
+.journey-shell .quest-starter-heading h1 em { color:var(--gt-coral); }
+.journey-shell .quest-starter-heading>p:last-child { max-width:630px; margin:0; color:var(--gt-muted); font-size:16px; line-height:1.6; }
+.journey-shell .quest-starter-layout { display:grid; grid-template-columns:minmax(0,1.42fr) minmax(360px,.78fr); gap:28px; align-items:start; }
+.journey-shell .quest-starter-form,
+.journey-shell .quest-starter-ai { box-sizing:border-box; border:1px solid #f2e6bb; border-radius:12px; background:#fffdf3; box-shadow:0 10px 26px rgba(102,82,30,.06); }
+.journey-shell .quest-starter-form { position:sticky; top:84px; max-height:calc(100dvh - 104px); overflow-y:auto; overscroll-behavior:contain; padding:28px; scrollbar-width:thin; scrollbar-color:#b8aad9 transparent; }
+.journey-shell .quest-starter-form::-webkit-scrollbar { width:8px; }
+.journey-shell .quest-starter-form::-webkit-scrollbar-thumb { border:2px solid #fffdf3; border-radius:999px; background:#b8aad9; }
+.journey-shell .quest-starter-form-top { display:flex; align-items:flex-start; justify-content:space-between; gap:22px; margin:-28px -28px 22px; padding:20px 28px; background:#f7f3ff; border-bottom:1px solid #d9cfed; border-radius:11px 11px 0 0; }
+.journey-shell .quest-starter-form-top .eyebrow { color:#8a6431; margin:0 0 6px; }
+.journey-shell .quest-starter-form-top h2 { margin:0; color:var(--gt-ink); font-size:28px; }
+.journey-shell .quest-starter-form .travel-mode-switch { flex:0 0 auto; }
+.journey-shell .quest-starter-meta { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:0; }
+.journey-shell .quest-starter-meta label { color:var(--gt-ink); font-size:14px; font-weight:600; }
+.journey-shell .quest-starter-meta label span { color:var(--gt-muted); font-size:12px; font-weight:500; }
+.journey-shell .quest-starter-meta input { width:100%; margin-top:7px; box-sizing:border-box; }
+.journey-shell .quest-starter-form .member-preferences { width:100%; max-width:none; margin:20px 0 0; padding:0; border:0; border-radius:0; background:transparent; }
+.journey-shell .quest-starter-form .member-preferences header { display:none; }
+.journey-shell .quest-starter-form,
+.journey-shell .quest-starter-ai { font-family:'DM Sans', sans-serif; }
+.journey-shell .quest-starter-form .member-preferences label { color:var(--gt-ink); font-size:15px; font-weight:500; }
+.journey-shell .quest-starter-form .member-preferences :is(input, select, textarea, button) { font-family:inherit; }
+.journey-shell .quest-starter-form .member-preferences .member-hint,
+.journey-shell .quest-starter-form .member-preferences summary { color:var(--gt-muted); }
+.journey-shell .member-visible-section { margin:22px 0 0; padding:20px 0 0; border-top:1px solid var(--gt-border); }
+.journey-shell .member-section-title { margin:0 0 16px; color:var(--gt-ink); font-size:16px; font-weight:800; }
+.journey-shell .member-section-title span { margin-left:6px; color:var(--gt-muted); font-size:13px; font-weight:500; }
+.journey-shell .member-inline-options { display:flex; flex-wrap:wrap; gap:8px; margin:9px 0 18px; }
+.journey-shell .member-inline-options button { border:1px solid #d9cfed; border-radius:999px; background:#fff; color:var(--gt-ink); padding:8px 11px; font-size:14px; font-weight:600; line-height:1.2; transition:transform .16s ease, background-color .16s ease, box-shadow .16s ease; }
+.journey-shell .member-inline-options button[aria-pressed=true] { border-color:#1769d8; background:#1769d8; color:#fff; box-shadow:0 4px 10px rgba(23,105,216,.2); }
+.journey-shell .member-inline-options button[aria-pressed=true]::before { content:'✓'; margin-right:5px; color:var(--gt-yellow); font-weight:800; }
+.journey-shell .member-inline-options button:disabled { opacity:.48; }
+.journey-shell .member-choice-grid button,
+.journey-shell .member-pace button { font-family:inherit; font-size:14px; font-weight:600; }
+.journey-shell .member-choice-grid button[aria-pressed=true] { border-color:#1769d8; background:#1769d8; color:#fff; box-shadow:0 5px 13px rgba(23,105,216,.2); }
+.journey-shell .member-pace button[aria-pressed=true] { border-color:var(--gt-coral); background:var(--gt-coral); color:#fff; box-shadow:0 5px 13px rgba(255,90,54,.18); }
+.journey-shell .member-choice-grid button[aria-pressed=true] svg,
+.journey-shell .member-pace button[aria-pressed=true] svg,
+.journey-shell .member-pace button[aria-pressed=true] small { color:#fff; }
+.journey-shell .quest-starter-form .member-preferences footer { border-top-color:var(--gt-border); }
+
+.journey-shell .quest-starter-ai { position:sticky; top:100px; overflow:hidden; }
+.journey-shell .quest-starter-ai-heading { display:flex; align-items:center; gap:12px; padding:22px 22px 16px; background:#f7f3ff; border-bottom:1px solid #d9cfed; }
+.journey-shell .quest-starter-ai-heading>span { display:grid; place-items:center; width:38px; height:38px; border-radius:50%; background:#12ace5; color:var(--gt-ink); }
+.journey-shell .quest-starter-ai-heading .eyebrow { margin:0 0 3px; color:#65508f; }
+.journey-shell .quest-starter-ai-heading h2 { margin:0; color:#3e2f61; font-size:24px; }
+.journey-shell .quest-starter-ai-intro { margin:18px 22px 14px; color:var(--gt-muted); font-size:14px; line-height:1.55; }
+.journey-shell .quest-starter-checklist { display:flex; flex-wrap:wrap; gap:7px; padding:0 22px 16px; border-bottom:1px solid #f0df9c; }
+.journey-shell .quest-starter-checklist span { display:inline-flex; align-items:center; gap:4px; padding:5px 8px; border-radius:999px; background:#fff9e6; color:#65508f; font-size:12px; text-transform:capitalize; }
+.journey-shell .quest-starter-checklist span.is-covered { background:#eff8c9; color:#435400; }
+.journey-shell .quest-starter-chat { display:flex; flex-direction:column; gap:10px; height:clamp(260px, 32vh, 350px); min-height:0; overflow-y:auto; overscroll-behavior:contain; padding:18px 22px; scrollbar-width:thin; scrollbar-color:#b8aad9 transparent; }
+.journey-shell .quest-starter-chat::-webkit-scrollbar { width:8px; }
+.journey-shell .quest-starter-chat::-webkit-scrollbar-thumb { border:2px solid #fff; border-radius:999px; background:#b8aad9; }
+.journey-shell .quest-starter-chat p { max-width:88%; margin:0; padding:11px 13px; border-radius:10px; font-size:14px; line-height:1.55; }
+.journey-shell .quest-starter-chat .guide { align-self:flex-start; background:#f3fcfd; color:#315b68; border:1px solid #cdeff2; }
+.journey-shell .quest-starter-chat .you { align-self:flex-end; background:#fff0ea; color:#7d3c31; border:1px solid #ffd2c5; }
+.journey-shell .quest-starter-chat .is-thinking { color:#65508f; font-style:italic; }
+.journey-shell .quest-starter-composer { display:grid; gap:10px; padding:16px 22px; border-top:1px solid #f0df9c; }
+.journey-shell .quest-starter-composer textarea { min-height:108px; resize:vertical; }
+.journey-shell .quest-starter-composer .primary-button { justify-content:center; width:100%; }
+.journey-shell .quest-starter-ai>.form-error { margin:0 22px 12px; }
+.journey-shell .quest-starter-ai-note { display:flex; align-items:center; gap:7px; margin:0; padding:0 22px 18px; color:var(--gt-muted); font-size:12px; line-height:1.45; }
+.journey-shell .guest-group-room .member-preferences { background:#fffdf3; border-color:#f2e6bb; box-shadow:0 10px 26px rgba(102,82,30,.06); }
+.journey-shell .guest-account-actions { display:flex; flex-wrap:wrap; gap:12px; margin:24px 0 14px; }
+.journey-shell .guest-finish-later { color:var(--gt-muted); font-size:14px; }
+
+@media (max-width: 1050px) {
+  .journey-shell .quest-starter { width:min(920px, calc(100vw - 48px)); }
+  .journey-shell .quest-starter-layout { grid-template-columns:1fr; }
+  .journey-shell .quest-starter-form,
+  .journey-shell .quest-starter-ai { position:relative; top:auto; max-height:none; overflow:visible; }
+}
+
+@media (max-width: 650px) {
+  .journey-shell .quest-starter { width:calc(100vw - 32px); padding-bottom:44px; }
+  .journey-shell .quest-starter-top { margin-bottom:24px; }
+  .journey-shell .quest-starter-heading { margin-bottom:25px; }
+  .journey-shell .quest-starter-form { padding:18px; }
+  .journey-shell .quest-starter-form-top { display:block; margin:-18px -18px 18px; padding:18px; }
+  .journey-shell .quest-starter-form .travel-mode-switch { margin-top:16px; }
+  .journey-shell .quest-starter-meta { grid-template-columns:1fr; }
+  .journey-shell .quest-starter-chat { height:280px; }
+  .journey-shell .canvas-panel-tabs { background: #65508f; }
+  .journey-shell .canvas-days>button { min-height: 86px; }
+  .journey-shell .canvas-confirm { align-items: flex-start; gap: 8px; font-size: 13px; }
+  .journey-shell .canvas-confirm button,
+  .journey-shell .canvas-confirm > span { font-size: 13px; }
+}

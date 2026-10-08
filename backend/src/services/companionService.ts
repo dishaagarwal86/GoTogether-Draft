@@ -34,7 +34,10 @@ export function parseCompanionRequest(value: unknown): CompanionRequest {
   const roomId = input.roomId === undefined ? undefined : text(input.roomId, 150)
   const message = input.message === undefined ? undefined : text(input.message, 4000)
   if (['extract', 'chat'].includes(task) && !message) throw new HttpError(400, 'Tell the Companion what you would like to plan.')
-  if (task !== 'group-dna' && !roomId) throw new HttpError(400, 'Open a quest before using the Companion.')
+  // A traveller may use the Companion while starting a new quest. Extraction is
+  // intentionally the only pre-quest task: it can suggest explicit fields, but
+  // has no group context and cannot make recommendations or change data itself.
+  if (!['group-dna', 'extract'].includes(task) && !roomId) throw new HttpError(400, 'Open a quest before using the Companion.')
   if (input.includeCrew !== undefined && typeof input.includeCrew !== 'boolean') throw new HttpError(400, 'Invalid crew conversation selection.')
   const itineraryId = input.itineraryId === undefined ? undefined : text(input.itineraryId, 150)
   if (task === 'explain' && !itineraryId) throw new HttpError(400, 'Choose an itinerary to explain.')
@@ -95,7 +98,7 @@ export async function askCompanion(userId: string, input: unknown) {
   const instructions = 'You are the GoTogether Companion. Give warm, concise travel advice grounded in the supplied context. Never calculate or invent scores, edit preferences, make bookings, or claim an action has been saved. Explain conflicts honestly. Task: ' + request.task +
     (request.task === 'group-dna'
       ? '. Return JSON: {"summary":"one sentence intro","places":[{"name":"City or Region","tag":"one mood tag like Adventure or Beach or Culture","reason":"one sentence why it fits"}]} — suggest exactly 3 places that match the preferences. No markdown, no explanation.'
-      : '. Return {"summary":"text"}' + (request.task === 'extract' ? ' with an additional "extracted" object containing only preferences explicitly supported by the notes. Allowed keys: moods (up to 3 of ' + moods.join(', ') + '), budget (' + budgets.join(', ') + '), pace (' + paces.join(', ') + '), mustHave (text), noGo (text), daysCount (integer 1 to 30). Omit unknown or ambiguous values. The user will review each field.' : '.'))
+      : '. Return {"summary":"text"}' + (request.task === 'extract' ? ' with an additional "extracted" object containing only preferences explicitly supported by the notes. Treat obvious spelling mistakes and natural phrasing as the intended travel preference, but omit anything still ambiguous. Allowed keys: moods (up to 3 of ' + moods.join(', ') + '), budget (' + budgets.join(', ') + '), pace (' + paces.join(', ') + '), mustHave (text), noGo (text), daysCount (integer 1 to 30). The user will review each field.' : '.'))
   const result = await generateAi(instructions, { message: request.message, context }, value => validateReply(value, request.task), fallback)
   const saved = await saveAiRecord(userId, request.roomId, request.task, key, { ...result.value, source: result.source, notice: result.notice, message: request.message, preferences: request.preferences, itineraryId: request.itineraryId, planVersion: plan?.preferenceVersion, preferenceId: own?.id, preferenceVersion: own && contextKey(own.data) })
   return { id: saved.id, ...result.value, source: result.source, notice: result.notice }

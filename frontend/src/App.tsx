@@ -8,6 +8,7 @@ import './styles/trip-canvas.css'
 import './styles/travel-memory.css'
 import './styles/group-room.css'
 import './styles/typography.css'
+import './styles/theme.css'
 
 function App() {
   return <BrowserRouter><AppShell /></BrowserRouter>

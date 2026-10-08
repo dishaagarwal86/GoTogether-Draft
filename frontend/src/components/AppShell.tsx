@@ -10,7 +10,6 @@ import { TravelCanvas } from './TravelArtwork'
 const HomePage = lazy(() => import('../pages/HomePage').then(module => ({ default: module.HomePage })))
 const CreateRoomPage = lazy(() => import('../pages/CreateRoomPage').then(module => ({ default: module.CreateRoomPage })))
 const PlanTripPage = lazy(() => import('../pages/PlanTripPage').then(module => ({ default: module.PlanTripPage })))
-const QuestionsPage = lazy(() => import('../pages/QuestionsPage').then(module => ({ default: module.QuestionsPage })))
 const RoomOverviewPage = lazy(() => import('../pages/RoomOverviewPage').then(module => ({ default: module.RoomOverviewPage })))
 const ExplorePage = lazy(() => import('../pages/ExplorePage').then(module => ({ default: module.ExplorePage })))
 const LoginPage = lazy(() => import('../pages/AuthPages').then(module => ({ default: module.LoginPage })))
@@ -36,6 +35,11 @@ function RequireAuth() {
   if (!user) return <Navigate to={`/login?next=${encodeURIComponent(location.pathname + location.search)}`} replace />
   return <Outlet />
 }
+function LegacyPreferencesRedirect() {
+  const location = useLocation()
+  const roomId = new URLSearchParams(location.search).get('roomId')
+  return <Navigate to={roomId ? `/quests/${encodeURIComponent(roomId)}?tab=crew&preferences=1` : '/travel-dna/new'} replace />
+}
 function AppLayout() {
   const location = useLocation()
   const isLanding = location.pathname === '/' || location.pathname === '/landing-concept'
@@ -59,7 +63,7 @@ function AppLayout() {
         <Route path="/travel-style" element={<TravelStylePage />} /><Route path="/dashboard" element={<DashboardPage />} /><Route path="/profile" element={<ProfilePage />} /><Route path="/crew" element={<CrewPage />} />
         <Route path="/trips" element={<PlanTripPage />} /><Route path="/plan" element={<Navigate to="/trips" replace />} />
         <Route path="/saved" element={<ExplorePage key={location.pathname + location.search} savedOnly />} /><Route path="/quests/:roomId" element={<QuestDetailPage key={location.pathname} />} />
-        <Route path="/travel-dna/new" element={<CreateRoomPage key={location.search} />} /><Route path="/travel-dna/preferences" element={<QuestionsPage key={location.search} />} />
+        <Route path="/travel-dna/new" element={<CreateRoomPage key={location.search} />} /><Route path="/travel-dna/preferences" element={<LegacyPreferencesRedirect />} />
         <Route path="/travel-dna/overview" element={<RoomOverviewPage />} /><Route path="/travel-dna/group-dna" element={<GroupDnaPage />} />
         <Route path="/travel-dna/plan-paths" element={<PlanPathsPage />} />
       </Route>
